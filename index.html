@@ -10,12 +10,22 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icons/icon-192.svg">
 <title>OC AGENDA - Oscar Caldera</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif}
+html,body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif;overflow-x:hidden}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
 input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
+/* Animated background */
+.app-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.app-bg::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.1) 0%,transparent 70%);top:-150px;right:-150px;animation:bgf1 14s ease-in-out infinite}
+.app-bg::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.06) 0%,transparent 70%);bottom:-80px;left:-80px;animation:bgf2 18s ease-in-out infinite}
+@keyframes bgf1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,60px)}}
+@keyframes bgf2{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px)}}
+.app-particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+.app-particle{position:absolute;opacity:0.05;animation:apf linear infinite}
+@keyframes apf{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:0.05}90%{opacity:0.05}100%{transform:translateY(-20px) rotate(360deg);opacity:0}}
+.app-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -53,7 +63,10 @@ input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 (function(){
 var h=React.createElement,us=React.useState,ue=React.useEffect,um=React.useMemo,ur=React.useRef;
 var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-var KEY="oc-agenda-v8",PH=2500,PS=1500,TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.github.io/ocagenda/cotizar.html";
+var KEY="oc-agenda-v8",TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.github.io/ocagenda/cotizar.html";
+var PRICE_KEY="oc-precios";
+function loadPrices(){try{var p=JSON.parse(localStorage.getItem(PRICE_KEY));return p||{ph:2500,ps:1500}}catch(e){return{ph:2500,ps:1500}}}
+function savePrices(p){localStorage.setItem(PRICE_KEY,JSON.stringify(p))}
 var ESTADOS=["Pendiente","Confirmado","Cancelado"];
 var EST_C={Pendiente:{bg:"#ff8c00"},Confirmado:{bg:"#00875a"},Cancelado:{bg:"#cc0000"}};
 var EMPTY={id:"",fecha:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
@@ -70,7 +83,7 @@ _order.forEach(function(_h){for(var _m=0;_m<60;_m+=30){var _hr=_h%12||12;var _ap
 function fm(n){return"$"+(Number(n)||0).toLocaleString("es-CO")}
 function ft(t){if(!t)return"";var p=t.split(":");var hr=parseInt(p[0]);return(hr%12||12)+":"+p[1]+" "+(hr>=12?"PM":"AM")}
 function gs(f){var t=new Date();t.setHours(0,0,0,0);var d=new Date(f+"T00:00:00");if(d<t)return"pasado";if(d.getTime()===t.getTime())return"hoy";return"proximo"}
-function ct(f){if(f.tipo==="Por hora")return(Number(f.horas)||1)*PH;if(f.tipo==="Serenata")return PS;return 0}
+function ct(f){var pr=loadPrices();if(f.tipo==="Por hora")return(Number(f.horas)||1)*(f.precioHora||pr.ph);if(f.tipo==="Serenata")return f.precioSerenata||pr.ps;return 0}
 function mapsUrl(a){return"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a)}
 function waNum(t){var n=(t||"").replace(/\D/g,"");if(n.length===10)n="52"+n;if(n.length===7)n="52686"+n;return n}
 function waUrl(t){return"https://wa.me/"+waNum(t)}
@@ -159,10 +172,13 @@ function PinScreen(props){
   function addDigit(d){if(pin.length>=4)return;var next=pin+d;setPin(next);setErr(false);
     if(next.length===4){if(next===APP_PIN){sessionStorage.setItem("oc-unlocked","1");props.onUnlock()}else{setErr(true);setShake(true);setTimeout(function(){setPin("");setShake(false)},600)}}}
   function del(){setPin(pin.slice(0,-1));setErr(false)}
-  return h("div",{style:{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
-    h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:80,height:80,borderRadius:20,marginBottom:20,boxShadow:"0 0 30px rgba(220,30,30,0.4)"}}),
-    h("h1",{style:{color:"#dc1e1e",fontSize:22,fontWeight:800,marginBottom:4,fontFamily:"'Outfit',sans-serif"}},"OC AGENDA"),
-    h("p",{style:{color:"#888",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif"}},"Ingresa tu PIN para continuar"),
+  return h(React.Fragment,null,
+    h("div",{className:"app-bg"}),
+    h("div",{className:"app-grain"}),
+    h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
+    h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:85,height:85,borderRadius:22,marginBottom:24,boxShadow:"0 0 40px rgba(220,30,30,0.5)"}}),
+    h("h1",{style:{color:"#dc1e1e",fontSize:26,fontWeight:800,marginBottom:4,fontFamily:"'Playfair Display',serif",letterSpacing:"-0.5px"}},"OC AGENDA"),
+    h("p",{style:{color:"#666",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif",textTransform:"uppercase",letterSpacing:"2px"}},"Ingrese su PIN"),
     // PIN dots
     h("div",{style:{display:"flex",gap:14,marginBottom:8,animation:shake?"shake 0.4s ease":"none"}},
       [0,1,2,3].map(function(i){return h("div",{key:i,style:{width:18,height:18,borderRadius:9,border:"2px solid "+(err?"#ff3333":pin.length>i?"#dc1e1e":"rgba(255,255,255,0.2)"),background:pin.length>i?(err?"#ff3333":"#dc1e1e"):"transparent",transition:"all 0.15s ease",transform:pin.length>i?"scale(1.1)":"scale(1)"}})})),
@@ -175,7 +191,7 @@ function PinScreen(props){
       })
     ),
     h("style",null,"@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}")
-  );
+  ));
 }
 
 function Root(){
@@ -203,6 +219,8 @@ function App(){
   var _srch=us(""),srch=_srch[0],setSrch=_srch[1];
   var _imp=us(false),showImport=_imp[0],setShowImport=_imp[1];
   var _impTxt=us(""),impTxt=_impTxt[0],setImpTxt=_impTxt[1];
+  var _pr=us(loadPrices()),precios=_pr[0],setPrecios=_pr[1];
+  var PH=precios.ph,PS=precios.ps;
 
   function ntf(m,t){setToast({m:m,t:t||"ok"});setTimeout(function(){setToast(null)},3500)}
   function save(a){setEvents(a);persist(a)}
@@ -269,6 +287,7 @@ function App(){
     if(!form.fecha||!form.contacto||!form.tipo)return;
     var newId=editing?form.id:String(Date.now());
     var ev=Object.assign({},form,{id:newId,horas:Number(form.horas)||1,anticipo:Number(form.anticipo)||0,personas:Number(form.personas)||0});
+    if(!editing){ev.precioHora=PH;ev.precioSerenata=PS}
     var conf=checkConflict(ev);
     if(conf&&!confirm("⚠️ CONFLICTO: Ya tienes un evento ese día con "+conf.contacto+" de "+ft(conf.hora)+" a "+calcEnd(conf.hora,conf.tipo==="Por hora"?conf.horas:1)+". ¿Agendar de todas formas?")){return}
     var arr=editing?events.map(function(x){return x.id===form.id?ev:x}):events.concat([ev]);
@@ -300,17 +319,22 @@ function App(){
   var C=function(bg,co,bd){return{border:"1px solid "+(bd||"rgba(255,255,255,0.08)"),padding:"6px 10px",borderRadius:7,fontSize:11,cursor:"pointer",fontFamily:"'Outfit',sans-serif",background:bg||"rgba(255,255,255,0.04)",color:co||"#ccc"}};
 
   return h(React.Fragment,null,
-    toast&&h("div",{style:{position:"fixed",bottom:75,left:"50%",transform:"translateX(-50%)",zIndex:9999,background:toast.t==="err"?"#cc0000":"#1a1a1a",color:"#fff",padding:"12px 24px",borderRadius:12,fontSize:13,fontWeight:500,animation:"toastIn 0.3s ease",boxShadow:"0 0 20px rgba(220,30,30,0.4)",border:"1px solid #dc1e1e"}},(toast.t==="err"?"❌ ":"✅ ")+toast.m),
+    // Premium background
+    h("div",{className:"app-bg"}),
+    h("div",{className:"app-particles",ref:function(el){if(el&&!el.hasChildNodes()){var icons=["🎵","🎤","🎶","♪","♫","✨"];for(var i=0;i<10;i++){var p=document.createElement("div");p.className="app-particle";p.textContent=icons[i%icons.length];p.style.left=Math.random()*100+"%";p.style.fontSize=(8+Math.random()*12)+"px";p.style.animationDuration=(18+Math.random()*22)+"s";p.style.animationDelay=(Math.random()*15)+"s";el.appendChild(p)}}}}),
+    h("div",{className:"app-grain"}),
 
-    h("div",{style:{minHeight:"100vh",background:"#000",padding:"16px 16px 80px",maxWidth:640,margin:"0 auto"}},
+    toast&&h("div",{style:{position:"fixed",bottom:75,left:"50%",transform:"translateX(-50%)",zIndex:9999,background:toast.t==="err"?"rgba(180,0,0,0.9)":"rgba(15,15,15,0.9)",backdropFilter:"blur(10px)",color:"#fff",padding:"12px 24px",borderRadius:12,fontSize:13,fontWeight:500,animation:"toastIn 0.3s ease",boxShadow:"0 0 20px rgba(220,30,30,0.4)",border:"1px solid rgba(220,30,30,0.3)"}},(toast.t==="err"?"❌ ":"✅ ")+toast.m),
+
+    h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",padding:"16px 16px 80px",maxWidth:640,margin:"0 auto"}},
       // Header
-      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:10}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}},
         h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:42,height:42,borderRadius:11,boxShadow:"0 0 18px rgba(220,30,30,0.4)"}}),
-          h("div",null,h("h1",{style:{fontSize:18,fontWeight:800,color:"#dc1e1e",margin:0}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#888",margin:0}},"Oscar Caldera • Eventos Musicales"))
+          h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:44,height:44,borderRadius:12,boxShadow:"0 0 25px rgba(220,30,30,0.4)"}}),
+          h("div",null,h("h1",{style:{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:800,color:"#dc1e1e",margin:0,letterSpacing:"-0.5px"}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#666",margin:0,letterSpacing:"1px",textTransform:"uppercase"}},"Oscar Caldera"))
         ),
         tab==="eventos"&&h("div",{style:{display:"flex",gap:6}},
-          h("button",{onClick:function(){setShowImport(true);setImpTxt("")},style:Object.assign({},B("rgba(37,211,102,0.15)"),{color:"#25d366",border:"1px solid rgba(37,211,102,0.25)",padding:"10px 12px",fontSize:12})},"📋 Importar"),
+          h("button",{onClick:function(){setShowImport(true);setImpTxt("")},className:"btn-rip",style:Object.assign({},B("rgba(37,211,102,0.1)"),{color:"#25d366",border:"1px solid rgba(37,211,102,0.2)",padding:"10px 12px",fontSize:12,backdropFilter:"blur(8px)"})},"📋 Importar"),
           h("button",{onClick:function(){setForm(Object.assign({},EMPTY));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},className:"btn-rip",style:B()},"+  Nuevo")
         )
       ),
@@ -337,7 +361,7 @@ function App(){
         ),
         // STATS
         h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}},
-          [{l:"Eventos",v:stats.n,c:"#fff"},{l:"Ingresos",v:fm(stats.total),c:"#ff4444"},{l:"Cobrado",v:fm(stats.ant),c:"#ff6666"},{l:"Por Cobrar",v:fm(stats.pend),c:stats.pend>0?"#ff3333":"#44ff44"}].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:10,padding:"11px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",animation:"slideUp 0.4s ease both",animationDelay:(i*0.08)+"s"}},h("span",{style:{fontSize:9,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{className:"stat-num",style:{fontSize:14,fontWeight:700,color:s.c,fontFamily:JM,animationDelay:(0.2+i*0.1)+"s"}},s.v))})
+          [{l:"Eventos",v:stats.n,c:"#fff"},{l:"Ingresos",v:fm(stats.total),c:"#ff4444"},{l:"Cobrado",v:fm(stats.ant),c:"#ff6666"},{l:"Por Cobrar",v:fm(stats.pend),c:stats.pend>0?"#ff3333":"#44ff44"}].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"11px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",animation:"slideUp 0.4s ease both",animationDelay:(i*0.08)+"s"}},h("span",{style:{fontSize:9,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{className:"stat-num",style:{fontSize:14,fontWeight:700,color:s.c,fontFamily:JM,animationDelay:(0.2+i*0.1)+"s"}},s.v))})
         ),
         // SEARCH + FILTERS
         h("input",{type:"text",style:Object.assign({},I,{marginBottom:8,fontSize:12}),placeholder:"🔍 Buscar por nombre, fecha o dirección...",value:srch,onChange:function(e){setSrch(e.target.value)}}),
@@ -410,7 +434,7 @@ function App(){
 
       // ========== CONTACTOS ==========
       tab==="contactos"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontSize:17,fontWeight:700,marginBottom:12}},"👤 Contactos"),
+        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"👤 Contactos"),
         h("input",{type:"text",style:Object.assign({},I,{marginBottom:10,fontSize:12}),placeholder:"🔍 Buscar contacto...",value:cSrch,onChange:function(e){setCsrch(e.target.value)}}),
         h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},filteredContacts.length+" contacto(s)"),
         h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
@@ -423,57 +447,71 @@ function App(){
 
       // ========== DASHBOARD ==========
       tab==="dashboard"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontSize:17,fontWeight:700,marginBottom:12}},"📊 Dashboard"),
+        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"📊 Dashboard"),
         h("select",{value:fYear,onChange:function(e){setFYear(e.target.value)},style:Object.assign({},I,{marginBottom:12,fontSize:13,cursor:"pointer"})},years.map(function(y){return h("option",{key:y,value:y},y)})),
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:14,marginBottom:12}},h(MChart,{events:events,year:fYear})),
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:14,marginBottom:12}},h(MChart,{events:events,year:fYear})),
         h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}},
           [{l:"Total Año",v:fm(events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado!=="Cancelado"}).reduce(function(s,x){return s+ct(x)},0)),c:"#ff4444"},
           {l:"Cobrado",v:fm(events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado!=="Cancelado"}).reduce(function(s,x){return s+(x.anticipo||0)},0)),c:"#00875a"},
           {l:"Eventos",v:events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)}).length,c:"#fff"},
           {l:"Confirmados",v:events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado==="Confirmado"}).length,c:"#00875a"}
-          ].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:10,padding:"12px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("span",{style:{fontSize:10,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{style:{fontSize:15,fontWeight:700,color:s.c,fontFamily:JM}},s.v))})
+          ].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("span",{style:{fontSize:10,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{style:{fontSize:15,fontWeight:700,color:s.c,fontFamily:JM}},s.v))})
         )
       ),
 
       // ========== AJUSTES ==========
       tab==="ajustes"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontSize:17,fontWeight:700,marginBottom:12}},"⚙️ Ajustes"),
+        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"⚙️ Ajustes"),
         h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"12px",borderRadius:12,fontSize:14,fontWeight:600,color:"#fff",background:"linear-gradient(135deg,#8b0000,#dc1e1e)",textDecoration:"none",marginBottom:8}},"🎤 Mi Página Web →"),
         // QR
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:16,marginBottom:8,textAlign:"center"}},
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8,textAlign:"center"}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📱 QR de Cotización"),
           h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},"Los clientes escanean y abren tu formulario"),
           h("img",{src:"https://api.qrserver.com/v1/create-qr-code/?data="+encodeURIComponent(COTIZAR_URL)+"&size=180x180&bgcolor=000000&color=dc1e1e",style:{width:150,height:150,borderRadius:8,border:"2px solid #dc1e1e"}}),
           h("p",{style:{color:"#666",fontSize:9,marginTop:6}},COTIZAR_URL)
         ),
         // Report
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:16,marginBottom:8}},
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📄 Reporte Mensual"),
           h("button",{onClick:function(){genReporte(events,fYear,fMonth)},style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)"})},"📄 Generar Reporte PDF")
         ),
         // Backup
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:16,marginBottom:8}},
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"💾 Respaldo"),
           h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},events.length+" eventos"),
           h("button",{onClick:exportD,style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)",marginBottom:6})},"📥 Exportar"),
           h("label",{style:{display:"block",width:"100%",padding:"10px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",background:"rgba(0,135,90,0.1)",border:"1px solid rgba(0,135,90,0.25)",color:"#00c896",fontFamily:"'Outfit',sans-serif",textAlign:"center"}},"📤 Importar",h("input",{type:"file",accept:".json",onChange:importD,style:{display:"none"}}))
         ),
         // Notif
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:16,marginBottom:8}},
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"🔔 Notificaciones"),
           h("button",{onClick:function(){reqNotif();if("Notification"in window)ntf("Permiso: "+Notification.permission)},style:Object.assign({},B("rgba(255,140,0,0.1)"),{width:"100%",color:"#ff8c00",border:"1px solid rgba(255,140,0,0.25)"})},"Activar")
         ),
         // Prices
-        h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:14,padding:16}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"💰 Precios"),
-          h("div",{style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid rgba(255,255,255,0.05)"}},h("span",{style:{color:"#ccc",fontSize:13}},"🕐 Por hora"),h("span",{style:{color:"#ff4444",fontWeight:700,fontFamily:JM}},fm(PH)+"/hr")),
-          h("div",{style:{display:"flex",justifyContent:"space-between",padding:"6px 0"}},h("span",{style:{color:"#ccc",fontSize:13}},"🎵 Serenata"),h("span",{style:{color:"#ff4444",fontWeight:700,fontFamily:JM}},fm(PS)))
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"💰 Precios"),
+          h("p",{style:{color:"#666",fontSize:10,marginBottom:12}},"Cambiar precios solo afecta eventos nuevos. Los ya agendados conservan su precio original."),
+          h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:10}},
+            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🕐 Por hora"),
+            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
+              h("span",{style:{color:"#888",fontSize:14}},"$"),
+              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PH,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ph:v});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{color:"#666",fontSize:11}},"/hr")
+            )
+          ),
+          h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🎵 Serenata"),
+            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
+              h("span",{style:{color:"#888",fontSize:14}},"$"),
+              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PS,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ps:v});setPrecios(np);savePrices(np)}})
+            )
+          )
         )
       )
     ),
 
     // Bottom nav
-    h("div",{style:{position:"fixed",bottom:0,left:0,right:0,background:"#0a0a0a",borderTop:"1px solid rgba(220,30,30,0.15)",display:"flex",justifyContent:"center",zIndex:900}},
+    h("div",{style:{position:"fixed",bottom:0,left:0,right:0,background:"rgba(5,5,5,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderTop:"1px solid rgba(220,30,30,0.1)",display:"flex",justifyContent:"center",zIndex:900}},
       h("div",{style:{display:"flex",maxWidth:640,width:"100%"}},
         [{id:"eventos",icon:"🎤",lb:"Eventos"},{id:"contactos",icon:"👤",lb:"Contactos"},{id:"dashboard",icon:"📊",lb:"Dashboard"},{id:"ajustes",icon:"⚙️",lb:"Ajustes"}].map(function(t){return h("div",{key:t.id,onClick:function(){setTab(t.id)},style:{flex:1,textAlign:"center",padding:"8px 0",cursor:"pointer"}},h("div",{style:{fontSize:18}},t.icon),h("div",{style:{fontSize:9,fontWeight:600,color:tab===t.id?"#ff4444":"#666",marginTop:1}},t.lb))})
       )
