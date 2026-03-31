@@ -69,7 +69,7 @@ function loadPrices(){try{var p=JSON.parse(localStorage.getItem(PRICE_KEY));retu
 function savePrices(p){localStorage.setItem(PRICE_KEY,JSON.stringify(p))}
 var ESTADOS=["Pendiente","Confirmado","Cancelado"];
 var EST_C={Pendiente:{bg:"#ff8c00"},Confirmado:{bg:"#00875a"},Cancelado:{bg:"#cc0000"}};
-var EMPTY={id:"",fecha:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
+var EMPTY={id:"",fecha:"",fecha_fin:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
 var ST={pasado:{bg:"rgba(255,255,255,0.02)",bd:"rgba(255,255,255,0.06)",badge:"#555",txt:"#666",lb:"Pasado"},hoy:{bg:"rgba(220,30,30,0.1)",bd:"rgba(220,30,30,0.35)",badge:"#dc1e1e",txt:"#ff4444",lb:"HOY"},proximo:{bg:"rgba(220,30,30,0.04)",bd:"rgba(220,30,30,0.15)",badge:"#cc0000",txt:"#ff3333",lb:"Próximo"}};
 var I={background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"10px 12px",color:"#fff",fontSize:14,outline:"none",fontFamily:"'Outfit',sans-serif",width:"100%"};
 var LB={fontSize:11,color:"#999",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.5px"};
@@ -91,6 +91,8 @@ function ytK(s){return"https://www.youtube.com/results?search_query="+encodeURIC
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
 function persist(a){localStorage.setItem(KEY,JSON.stringify(a))}
 function fd(f){if(!f)return"";var p=f.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function dateInRange(dateStr,ev){if(!ev.fecha)return false;if(!ev.fecha_fin)return dateStr===ev.fecha;return dateStr>=ev.fecha&&dateStr<=ev.fecha_fin}
+function rangeDays(f1,f2){if(!f1||!f2)return 1;var d1=new Date(f1+"T00:00:00"),d2=new Date(f2+"T00:00:00");return Math.max(1,Math.round((d2-d1)/(86400000))+1)}
 function calcEnd(hora,hrs){if(!hora)return"";var p=hora.split(":");var eH=parseInt(p[0])+(parseInt(hrs)||1);var eM=p[1];var nd=eH>=24;if(nd)eH-=24;return ft(String(eH).padStart(2,"0")+":"+eM)+(nd?" (sig.)":"")}
 function folio(id,evs){var idx=evs.findIndex(function(e){return e.id===id});var n=idx>=0?idx+1:evs.length+1;var yr=new Date().getFullYear();return"OC-"+yr+"-"+String(n).padStart(3,"0")}
 
@@ -285,13 +287,20 @@ function App(){
 
   // Conflict detector
   function checkConflict(ev){
-    if(!ev.fecha||!ev.hora)return null;
-    var dur=ev.tipo==="Por hora"?(Number(ev.horas)||1):1;
-    var p=ev.hora.split(":"),startH=parseInt(p[0]),startM=parseInt(p[1]);
-    var startMin=startH*60+startM,endMin=startMin+dur*60;
+    if(!ev.fecha)return null;
     var conflict=null;
     events.forEach(function(x){
-      if(x.id===ev.id||x.fecha!==ev.fecha||x.estado==="Cancelado"||!x.hora)return;
+      if(x.id===ev.id||x.estado==="Cancelado")return;
+      // Check blocked date ranges
+      if(x.tipo==="Bloqueado"&&dateInRange(ev.fecha,x)){conflict=x;return}
+      if(ev.tipo==="Bloqueado"){
+        if(ev.fecha_fin){var d=new Date(x.fecha+"T00:00:00"),s=new Date(ev.fecha+"T00:00:00"),e=new Date(ev.fecha_fin+"T00:00:00");if(d>=s&&d<=e){conflict=x;return}}
+        else if(x.fecha===ev.fecha){conflict=x;return}
+      }
+      // Check time conflicts on same day
+      if(!ev.hora||!x.hora||x.fecha!==ev.fecha)return;
+      var dur=ev.tipo==="Por hora"?(Number(ev.horas)||1):1;
+      var p=ev.hora.split(":"),startMin=parseInt(p[0])*60+parseInt(p[1]),endMin=startMin+dur*60;
       var xDur=x.tipo==="Por hora"?(Number(x.horas)||1):1;
       var xP=x.hora.split(":"),xStart=parseInt(xP[0])*60+parseInt(xP[1]),xEnd=xStart+xDur*60;
       if(startMin<xEnd&&endMin>xStart)conflict=x;
@@ -329,7 +338,7 @@ function App(){
 
   // Next event & today events
   var nextEv=um(function(){var t=new Date();t.setHours(0,0,0,0);var future=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t&&x.estado!=="Cancelado"}).sort(function(a,b){return new Date(a.fecha+"T"+(a.hora||"00:00"))-new Date(b.fecha+"T"+(b.hora||"00:00"))});return future[0]||null},[events]);
-  var todayEvs=um(function(){var t=new Date();t.setHours(0,0,0,0);return events.filter(function(x){return new Date(x.fecha+"T00:00:00").getTime()===t.getTime()&&x.estado!=="Cancelado"})},[events]);
+  var todayEvs=um(function(){var t=new Date();t.setHours(0,0,0,0);var ts=t.toISOString().split("T")[0];return events.filter(function(x){return(new Date(x.fecha+"T00:00:00").getTime()===t.getTime()||dateInRange(ts,x))&&x.estado!=="Cancelado"})},[events]);
 
   var tF=ct(form),sF=tF-(Number(form.anticipo)||0),canSave=form.fecha&&form.contacto&&form.tipo;
   var filteredContacts=um(function(){if(!cSrch)return contacts;return contacts.filter(function(c){return c.name.toLowerCase().indexOf(cSrch.toLowerCase())>=0})},[contacts,cSrch]);
@@ -407,6 +416,7 @@ function App(){
                   h("div",{style:{display:"flex",gap:6,fontSize:11,color:"#888",flexWrap:"wrap"}},
                     ev.tipo!=="Bloqueado"&&h("span",null,"👤 "+ev.contacto),
                     ev.hora&&h("span",null,ft(ev.hora)+(ev.tipo!=="Bloqueado"?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")),
+                    ev.tipo==="Bloqueado"&&ev.fecha_fin&&h("span",{style:{color:"#999"}},"→ "+fd(ev.fecha_fin)+" ("+rangeDays(ev.fecha,ev.fecha_fin)+" días)"),
                     ev.tipo==="Bloqueado"&&ev.notas&&h("span",{style:{color:"#777",fontStyle:"italic"}},ev.notas),
                     h("span",{style:{color:"#666",fontSize:9}},folio(ev.id,events))
                   )
@@ -494,15 +504,15 @@ function App(){
               for(var d=1;d<=daysInMonth;d++){
                 var dateStr=calY+"-"+String(calM+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
                 var isToday=new Date(dateStr+"T00:00:00").getTime()===today.getTime();
-                var dayEvs=events.filter(function(x){return x.fecha===dateStr});
+                var dayEvs=events.filter(function(x){return x.fecha===dateStr||dateInRange(dateStr,x)});
                 var hasEvent=dayEvs.some(function(x){return x.tipo!=="Bloqueado"&&x.estado!=="Cancelado"});
                 var hasBlocked=dayEvs.some(function(x){return x.tipo==="Bloqueado"});
-                var hasCancelled=dayEvs.some(function(x){return x.estado==="Cancelado"});
                 var bg="transparent";var co="#666";var bd="transparent";
                 if(hasEvent){bg="rgba(220,30,30,0.2)";co="#ff4444";bd="rgba(220,30,30,0.4)"}
                 else if(hasBlocked){bg="rgba(100,100,100,0.15)";co="#999";bd="rgba(100,100,100,0.3)"}
                 if(isToday){bd="#dc1e1e";co="#fff"}
-                cells.push(h("div",{key:d,title:dayEvs.map(function(x){return x.tipo==="Bloqueado"?"🚫 "+x.contacto:x.contacto}).join(", "),style:{padding:"6px 0",borderRadius:7,fontSize:12,fontWeight:isToday?700:hasEvent?600:400,color:co,background:bg,border:"1px solid "+bd,cursor:dayEvs.length?"pointer":"default",transition:"all 0.15s",position:"relative"}},d,hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#dc1e1e",margin:"2px auto 0"}}),hasBlocked&&!hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#888",margin:"2px auto 0"}})))
+                var titles=dayEvs.map(function(x){return x.tipo==="Bloqueado"?"🚫 "+x.contacto:x.contacto}).join(", ");
+                cells.push(h("div",{key:d,title:titles,style:{padding:"6px 0",borderRadius:7,fontSize:12,fontWeight:isToday?700:hasEvent?600:400,color:co,background:bg,border:"1px solid "+bd,cursor:dayEvs.length?"pointer":"default",transition:"all 0.15s",position:"relative"}},d,hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#dc1e1e",margin:"2px auto 0"}}),hasBlocked&&!hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#888",margin:"2px auto 0"}})))
               }
               return cells;
             })()
@@ -579,7 +589,9 @@ function App(){
           // Type
           h("div",{style:{gridColumn:"1/-1",display:"flex",gap:8}},["Por hora","Serenata","Bloqueado"].map(function(t){var ac=form.tipo===t;var isB=t==="Bloqueado";return h("div",{key:t,onClick:function(){upd("tipo",t);if(t==="Serenata")setShowSongs(true)},style:{flex:1,textAlign:"center",padding:"11px 8px",borderRadius:11,cursor:"pointer",fontWeight:600,fontSize:13,background:ac?(isB?"rgba(100,100,100,0.15)":"rgba(220,30,30,0.15)"):"rgba(255,255,255,0.04)",color:ac?(isB?"#aaa":"#ff4444"):"#888",border:"1px solid "+(ac?(isB?"rgba(100,100,100,0.4)":"rgba(220,30,30,0.4)"):"rgba(255,255,255,0.08)")}},h("div",{style:{fontSize:18,marginBottom:2}},t==="Por hora"?"🕐":t==="Serenata"?"🎵":"🚫"),t,h("div",{style:{fontSize:10,color:ac?(isB?"#888":"#ff6666"):"#666",fontWeight:400}},t==="Por hora"?fm(PH)+"/hr":t==="Serenata"?fm(PS):"Personal"))})),
           // Date
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Fecha *"),h("input",{type:"date",style:I,value:form.fecha,onChange:function(e){upd("fecha",e.target.value)}})),
+          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},form.tipo==="Bloqueado"?"Fecha inicio *":"Fecha *"),h("input",{type:"date",style:I,value:form.fecha,onChange:function(e){upd("fecha",e.target.value)}})),
+          // Fecha fin (solo Bloqueado)
+          form.tipo==="Bloqueado"?h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Fecha fin"),h("input",{type:"date",style:I,value:form.fecha_fin||"",min:form.fecha||"",onChange:function(e){upd("fecha_fin",e.target.value)}}),form.fecha&&form.fecha_fin&&h("div",{style:{marginTop:4,padding:"6px 10px",background:"rgba(100,100,100,0.1)",border:"1px solid rgba(100,100,100,0.15)",borderRadius:7,fontSize:11,color:"#999"}},"🚫 "+rangeDays(form.fecha,form.fecha_fin)+" día(s) bloqueado(s)")):
           // Time (select :00/:30 only)
           h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Hora inicio"),h("select",{style:Object.assign({},I,{cursor:"pointer"}),value:form.hora,onChange:function(e){upd("hora",e.target.value)}},h("option",{value:""},"Seleccionar..."),TIMES.map(function(t){return h("option",{key:t.v,value:t.v},t.l)}))),
           // Hours (por hora only)
