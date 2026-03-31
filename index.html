@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="OC AGENDA">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icons/icon-192.svg">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.svg">
 <title>OC AGENDA - Oscar Caldera</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -140,7 +140,7 @@ function genReporte(events,fYear,fMonth){
 
 // Notifications
 function reqNotif(){if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}
-function chkReminders(evs){if(!("Notification"in window)||Notification.permission!=="granted")return;var now=Date.now();evs.forEach(function(ev){if(ev.estado==="Cancelado"||!ev.fecha||!ev.hora)return;var dt=new Date(ev.fecha+"T"+ev.hora+":00").getTime(),d=dt-now;if(d>0&&d<=7200000&&d>7140000)new Notification("🎤 Evento en 2 horas",{body:ev.tipo+" - "+ev.contacto,icon:"/icons/icon-192.svg"});if(d>0&&d<=86400000&&d>86340000)new Notification("🎤 Evento mañana",{body:ev.tipo+" - "+ev.contacto+" "+ft(ev.hora),icon:"/icons/icon-192.svg"})})}
+function chkReminders(evs){if(!("Notification"in window)||Notification.permission!=="granted")return;var now=Date.now();evs.forEach(function(ev){if(ev.estado==="Cancelado"||!ev.fecha||!ev.hora)return;var dt=new Date(ev.fecha+"T"+ev.hora+":00").getTime(),d=dt-now;if(d>0&&d<=7200000&&d>7140000)new Notification("🎤 Evento en 2 horas",{body:ev.tipo+" - "+ev.contacto,icon:"./icons/icon-192.svg"});if(d>0&&d<=86400000&&d>86340000)new Notification("🎤 Evento mañana",{body:ev.tipo+" - "+ev.contacto+" "+ft(ev.hora),icon:"./icons/icon-192.svg"})})}
 
 // WhatsApp messages
 function shareWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="🎤 *Oscar Caldera - Evento Musical*\n\n📋 *Tipo:* "+ev.tipo+"\n📅 *Fecha:* "+fd(ev.fecha)+"\n";if(ev.hora)m+="🕐 *Inicio:* "+ft(ev.hora)+"\n🕐 *Fin:* "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)+"\n";m+="💰 *Total:* "+fm(total)+"\n";if(ev.anticipo)m+="💵 *Anticipo:* "+fm(ev.anticipo)+"\n📊 *Restante:* "+fm(saldo)+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n   ▶ "+ytK(c)+"\n"})}m+="\n✅ *Estado:* "+ev.estado;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}
@@ -160,7 +160,7 @@ function PinScreen(props){
     if(next.length===4){if(next===APP_PIN){sessionStorage.setItem("oc-unlocked","1");props.onUnlock()}else{setErr(true);setShake(true);setTimeout(function(){setPin("");setShake(false)},600)}}}
   function del(){setPin(pin.slice(0,-1));setErr(false)}
   return h("div",{style:{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
-    h("img",{src:"/icons/icon-192.svg",className:"logo-beat",style:{width:80,height:80,borderRadius:20,marginBottom:20,boxShadow:"0 0 30px rgba(220,30,30,0.4)"}}),
+    h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:80,height:80,borderRadius:20,marginBottom:20,boxShadow:"0 0 30px rgba(220,30,30,0.4)"}}),
     h("h1",{style:{color:"#dc1e1e",fontSize:22,fontWeight:800,marginBottom:4,fontFamily:"'Outfit',sans-serif"}},"OC AGENDA"),
     h("p",{style:{color:"#888",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif"}},"Ingresa tu PIN para continuar"),
     // PIN dots
@@ -306,7 +306,7 @@ function App(){
       // Header
       h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:10}},
         h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          h("img",{src:"/icons/icon-192.svg",className:"logo-beat",style:{width:42,height:42,borderRadius:11,boxShadow:"0 0 18px rgba(220,30,30,0.4)"}}),
+          h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:42,height:42,borderRadius:11,boxShadow:"0 0 18px rgba(220,30,30,0.4)"}}),
           h("div",null,h("h1",{style:{fontSize:18,fontWeight:800,color:"#dc1e1e",margin:0}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#888",margin:0}},"Oscar Caldera • Eventos Musicales"))
         ),
         tab==="eventos"&&h("div",{style:{display:"flex",gap:6}},
@@ -588,7 +588,7 @@ function App(){
   );
 }
 ReactDOM.createRoot(document.getElementById("root")).render(h(Root));
-if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(function(){});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(function(){});
 })();
 </script>
 </body>
