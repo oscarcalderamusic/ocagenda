@@ -147,7 +147,7 @@ document.getElementById("fecha").setAttribute("min",today);
 
 // Generate time options :00 and :30 only
 var horaSelect=document.getElementById("hora");
-for(var _h=6;_h<24;_h++){for(var _m=0;_m<60;_m+=30){var hr=_h%12||12;var ap=_h>=12?"PM":"AM";var val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var lab=hr+":"+String(_m).padStart(2,"0")+" "+ap;var opt=document.createElement("option");opt.value=val;opt.textContent=lab;horaSelect.appendChild(opt)}}
+[17,18,19,20,21,22,23,16,15,14,13,12,11,10,9,8,7,6].forEach(function(_h){for(var _m=0;_m<60;_m+=30){var hr=_h%12||12;var ap=_h>=12?"PM":"AM";var val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var lab=hr+":"+String(_m).padStart(2,"0")+" "+ap;var opt=document.createElement("option");opt.value=val;opt.textContent=lab;horaSelect.appendChild(opt)}})
 
 function selType(t){
   tipo=t;
