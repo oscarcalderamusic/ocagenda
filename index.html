@@ -18,10 +18,28 @@ html,body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif}
 input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.08)}30%{transform:scale(1)}45%{transform:scale(1.05)}60%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(120vh) rotate(720deg);opacity:0}}
+@keyframes ripple{0%{transform:scale(0);opacity:0.6}100%{transform:scale(4);opacity:0}}
+@keyframes cardEnter{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(220,30,30,0.2)}50%{box-shadow:0 0 20px rgba(220,30,30,0.5)}}
+.ev-card{transition:transform 0.15s ease,box-shadow 0.15s ease;-webkit-tap-highlight-color:transparent}
+.ev-card:active{transform:scale(0.97)!important;box-shadow:0 0 0 rgba(0,0,0,0)!important}
+.btn-rip{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.btn-rip:after{content:'';position:absolute;top:50%;left:50%;width:10px;height:10px;background:rgba(255,255,255,0.4);border-radius:50%;transform:scale(0);opacity:0}
+.btn-rip:active:after{animation:ripple 0.5s ease-out}
+.glass{background:rgba(10,10,10,0.85)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;border:1px solid rgba(255,255,255,0.08)!important}
+.logo-beat{animation:heartbeat 3s ease-in-out infinite}
+.stat-num{animation:countUp 0.6s ease both}
+.next-glow{animation:glowPulse 2.5s ease-in-out infinite}
+.confetti-piece{position:fixed;width:8px;height:8px;top:-10px;z-index:10000;border-radius:2px;animation:confetti-fall 2.5s ease-in forwards;pointer-events:none}
 .sug{position:absolute;top:100%;left:0;right:0;background:#1a1a1a;border:1px solid rgba(220,30,30,0.2);border-radius:8px;z-index:10;max-height:120px;overflow-y:auto}
-.sug-i{padding:8px 12px;color:#ccc;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sug-i{padding:8px 12px;color:#ccc;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
 .sug-i:hover{background:rgba(220,30,30,0.1);color:#fff}
 </style>
 </head>
@@ -35,7 +53,7 @@ input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 (function(){
 var h=React.createElement,us=React.useState,ue=React.useEffect,um=React.useMemo,ur=React.useRef;
 var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-var KEY="oc-agenda-v8",PH=2500,PS=1500,TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.netlify.app/cotizar";
+var KEY="oc-agenda-v8",PH=2500,PS=1500,TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.github.io/ocagenda/cotizar.html";
 var ESTADOS=["Pendiente","Confirmado","Cancelado"];
 var EST_C={Pendiente:{bg:"#ff8c00"},Confirmado:{bg:"#00875a"},Cancelado:{bg:"#cc0000"}};
 var EMPTY={id:"",fecha:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
@@ -46,7 +64,8 @@ var JM="'JetBrains Mono',monospace";
 
 // Time options :00 and :30 only
 var TIMES=[];
-for(var _h=0;_h<24;_h++){for(var _m=0;_m<60;_m+=30){var _hr=_h%12||12;var _ap=_h>=12?"PM":"AM";var _val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var _lab=_hr+":"+String(_m).padStart(2,"0")+" "+_ap;TIMES.push({v:_val,l:_lab})}}
+var _order=[17,18,19,20,21,22,23,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
+_order.forEach(function(_h){for(var _m=0;_m<60;_m+=30){var _hr=_h%12||12;var _ap=_h>=12?"PM":"AM";var _val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var _lab=_hr+":"+String(_m).padStart(2,"0")+" "+_ap;TIMES.push({v:_val,l:_lab})}});
 
 function fm(n){return"$"+(Number(n)||0).toLocaleString("es-CO")}
 function ft(t){if(!t)return"";var p=t.split(":");var hr=parseInt(p[0]);return(hr%12||12)+":"+p[1]+" "+(hr>=12?"PM":"AM")}
@@ -125,11 +144,45 @@ function chkReminders(evs){if(!("Notification"in window)||Notification.permissio
 
 // WhatsApp messages
 function shareWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="🎤 *Oscar Caldera - Evento Musical*\n\n📋 *Tipo:* "+ev.tipo+"\n📅 *Fecha:* "+fd(ev.fecha)+"\n";if(ev.hora)m+="🕐 *Inicio:* "+ft(ev.hora)+"\n🕐 *Fin:* "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)+"\n";m+="💰 *Total:* "+fm(total)+"\n";if(ev.anticipo)m+="💵 *Anticipo:* "+fm(ev.anticipo)+"\n📊 *Restante:* "+fm(saldo)+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n   ▶ "+ytK(c)+"\n"})}m+="\n✅ *Estado:* "+ev.estado;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}
-function confirmWA(ev){var m="Hola "+ev.contacto+", te confirmo tu evento:\n\n🎤 *"+ev.tipo+"*\n📅 "+fd(ev.fecha)+"\n🕐 "+ft(ev.hora)+(ev.hora?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")+"\n"+(ev.direccion?"📍 "+ev.direccion+"\n":"")+(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})?"\n🎵 Canciones:\n"+ev.canciones.filter(function(c){return c}).map(function(c,i){return(i+1)+". "+c}).join("\n")+"\n":"")+"\n¡Nos vemos! 🎤\n_Oscar Caldera_";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
-function reviewWA(ev){var m="Hola "+ev.contacto+", ¡gracias por confiar en Oscar Caldera para tu evento! 🎤\n\n¿Podrías dejarme una reseña? Tu opinión me ayuda mucho 🙏\n\n👉 https://www.facebook.com/serenade.mx/reviews\n\n¡Muchas gracias!";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
+function confirmWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="Hola "+ev.contacto+", gracias por agendar su evento conmigo.\n\n";m+="📋 *Detalles del evento:*\n";m+="🎤 *"+ev.tipo+"*\n";m+="📅 "+fd(ev.fecha)+"\n";m+="🕐 "+ft(ev.hora)+(ev.hora?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")+"\n";if(ev.direccion)m+="📍 "+ev.direccion+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n"})}m+="\n";if(ev.anticipo>0){m+="Confirmo la recepción de su anticipo por *"+fm(ev.anticipo)+"*.\n";if(saldo>0)m+="Queda pendiente un saldo de *"+fm(saldo)+"*, el cual puede liquidar en cualquier momento previo al evento o el mismo día.\n";else m+="Su evento se encuentra *liquidado en su totalidad*. ✅\n"}else{m+="El costo total del evento es de *"+fm(total)+"*.\n"}m+="\nQuedo atento a cualquier detalle adicional. Gracias por su confianza, estamos en contacto. 🙏\n\n";m+="🎤 *Oscar Caldera*\n";m+="━━━━━━━━━━━━━━━━━━\n";m+="📱 Redes sociales:\n";m+="▪️ Facebook: https://www.facebook.com/serenade.mx\n";m+="▪️ Instagram: https://www.instagram.com/oscarcalderamusic\n";m+="▪️ TikTok: https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
+function reviewWA(ev){var m="Hola "+ev.contacto+", ¡gracias por confiar en Oscar Caldera para tu evento! 🎤\n\n¿Podrías dejarme una reseña? Tu opinión me ayuda mucho a seguir creciendo 🙏\n\n👉 https://www.facebook.com/serenade.mx/reviews\n\n¡Muchas gracias! Fue un placer cantar para ti.\n\n🎤 *Oscar Caldera*\n▪️ https://www.facebook.com/serenade.mx\n▪️ https://www.instagram.com/oscarcalderamusic\n▪️ https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
 
 // Chart
 function MChart(props){var ref=ur(null),cRef=ur(null);ue(function(){if(!ref.current)return;if(cRef.current)cRef.current.destroy();var d=new Array(12).fill(0),a=new Array(12).fill(0);var yr=parseInt(props.year)||new Date().getFullYear();props.events.forEach(function(ev){var dt=new Date(ev.fecha+"T00:00:00");if(dt.getFullYear()===yr&&ev.estado!=="Cancelado"){d[dt.getMonth()]+=ct(ev);a[dt.getMonth()]+=(ev.anticipo||0)}});cRef.current=new Chart(ref.current,{type:"bar",data:{labels:MS.map(function(m){return m.slice(0,3)}),datasets:[{label:"Total",data:d,backgroundColor:"rgba(220,30,30,0.6)",borderColor:"#dc1e1e",borderWidth:1,borderRadius:4},{label:"Cobrado",data:a,backgroundColor:"rgba(0,135,90,0.6)",borderColor:"#00875a",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#999",font:{family:"Outfit"}}}},scales:{x:{ticks:{color:"#888"},grid:{color:"rgba(255,255,255,0.03)"}},y:{ticks:{color:"#888",callback:function(v){return"$"+v.toLocaleString()}},grid:{color:"rgba(255,255,255,0.05)"}}}}});return function(){if(cRef.current)cRef.current.destroy()}},[props.events,props.year]);return h("canvas",{ref:ref,style:{width:"100%",height:200}})}
+
+// ============ PIN LOCK SCREEN ============
+var APP_PIN="2108";
+function PinScreen(props){
+  var _pin=us(""),pin=_pin[0],setPin=_pin[1];
+  var _err=us(false),err=_err[0],setErr=_err[1];
+  var _shake=us(false),shake=_shake[0],setShake=_shake[1];
+  function addDigit(d){if(pin.length>=4)return;var next=pin+d;setPin(next);setErr(false);
+    if(next.length===4){if(next===APP_PIN){sessionStorage.setItem("oc-unlocked","1");props.onUnlock()}else{setErr(true);setShake(true);setTimeout(function(){setPin("");setShake(false)},600)}}}
+  function del(){setPin(pin.slice(0,-1));setErr(false)}
+  return h("div",{style:{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
+    h("img",{src:"/icons/icon-192.svg",className:"logo-beat",style:{width:80,height:80,borderRadius:20,marginBottom:20,boxShadow:"0 0 30px rgba(220,30,30,0.4)"}}),
+    h("h1",{style:{color:"#dc1e1e",fontSize:22,fontWeight:800,marginBottom:4,fontFamily:"'Outfit',sans-serif"}},"OC AGENDA"),
+    h("p",{style:{color:"#888",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif"}},"Ingresa tu PIN para continuar"),
+    // PIN dots
+    h("div",{style:{display:"flex",gap:14,marginBottom:8,animation:shake?"shake 0.4s ease":"none"}},
+      [0,1,2,3].map(function(i){return h("div",{key:i,style:{width:18,height:18,borderRadius:9,border:"2px solid "+(err?"#ff3333":pin.length>i?"#dc1e1e":"rgba(255,255,255,0.2)"),background:pin.length>i?(err?"#ff3333":"#dc1e1e"):"transparent",transition:"all 0.15s ease",transform:pin.length>i?"scale(1.1)":"scale(1)"}})})),
+    err&&h("p",{style:{color:"#ff3333",fontSize:12,marginTop:8,marginBottom:-8,fontFamily:"'Outfit',sans-serif",animation:"fadeIn 0.2s"}},"PIN incorrecto"),
+    // Keypad
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:24,width:240}},
+      [1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(function(d,i){
+        if(d==="")return h("div",{key:i});
+        return h("button",{key:i,className:"btn-rip",onClick:function(){if(d==="⌫")del();else addDigit(String(d))},style:{width:70,height:56,borderRadius:14,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:d==="⌫"?"#ff4444":"#fff",fontSize:d==="⌫"?20:22,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.1s"}})
+      })
+    ),
+    h("style",null,"@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}")
+  );
+}
+
+function Root(){
+  var _unlocked=us(sessionStorage.getItem("oc-unlocked")==="1"),unlocked=_unlocked[0],setUnlocked=_unlocked[1];
+  if(!unlocked)return h(PinScreen,{onUnlock:function(){setUnlocked(true)}});
+  return h(App);
+}
 
 // ============ MAIN APP ============
 function App(){
@@ -148,12 +201,46 @@ function App(){
   var _sgS=us(false),sgShow=_sgS[0],setSgShow=_sgS[1];
   var _cSrch=us(""),cSrch=_cSrch[0],setCsrch=_cSrch[1];
   var _srch=us(""),srch=_srch[0],setSrch=_srch[1];
+  var _imp=us(false),showImport=_imp[0],setShowImport=_imp[1];
+  var _impTxt=us(""),impTxt=_impTxt[0],setImpTxt=_impTxt[1];
 
   function ntf(m,t){setToast({m:m,t:t||"ok"});setTimeout(function(){setToast(null)},3500)}
   function save(a){setEvents(a);persist(a)}
   function upd(k,v){var o=Object.assign({},form);o[k]=v;setForm(o)}
   function updS(i,v){var c=form.canciones.slice();c[i]=v;setForm(Object.assign({},form,{canciones:c}))}
-  function close(){setForm(Object.assign({},EMPTY));setShowForm(false);setEditing(false);setShowSongs(false);setSgShow(false)}
+  function close(){setForm(Object.assign({},EMPTY));setShowForm(false);setEditing(false);setShowSongs(false);setSgShow(false);setShowImport(false);setImpTxt("")}
+
+  function parseWA(txt){
+    var f=Object.assign({},EMPTY);
+    // Extract fields using patterns
+    var m;
+    m=txt.match(/Cliente:\*?\s*(.+)/i);if(m)f.contacto=m[1].trim();
+    m=txt.match(/Teléfono:\*?\s*(.+)/i);if(m)f.telefono=m[1].trim();
+    m=txt.match(/Fecha:\*?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
+    if(m){var p=m[1].split("/");f.fecha=p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0")}
+    m=txt.match(/Inicio:\*?\s*(\d{1,2}:\d{2}\s*[AP]M)/i);
+    if(m){var t=m[1].trim();var tp=t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);if(tp){var hr=parseInt(tp[1]);if(tp[3].toUpperCase()==="PM"&&hr<12)hr+=12;if(tp[3].toUpperCase()==="AM"&&hr===12)hr=0;f.hora=String(hr).padStart(2,"0")+":"+tp[2]}}
+    m=txt.match(/Tipo:\*?\s*(.+)/i);
+    if(m){var tipo=m[1].trim();if(tipo.indexOf("Serenata")>=0)f.tipo="Serenata";else f.tipo="Por hora";var hm=tipo.match(/(\d+)\s*hrs?/i);if(hm)f.horas=hm[1]}
+    m=txt.match(/Lugar:\*?\s*(.+)/i);if(m)f.direccion=m[1].trim();
+    m=txt.match(/Personas:\*?\s*(\d+)/i);if(m)f.personas=m[1];
+    m=txt.match(/Notas:\*?\s*(.+)/i);if(m)f.notas=m[1].trim();
+    // Extract songs
+    var songs=["","","",""];
+    var songMatches=txt.match(/\d+\.\s*(.+)/g);
+    if(songMatches&&f.tipo==="Serenata"){songMatches.forEach(function(s,i){if(i<4){var clean=s.replace(/^\d+\.\s*/,"").trim();if(clean&&clean.indexOf("*")<0&&clean.indexOf("━")<0)songs[i]=clean}})}
+    f.canciones=songs;
+    return f;
+  }
+
+  function doImport(){
+    if(!impTxt.trim()){ntf("Pega el mensaje de WhatsApp","err");return}
+    var parsed=parseWA(impTxt);
+    if(!parsed.contacto){ntf("No se encontró el nombre del cliente","err");return}
+    setForm(parsed);
+    setShowImport(false);setImpTxt("");setShowForm(true);setEditing(false);
+    ntf("Datos importados — revisa y toca Agregar");
+  }
 
   ue(function(){reqNotif();var iv=setInterval(function(){chkReminders(events)},60000);chkReminders(events);return function(){clearInterval(iv)}},[events]);
 
@@ -191,7 +278,8 @@ function App(){
   function doDel(id){save(events.filter(function(x){return x.id!==id}));setDelId(null);setExpId(null);ntf("Evento eliminado")}
   function delPast(){var t=new Date();t.setHours(0,0,0,0);var k=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t});var r=events.length-k.length;save(k);ntf(r+" pasados eliminados")}
   function setEst(id,est){save(events.map(function(x){return x.id===id?Object.assign({},x,{estado:est}):x}));ntf("Estado: "+est)}
-  function markPaid(ev){save(events.map(function(x){return x.id===ev.id?Object.assign({},x,{anticipo:ct(x)}):x}));ntf("Marcado como pagado")}
+  function confetti(){var colors=["#dc1e1e","#ff4444","#fff","#ff8c00","#00c896","#4285f4"];for(var i=0;i<40;i++){var el=document.createElement("div");el.className="confetti-piece";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=Math.random()*0.8+"s";el.style.animationDuration=(2+Math.random()*1.5)+"s";el.style.width=(6+Math.random()*6)+"px";el.style.height=(6+Math.random()*6)+"px";document.body.appendChild(el);setTimeout(function(){el.remove()},4000)}}
+  function markPaid(ev){save(events.map(function(x){return x.id===ev.id?Object.assign({},x,{anticipo:ct(x)}):x}));ntf("💰 ¡Pagado!");confetti()}
 
   function exportD(){var b=new Blob([JSON.stringify(events,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="oc_agenda_"+new Date().toISOString().slice(0,10)+".json";a.click();ntf("Respaldo descargado")}
   function importD(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(Array.isArray(d)){save(d);ntf(d.length+" eventos restaurados")}else ntf("Inválido","err")}catch(er){ntf("Error","err")}};r.readAsText(f)}
@@ -218,10 +306,13 @@ function App(){
       // Header
       h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:10}},
         h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          h("div",{style:{fontSize:22,width:42,height:42,display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#8b0000,#dc1e1e)",borderRadius:11,boxShadow:"0 0 18px rgba(220,30,30,0.4)"}},"🎤"),
+          h("img",{src:"/icons/icon-192.svg",className:"logo-beat",style:{width:42,height:42,borderRadius:11,boxShadow:"0 0 18px rgba(220,30,30,0.4)"}}),
           h("div",null,h("h1",{style:{fontSize:18,fontWeight:800,color:"#dc1e1e",margin:0}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#888",margin:0}},"Oscar Caldera • Eventos Musicales"))
         ),
-        tab==="eventos"&&h("button",{onClick:function(){setForm(Object.assign({},EMPTY));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},style:B()},"+  Nuevo")
+        tab==="eventos"&&h("div",{style:{display:"flex",gap:6}},
+          h("button",{onClick:function(){setShowImport(true);setImpTxt("")},style:Object.assign({},B("rgba(37,211,102,0.15)"),{color:"#25d366",border:"1px solid rgba(37,211,102,0.25)",padding:"10px 12px",fontSize:12})},"📋 Importar"),
+          h("button",{onClick:function(){setForm(Object.assign({},EMPTY));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},className:"btn-rip",style:B()},"+  Nuevo")
+        )
       ),
 
       // ========== EVENTOS ==========
@@ -232,7 +323,7 @@ function App(){
           todayEvs.map(function(ev,i){return h("span",{key:i,style:{color:"#fff",fontSize:13}},ev.tipo+" "+ft(ev.hora)+" - "+ev.contacto+(i<todayEvs.length-1?" | ":""))})
         ),
         // NEXT EVENT CARD
-        nextEv&&gs(nextEv.fecha)!=="hoy"&&h("div",{style:{background:"rgba(220,30,30,0.05)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:12,padding:"14px",marginBottom:10},onClick:function(){setExpId(expId===nextEv.id?null:nextEv.id)}},
+        nextEv&&gs(nextEv.fecha)!=="hoy"&&h("div",{className:"next-glow",style:{background:"rgba(220,30,30,0.05)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:12,padding:"14px",marginBottom:10,animation:"slideUp 0.5s ease both"},onClick:function(){setExpId(expId===nextEv.id?null:nextEv.id)}},
           h("div",{style:{fontSize:10,color:"#dc1e1e",fontWeight:600,marginBottom:6}},"📌 PRÓXIMO EVENTO"),
           h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
             h("div",null,
@@ -246,7 +337,7 @@ function App(){
         ),
         // STATS
         h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}},
-          [{l:"Eventos",v:stats.n,c:"#fff"},{l:"Ingresos",v:fm(stats.total),c:"#ff4444"},{l:"Cobrado",v:fm(stats.ant),c:"#ff6666"},{l:"Por Cobrar",v:fm(stats.pend),c:stats.pend>0?"#ff3333":"#44ff44"}].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:10,padding:"11px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("span",{style:{fontSize:9,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{style:{fontSize:14,fontWeight:700,color:s.c,fontFamily:JM}},s.v))})
+          [{l:"Eventos",v:stats.n,c:"#fff"},{l:"Ingresos",v:fm(stats.total),c:"#ff4444"},{l:"Cobrado",v:fm(stats.ant),c:"#ff6666"},{l:"Por Cobrar",v:fm(stats.pend),c:stats.pend>0?"#ff3333":"#44ff44"}].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:10,padding:"11px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",animation:"slideUp 0.4s ease both",animationDelay:(i*0.08)+"s"}},h("span",{style:{fontSize:9,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{className:"stat-num",style:{fontSize:14,fontWeight:700,color:s.c,fontFamily:JM,animationDelay:(0.2+i*0.1)+"s"}},s.v))})
         ),
         // SEARCH + FILTERS
         h("input",{type:"text",style:Object.assign({},I,{marginBottom:8,fontSize:12}),placeholder:"🔍 Buscar por nombre, fecha o dirección...",value:srch,onChange:function(e){setSrch(e.target.value)}}),
@@ -261,7 +352,7 @@ function App(){
           :filtered.map(function(ev,idx){
             var st=gs(ev.fecha),sc=ST[st],total=ct(ev),saldo=total-(ev.anticipo||0),isExp=expId===ev.id,d=new Date(ev.fecha+"T00:00:00"),ec=EST_C[ev.estado]||EST_C.Pendiente;
             var hasSg=ev.tipo==="Serenata"&&ev.canciones&&ev.canciones.some(function(c){return c});
-            return h("div",{key:ev.id,onClick:function(){setExpId(isExp?null:ev.id)},style:{border:"1px solid "+sc.bd,borderRadius:12,padding:"11px 13px",cursor:"pointer",background:sc.bg,animation:"fadeIn 0.3s ease both",animationDelay:(idx*0.03)+"s"}},
+            return h("div",{key:ev.id,className:"ev-card",onClick:function(){setExpId(isExp?null:ev.id)},style:{border:"1px solid "+sc.bd,borderRadius:12,padding:"11px 13px",cursor:"pointer",background:sc.bg,animation:"cardEnter 0.4s ease both",animationDelay:(idx*0.06)+"s"}},
               h("div",{style:{display:"flex",alignItems:"center",gap:12}},
                 h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",minWidth:38}},h("span",{style:{fontSize:20,fontWeight:800,lineHeight:1,fontFamily:JM,color:sc.txt}},d.getDate()),h("span",{style:{fontSize:9,color:"#777",textTransform:"uppercase",fontWeight:600}},MS[d.getMonth()].slice(0,3))),
                 h("div",{style:{flex:1,minWidth:0}},
@@ -389,8 +480,8 @@ function App(){
     ),
 
     // ========== FORM ==========
-    showForm&&h("div",{onClick:close,style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
-      h("div",{onClick:function(e){e.stopPropagation()},style:{background:"#0a0a0a",borderRadius:18,padding:20,width:"100%",maxWidth:460,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(220,30,30,0.25)",animation:"slideIn 0.3s ease",boxShadow:"0 0 40px rgba(220,30,30,0.15)"}},
+    showForm&&h("div",{onClick:close,style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:460,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 40px rgba(220,30,30,0.15)"}},
         h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},h("h2",{style:{fontSize:16,fontWeight:700,color:"#fff",margin:0}},editing?"✏️ Editar":"🎤 Nuevo Evento"),h("button",{onClick:close,style:{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer"}},"✕")),
         h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11}},
           // Type
@@ -435,8 +526,8 @@ function App(){
     ),
 
     // Songs dialog
-    showSongs&&showForm&&h("div",{onClick:function(){setShowSongs(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",backdropFilter:"blur(4px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1100,padding:14}},
-      h("div",{onClick:function(e){e.stopPropagation()},style:{background:"#0d0d0d",borderRadius:16,padding:20,width:"100%",maxWidth:370,border:"1px solid rgba(220,30,30,0.3)",animation:"slideIn 0.25s ease"}},
+    showSongs&&showForm&&h("div",{onClick:function(){setShowSongs(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1100,padding:14}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:16,padding:20,width:"100%",maxWidth:370,border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.25s ease"}},
         h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},h("span",{style:{fontSize:22}},"🎵"),h("div",null,h("h3",{style:{fontSize:15,fontWeight:700,color:"#fff",margin:0}},"Canciones de la Serenata"),h("p",{style:{fontSize:10,color:"#888",margin:"2px 0 0"}},"4 canciones = "+fm(PS)))),
         h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"9px",borderRadius:8,fontSize:11,fontWeight:600,color:"#dc1e1e",background:"rgba(220,30,30,0.08)",border:"1px solid rgba(220,30,30,0.2)",textDecoration:"none",marginBottom:10}},"🎵 Ver repertorio completo →"),
         [0,1,2,3].map(function(i){return h("div",{key:i,style:{marginBottom:8}},
@@ -447,9 +538,46 @@ function App(){
       )
     ),
 
+    // Import from WhatsApp
+    showImport&&h("div",{onClick:function(){setShowImport(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:420,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(37,211,102,0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 30px rgba(37,211,102,0.15)"}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+          h("h2",{style:{fontSize:16,fontWeight:700,color:"#fff",margin:0}},"📋 Importar desde WhatsApp"),
+          h("button",{onClick:function(){setShowImport(false)},style:{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer"}},"✕")
+        ),
+        h("p",{style:{color:"#888",fontSize:12,marginBottom:12,lineHeight:1.5}},"Copia el mensaje que te mandó el cliente desde WhatsApp y pégalo aquí. La app llenará los campos automáticamente."),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:4,marginBottom:14}},
+          h("label",{style:LB},"Pegar mensaje aquí"),
+          h("textarea",{style:Object.assign({},I,{minHeight:180,resize:"vertical",fontSize:12,lineHeight:1.4}),placeholder:"🎤 *SOLICITUD DE EVENTO MUSICAL*\n━━━━━━━━━━━━━━━━━━\n\n👤 *Cliente:* ...\n📱 *Teléfono:* ...\n...\n\n(Pega aquí todo el mensaje)",value:impTxt,onChange:function(e){setImpTxt(e.target.value)}})
+        ),
+        impTxt.trim()&&h("div",{style:{background:"rgba(37,211,102,0.06)",border:"1px solid rgba(37,211,102,0.15)",borderRadius:10,padding:12,marginBottom:14}},
+          h("div",{style:{fontSize:11,color:"#25d366",fontWeight:600,marginBottom:6}},"✅ Vista previa:"),
+          (function(){
+            var p=parseWA(impTxt);
+            return h("div",{style:{fontSize:12,color:"#ccc",lineHeight:1.6}},
+              p.contacto&&h("div",null,"👤 ",h("span",{style:{color:"#fff"}},p.contacto)),
+              p.telefono&&h("div",null,"📱 ",p.telefono),
+              p.tipo&&h("div",null,"📋 ",p.tipo,p.tipo==="Por hora"?" ("+p.horas+"h)":""),
+              p.fecha&&h("div",null,"📅 ",fd(p.fecha)),
+              p.hora&&h("div",null,"🕐 ",ft(p.hora)),
+              p.direccion&&h("div",null,"📍 ",p.direccion),
+              p.personas&&h("div",null,"👥 ",p.personas),
+              p.tipo==="Serenata"&&p.canciones.some(function(c){return c})&&h("div",null,"🎵 ",p.canciones.filter(function(c){return c}).join(", ")),
+              p.notas&&h("div",null,"📝 ",p.notas),
+              !p.contacto&&h("div",{style:{color:"#ff4444"}},"⚠️ No se detectó nombre del cliente")
+            );
+          })()
+        ),
+        h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
+          h("button",{onClick:function(){setShowImport(false);setImpTxt("")},style:Object.assign({},B("rgba(255,255,255,0.06)"),{color:"#999",border:"1px solid rgba(255,255,255,0.1)"})},"Cancelar"),
+          h("button",{onClick:doImport,disabled:!impTxt.trim(),style:Object.assign({},B("#25d366"),{opacity:impTxt.trim()?1:0.4})},"📋 Importar y llenar formulario")
+        )
+      )
+    ),
+
     // Delete
-    delId&&h("div",{onClick:function(){setDelId(null)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}},
-      h("div",{onClick:function(e){e.stopPropagation()},style:{background:"#0d0d0d",borderRadius:14,padding:20,border:"1px solid rgba(220,30,30,0.3)",maxWidth:300,width:"100%",animation:"slideIn 0.2s"}},
+    delId&&h("div",{onClick:function(){setDelId(null)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:14,padding:20,border:"1px solid rgba(220,30,30,0.2)",maxWidth:300,width:"100%",animation:"slideIn 0.2s"}},
         h("p",{style:{color:"#fff",fontSize:14,marginBottom:6}},"¿Eliminar este evento?"),
         h("p",{style:{color:"#888",fontSize:11,marginBottom:16}},"Se eliminará permanentemente."),
         h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
@@ -459,7 +587,7 @@ function App(){
     )
   );
 }
-ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+ReactDOM.createRoot(document.getElementById("root")).render(h(Root));
 if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(function(){});
 })();
 </script>
