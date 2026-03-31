@@ -230,23 +230,37 @@ function App(){
 
   function parseWA(txt){
     var f=Object.assign({},EMPTY);
-    // Extract fields using patterns
+    var MS_MAP={"enero":0,"febrero":1,"marzo":2,"abril":3,"mayo":4,"junio":5,"julio":6,"agosto":7,"septiembre":8,"octubre":9,"noviembre":10,"diciembre":11};
+    // Clean asterisks that WhatsApp uses for bold
+    var clean=txt.replace(/\*/g,"");
     var m;
-    m=txt.match(/Cliente:\*?\s*(.+)/i);if(m)f.contacto=m[1].trim();
-    m=txt.match(/Teléfono:\*?\s*(.+)/i);if(m)f.telefono=m[1].trim();
-    m=txt.match(/Fecha:\*?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
-    if(m){var p=m[1].split("/");f.fecha=p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0")}
-    m=txt.match(/Inicio:\*?\s*(\d{1,2}:\d{2}\s*[AP]M)/i);
-    if(m){var t=m[1].trim();var tp=t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);if(tp){var hr=parseInt(tp[1]);if(tp[3].toUpperCase()==="PM"&&hr<12)hr+=12;if(tp[3].toUpperCase()==="AM"&&hr===12)hr=0;f.hora=String(hr).padStart(2,"0")+":"+tp[2]}}
-    m=txt.match(/Tipo:\*?\s*(.+)/i);
-    if(m){var tipo=m[1].trim();if(tipo.indexOf("Serenata")>=0)f.tipo="Serenata";else f.tipo="Por hora";var hm=tipo.match(/(\d+)\s*hrs?/i);if(hm)f.horas=hm[1]}
-    m=txt.match(/Lugar:\*?\s*(.+)/i);if(m)f.direccion=m[1].trim();
-    m=txt.match(/Personas:\*?\s*(\d+)/i);if(m)f.personas=m[1];
-    m=txt.match(/Notas:\*?\s*(.+)/i);if(m)f.notas=m[1].trim();
-    // Extract songs
+    // Name
+    m=clean.match(/Cliente:\s*(.+)/i);if(m)f.contacto=m[1].trim();
+    // Phone
+    m=clean.match(/Tel[ée]fono:\s*(.+)/i);if(m)f.telefono=m[1].trim();
+    // Date - format "15 de Agosto de 2026"
+    m=clean.match(/Fecha:\s*(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})/i);
+    if(m){var mo=MS_MAP[m[2].toLowerCase()];if(mo!==undefined){f.fecha=m[3]+"-"+String(mo+1).padStart(2,"0")+"-"+m[1].padStart(2,"0")}}
+    // Date - format "DD/MM/YYYY" (fallback)
+    if(!f.fecha){m=clean.match(/Fecha:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i);if(m)f.fecha=m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0")}
+    // Time
+    m=clean.match(/Inicio:\s*(\d{1,2}:\d{2}\s*[AP]M)/i);
+    if(m){var tp=m[1].trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);if(tp){var hr=parseInt(tp[1]);if(tp[3].toUpperCase()==="PM"&&hr<12)hr+=12;if(tp[3].toUpperCase()==="AM"&&hr===12)hr=0;f.hora=String(hr).padStart(2,"0")+":"+tp[2]}}
+    // Type
+    m=clean.match(/Tipo:\s*(.+)/i);
+    if(m){var tipo=m[1].trim();if(tipo.indexOf("Serenata")>=0||tipo.indexOf("serenata")>=0)f.tipo="Serenata";else f.tipo="Por hora";var hm=tipo.match(/(\d+)\s*hrs?/i);if(hm)f.horas=hm[1]}
+    // Duration fallback
+    if(!f.horas||f.horas==="1"){m=clean.match(/Duraci[oó]n:\s*(\d+)/i);if(m)f.horas=m[1]}
+    // Location
+    m=clean.match(/Lugar:\s*(.+)/i);if(m)f.direccion=m[1].trim();
+    // People - both "Personas" and "Invitados"
+    m=clean.match(/(?:Personas|Invitados):\s*(\d+)/i);if(m)f.personas=m[1];
+    // Notes
+    m=clean.match(/Notas:\s*(.+)/i);if(m)f.notas=m[1].trim();
+    // Songs - find the Canciones section and extract numbered items after it
     var songs=["","","",""];
-    var songMatches=txt.match(/\d+\.\s*(.+)/g);
-    if(songMatches&&f.tipo==="Serenata"){songMatches.forEach(function(s,i){if(i<4){var clean=s.replace(/^\d+\.\s*/,"").trim();if(clean&&clean.indexOf("*")<0&&clean.indexOf("━")<0)songs[i]=clean}})}
+    var songSection=clean.match(/Canciones:\s*\n([\s\S]*?)(?:\n\n|\n━|$)/i);
+    if(songSection){var lines=songSection[1].split("\n");var si=0;lines.forEach(function(line){var sm=line.match(/^\s*\d+[\.\)]\s*(.+)/);if(sm&&si<4){var songName=sm[1].trim();if(songName&&songName.indexOf("━")<0&&songName.length>1){songs[si]=songName;si++}}})}
     f.canciones=songs;
     return f;
   }
