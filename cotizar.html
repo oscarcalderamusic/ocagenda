@@ -4,630 +4,413 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="OC AGENDA">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icons/icon-192.svg">
-<title>OC AGENDA - Oscar Caldera</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Cotizar Evento - Oscar Caldera</title>
+<link rel="icon" href="./icons/icon-192.svg">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif;overflow-x:hidden}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
-/* Animated background */
-.app-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.app-bg::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.1) 0%,transparent 70%);top:-150px;right:-150px;animation:bgf1 14s ease-in-out infinite}
-.app-bg::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.06) 0%,transparent 70%);bottom:-80px;left:-80px;animation:bgf2 18s ease-in-out infinite}
-@keyframes bgf1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,60px)}}
-@keyframes bgf2{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px)}}
-.app-particles{position:fixed;inset:0;z-index:0;pointer-events:none}
-.app-particle{position:absolute;opacity:0.05;animation:apf linear infinite}
-@keyframes apf{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:0.05}90%{opacity:0.05}100%{transform:translateY(-20px) rotate(360deg);opacity:0}}
-.app-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+html{scroll-behavior:smooth}
+body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif;overflow-x:hidden;color:#fff}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.bg::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.12) 0%,transparent 70%);top:-200px;right:-200px;animation:f1 12s ease-in-out infinite}
+.bg::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.08) 0%,transparent 70%);bottom:-100px;left:-100px;animation:f2 15s ease-in-out infinite}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,80px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,-60px)}}
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+.particle{position:absolute;opacity:0.07;animation:pf linear infinite}
+@keyframes pf{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:0.07}90%{opacity:0.07}100%{transform:translateY(-20px) rotate(360deg);opacity:0}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:24px 20px 50px}
+.hero{text-align:center;padding:40px 0 30px;animation:hi 1s ease both}
+@keyframes hi{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.hero-logo{width:70px;height:70px;border-radius:18px;box-shadow:0 0 40px rgba(220,30,30,0.5);margin-bottom:16px;animation:lp 3s ease-in-out infinite}
+@keyframes lp{0%,100%{box-shadow:0 0 20px rgba(220,30,30,0.3)}50%{box-shadow:0 0 50px rgba(220,30,30,0.6)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1.1}
+.hero h1 span{color:#dc1e1e;font-style:italic}
+.hero p{color:#888;font-size:14px;margin-top:10px;line-height:1.6}
+.hero p b{color:#25d366}
+.hero-line{width:60px;height:2px;background:linear-gradient(90deg,transparent,#dc1e1e,transparent);margin:16px auto 0}
+.steps{display:flex;gap:6px;margin-bottom:20px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.06);transition:background 0.5s}
+.step-dot.done{background:#dc1e1e}
+.step-dot.active{background:linear-gradient(90deg,#dc1e1e,rgba(220,30,30,0.3));background-size:200% 100%;animation:sh 1.5s infinite}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:22px;margin-bottom:16px;opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.card-icon{width:36px;height:36px;border-radius:10px;background:rgba(220,30,30,0.1);display:flex;align-items:center;justify-content:center;font-size:18px}
+.card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+.field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+.label{display:block;font-size:11px;color:#666;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.req{color:#dc1e1e}
+.input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;transition:border-color 0.3s,box-shadow 0.3s;font-family:'Outfit',sans-serif}
+.input:focus{border-color:rgba(220,30,30,0.4);box-shadow:0 0 15px rgba(220,30,30,0.1)}
+.input::placeholder{color:#444}
+textarea.input{min-height:80px;resize:vertical}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type-opt{text-align:center;padding:20px 12px;border-radius:16px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);transition:all 0.3s;position:relative;overflow:hidden}
+.type-opt::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(220,30,30,0.15),transparent 70%);opacity:0;transition:opacity 0.3s}
+.type-opt.active{border-color:rgba(220,30,30,0.4);background:rgba(220,30,30,0.08)}
+.type-opt.active::before{opacity:1}
+.type-opt .t-icon{font-size:32px;margin-bottom:8px;transition:transform 0.3s}
+.type-opt.active .t-icon{transform:scale(1.15)}
+.type-opt .t-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#888;transition:color 0.3s}
+.type-opt.active .t-name{color:#fff}
+.type-opt .t-price{font-size:12px;color:#555;margin-top:4px;font-family:'JetBrains Mono',monospace;transition:color 0.3s}
+.type-opt.active .t-price{color:#dc1e1e}
+.hours-box,.songs-box{display:none;margin-top:16px}.hours-box.show,.songs-box.show{display:block}
+.hours-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.hours-input{width:70px;text-align:center;font-size:20px;font-weight:700}
+.song-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.song-num{color:#dc1e1e;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px}
+.song-input{flex:1}
+.song-clear{background:none;border:none;color:#555;font-size:16px;cursor:pointer;padding:4px 8px}
+.rep-btn{display:block;width:100%;text-align:center;padding:12px;border-radius:12px;font-size:13px;font-weight:600;color:#dc1e1e;background:rgba(220,30,30,0.06);border:1px solid rgba(220,30,30,0.15);cursor:pointer;margin-bottom:14px;transition:all 0.3s;font-family:'Outfit',sans-serif}
+.rep-btn:hover{background:rgba(220,30,30,0.12)}
+/* Repertoire modal */
+.rep-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadeIn 0.3s}
+.rep-modal.show{display:flex;flex-direction:column}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
-@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.08)}30%{transform:scale(1)}45%{transform:scale(1.05)}60%{transform:scale(1)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(120vh) rotate(720deg);opacity:0}}
-@keyframes ripple{0%{transform:scale(0);opacity:0.6}100%{transform:scale(4);opacity:0}}
-@keyframes cardEnter{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
-@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(220,30,30,0.2)}50%{box-shadow:0 0 20px rgba(220,30,30,0.5)}}
-.ev-card{transition:transform 0.15s ease,box-shadow 0.15s ease;-webkit-tap-highlight-color:transparent}
-.ev-card:active{transform:scale(0.97)!important;box-shadow:0 0 0 rgba(0,0,0,0)!important}
-.btn-rip{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.btn-rip:after{content:'';position:absolute;top:50%;left:50%;width:10px;height:10px;background:rgba(255,255,255,0.4);border-radius:50%;transform:scale(0);opacity:0}
-.btn-rip:active:after{animation:ripple 0.5s ease-out}
-.glass{background:rgba(10,10,10,0.85)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;border:1px solid rgba(255,255,255,0.08)!important}
-.logo-beat{animation:heartbeat 3s ease-in-out infinite}
-.stat-num{animation:countUp 0.6s ease both}
-.next-glow{animation:glowPulse 2.5s ease-in-out infinite}
-.confetti-piece{position:fixed;width:8px;height:8px;top:-10px;z-index:10000;border-radius:2px;animation:confetti-fall 2.5s ease-in forwards;pointer-events:none}
-.sug{position:absolute;top:100%;left:0;right:0;background:#1a1a1a;border:1px solid rgba(220,30,30,0.2);border-radius:8px;z-index:10;max-height:120px;overflow-y:auto}
-.sug-i{padding:8px 12px;color:#ccc;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
-.sug-i:hover{background:rgba(220,30,30,0.1);color:#fff}
+.rep-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.rep-header h3{font-family:'Playfair Display',serif;font-size:18px}
+.rep-close{background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:4px 8px}
+.rep-selected{padding:10px 20px;background:rgba(220,30,30,0.05);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;color:#888;flex-shrink:0}
+.rep-selected b{color:#dc1e1e}
+.rep-body{flex:1;overflow-y:auto;padding:10px 20px 30px}
+.rep-cat{margin-bottom:6px}
+.rep-cat-btn{width:100%;text-align:left;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;justify-content:space-between;align-items:center;transition:background 0.2s}
+.rep-cat-btn:hover{background:rgba(220,30,30,0.06)}
+.rep-cat-btn .cnt{color:#dc1e1e;font-size:11px;font-family:'JetBrains Mono',monospace}
+.rep-songs{display:none;padding:6px 0 6px 10px}
+.rep-songs.open{display:block}
+.rep-song{padding:10px 12px;margin:3px 0;border-radius:8px;font-size:13px;color:#ccc;cursor:pointer;transition:all 0.15s;border:1px solid transparent}
+.rep-song:hover{background:rgba(220,30,30,0.06);color:#fff}
+.rep-song:active{transform:scale(0.97)}
+.rep-song.picked{color:#555;text-decoration:line-through;pointer-events:none}
+.rep-song .art{color:#666;font-size:11px;margin-left:4px}
+.sched{display:none;background:rgba(220,30,30,0.04);border:1px solid rgba(220,30,30,0.1);border-radius:14px;padding:14px;margin-top:14px}
+.sched.show{display:block;animation:fu 0.4s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sched-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.sched-label{color:#999;font-size:12px}
+.sched-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px}
+.sched-val.start{color:#fff}.sched-val.end{color:#dc1e1e}
+.sched-dur{text-align:center;padding-top:6px;border-top:1px solid rgba(220,30,30,0.08);color:#777;font-size:11px;margin-top:4px}
+.date-display{margin-top:6px;padding:8px 12px;background:rgba(220,30,30,0.04);border:1px solid rgba(220,30,30,0.1);border-radius:8px;color:#fff;font-size:13px;font-weight:500;display:none}
+.date-display.show{display:block;animation:fu 0.3s ease}
+.price-sum{display:none;background:linear-gradient(135deg,rgba(220,30,30,0.06),rgba(220,30,30,0.02));border:1px solid rgba(220,30,30,0.15);border-radius:16px;padding:18px;margin-top:16px}
+.price-sum.show{display:block;animation:fu 0.4s ease both}
+.price-row{display:flex;justify-content:space-between;align-items:center}
+.price-label{color:#999;font-size:13px}
+.price-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;color:#dc1e1e}
+.submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;border:none;color:#fff;font-family:'Outfit',sans-serif;margin-top:16px;position:relative;overflow:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1a8d45,#25d366)}
+.submit:disabled{opacity:0.35;cursor:not-allowed}
+.submit:not(:disabled):active{transform:scale(0.97)}
+.success{display:none;text-align:center;padding:60px 20px;animation:si 0.6s ease both}
+.success.show{display:block}
+@keyframes si{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.success-check{width:80px;height:80px;border-radius:50%;background:rgba(37,211,102,0.1);border:3px solid #25d366;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:cp 0.5s ease 0.3s both}
+@keyframes cp{from{transform:scale(0)}to{transform:scale(1)}}
+.success h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px}
+.success p{color:#999;font-size:14px;line-height:1.6}
+.success .retry{color:#25d366;text-decoration:none;font-weight:600}
+.success .new-btn{margin-top:24px;padding:14px 30px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:rgba(220,30,30,0.08);border:1px solid rgba(220,30,30,0.2);color:#dc1e1e;font-family:'Outfit',sans-serif}
+.footer{text-align:center;margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-logo{width:40px;height:40px;border-radius:10px;margin:0 auto 10px}
+.footer p{color:#555;font-size:11px;line-height:1.8}
+.footer a{color:#dc1e1e;text-decoration:none}
+.socials{display:flex;justify-content:center;gap:16px;margin-top:12px}
+.social-link{color:#666;font-size:11px;text-decoration:none;transition:color 0.3s}
+.social-link:hover{color:#dc1e1e}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div class="bg"></div>
+<div class="particles" id="particles"></div>
+<div class="grain"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <img src="./icons/icon-192.svg" class="hero-logo" alt="OC">
+    <h1>Oscar <span>Caldera</span></h1>
+    <p>Música en vivo para su evento especial en Mexicali.<br>Cotice en segundos y lo contactamos por <b>WhatsApp</b>.</p>
+    <div class="hero-line"></div>
+  </div>
+  <div class="steps"><div class="step-dot active" id="s1"></div><div class="step-dot" id="s2"></div><div class="step-dot" id="s3"></div></div>
+
+  <div id="form-section">
+    <div class="card" data-step="1">
+      <div class="card-head"><div class="card-icon">🎵</div><div class="card-title">Tipo de Servicio</div></div>
+      <div class="type-grid">
+        <div class="type-opt" id="btn-hora" onclick="selType('hora')"><div class="t-icon">🕐</div><div class="t-name">Por Hora</div><div class="t-price">$2,500/hr</div></div>
+        <div class="type-opt" id="btn-serenata" onclick="selType('serenata')"><div class="t-icon">🎵</div><div class="t-name">Serenata</div><div class="t-price">$1,500 · 4 canciones</div></div>
+      </div>
+      <div class="hours-box" id="hours-box">
+        <div class="label">¿Cuántas horas necesita?</div>
+        <div class="hours-row">
+          <input type="number" class="input hours-input" id="horas" value="1" min="1" max="12" oninput="calcAll()">
+          <span style="color:#888;font-size:13px">hrs × $2,500 =</span>
+          <span style="color:#dc1e1e;font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace" id="hours-total">$2,500</span>
+        </div>
+      </div>
+      <div class="songs-box" id="songs-box">
+        <button class="rep-btn" onclick="openRep()">🎵 Ver repertorio y elegir canciones →</button>
+        <div class="label">Sus 4 canciones elegidas</div>
+        <div class="song-row"><span class="song-num">1.</span><input type="text" class="input song-input" id="song1" placeholder="Toque el botón de arriba para elegir" readonly><button class="song-clear" onclick="clearSong(0)" title="Quitar">✕</button></div>
+        <div class="song-row"><span class="song-num">2.</span><input type="text" class="input song-input" id="song2" placeholder="—" readonly><button class="song-clear" onclick="clearSong(1)" title="Quitar">✕</button></div>
+        <div class="song-row"><span class="song-num">3.</span><input type="text" class="input song-input" id="song3" placeholder="—" readonly><button class="song-clear" onclick="clearSong(2)" title="Quitar">✕</button></div>
+        <div class="song-row"><span class="song-num">4.</span><input type="text" class="input song-input" id="song4" placeholder="—" readonly><button class="song-clear" onclick="clearSong(3)" title="Quitar">✕</button></div>
+      </div>
+    </div>
+
+    <div class="card" data-step="2">
+      <div class="card-head"><div class="card-icon">📅</div><div class="card-title">Datos del Evento</div></div>
+      <div class="field">
+        <label class="label">Fecha del evento <span class="req">*</span></label>
+        <input type="date" class="input" id="fecha" required onchange="showDate()">
+        <div class="date-display" id="date-display"></div>
+      </div>
+      <div class="field">
+        <label class="label">Hora de inicio <span class="req">*</span></label>
+        <select class="input" id="hora" onchange="calcAll()"><option value="">Seleccione la hora...</option></select>
+      </div>
+      <div class="sched" id="sched">
+        <div class="sched-row"><span class="sched-label">🕐 Inicio</span><span class="sched-val start" id="t-start">--</span></div>
+        <div class="sched-row"><span class="sched-label">🕐 Fin estimado</span><span class="sched-val end" id="t-end">--</span></div>
+        <div class="sched-dur" id="t-dur"></div>
+      </div>
+      <div class="field">
+        <label class="label">Lugar del evento</label>
+        <input type="text" class="input" id="direccion" placeholder="¿Dónde será la celebración?">
+      </div>
+      <div class="field">
+        <label class="label">Invitados (aprox.)</label>
+        <input type="number" class="input" id="personas" placeholder="50" min="1">
+      </div>
+    </div>
+
+    <div class="card" data-step="3">
+      <div class="card-head"><div class="card-icon">👤</div><div class="card-title">Sus Datos</div></div>
+      <div class="field"><label class="label">Nombre completo <span class="req">*</span></label><input type="text" class="input" id="nombre" placeholder="¿Cómo se llama?"></div>
+      <div class="field"><label class="label">Teléfono <span class="req">*</span></label><input type="tel" class="input" id="telefono" value="686" placeholder="686 123 4567"></div>
+      <div class="field"><label class="label">Notas especiales</label><textarea class="input" id="notas" placeholder="¿Algún detalle extra importante que mencionar?"></textarea></div>
+    </div>
+
+    <div class="price-sum" id="price-sum">
+      <div class="price-row"><span class="price-label" id="price-desc">Total estimado</span><span class="price-val" id="price-total">$0</span></div>
+    </div>
+    <button class="submit" id="submit-btn" onclick="enviar()" disabled><span>💬</span> Enviar solicitud por WhatsApp</button>
+  </div>
+
+  <div class="success" id="success">
+    <div class="success-check">✅</div>
+    <h2>¡Solicitud Enviada!</h2>
+    <p><b>Oscar Caldera</b> se comunicará con usted pronto por WhatsApp para confirmar disponibilidad y detalles de su evento.</p>
+    <p style="margin-top:12px;font-size:12px">¿No se abrió WhatsApp? <a href="#" id="retry-link" class="retry">Toque aquí para reintentar</a></p>
+    <button class="new-btn" onclick="resetForm()">Enviar otra solicitud</button>
+  </div>
+
+  <div class="footer">
+    <img src="./icons/icon-192.svg" class="footer-logo" alt="OC">
+    <p><b style="color:#dc1e1e">Oscar Caldera</b><br>Música en Vivo para Eventos<br>Mexicali, Baja California</p>
+    <div class="socials">
+      <a href="https://www.facebook.com/serenade.mx" target="_blank" class="social-link">📘 Facebook</a>
+      <a href="https://www.instagram.com/oscarcalderamusic" target="_blank" class="social-link">📸 Instagram</a>
+      <a href="https://www.tiktok.com/@oscarcalderamusic" target="_blank" class="social-link">🎵 TikTok</a>
+    </div>
+    <p style="margin-top:12px"><a href="https://oscarcalderamusic.netlify.app">oscarcalderamusic.netlify.app</a></p>
+  </div>
+</div>
+
+<!-- Repertoire Modal -->
+<div class="rep-modal" id="rep-modal">
+  <div class="rep-header">
+    <h3>🎵 Repertorio para Serenatas</h3>
+    <button class="rep-close" onclick="closeRep()">✕</button>
+  </div>
+  <div class="rep-selected" id="rep-selected">Canciones elegidas: <b>0 de 4</b></div>
+  <div class="rep-body" id="rep-body"></div>
+</div>
+
 <script>
-(function(){
-var h=React.createElement,us=React.useState,ue=React.useEffect,um=React.useMemo,ur=React.useRef;
+var MI_NUMERO="526861559857";
+var tipo="";
+var songs=["","","",""];
 var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-var KEY="oc-agenda-v8",TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.github.io/ocagenda/cotizar.html";
-var PRICE_KEY="oc-precios";
-function loadPrices(){try{var p=JSON.parse(localStorage.getItem(PRICE_KEY));return p||{ph:2500,ps:1500}}catch(e){return{ph:2500,ps:1500}}}
-function savePrices(p){localStorage.setItem(PRICE_KEY,JSON.stringify(p))}
-var ESTADOS=["Pendiente","Confirmado","Cancelado"];
-var EST_C={Pendiente:{bg:"#ff8c00"},Confirmado:{bg:"#00875a"},Cancelado:{bg:"#cc0000"}};
-var EMPTY={id:"",fecha:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
-var ST={pasado:{bg:"rgba(255,255,255,0.02)",bd:"rgba(255,255,255,0.06)",badge:"#555",txt:"#666",lb:"Pasado"},hoy:{bg:"rgba(220,30,30,0.1)",bd:"rgba(220,30,30,0.35)",badge:"#dc1e1e",txt:"#ff4444",lb:"HOY"},proximo:{bg:"rgba(220,30,30,0.04)",bd:"rgba(220,30,30,0.15)",badge:"#cc0000",txt:"#ff3333",lb:"Próximo"}};
-var I={background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"10px 12px",color:"#fff",fontSize:14,outline:"none",fontFamily:"'Outfit',sans-serif",width:"100%"};
-var LB={fontSize:11,color:"#999",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.5px"};
-var JM="'JetBrains Mono',monospace";
+var DIAS=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
-// Time options :00 and :30 only
-var TIMES=[];
-var _order=[17,18,19,20,21,22,23,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
-_order.forEach(function(_h){for(var _m=0;_m<60;_m+=30){var _hr=_h%12||12;var _ap=_h>=12?"PM":"AM";var _val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var _lab=_hr+":"+String(_m).padStart(2,"0")+" "+_ap;TIMES.push({v:_val,l:_lab})}});
+// REPERTOIRE
+var REP=[
+{cat:"Las Antigüitas",songs:["Cien Años","Gema","Esclavo Y Amo","Cómo Han Pasado Los Años","Piel Canela","Sabor A Mí"]},
+{cat:"Con Mariachi",songs:["Hermoso Cariño","Si Nos Dejan","Gema","Amor Eterno","Motivos","Contigo Aprendí","Eso Y Más (Joan Sebastian)","Volver, Volver","Sabor A Mí","Esclavo Y Amo","Cómo Han Pasado Los Años","La Media Vuelta"]},
+{cat:"Luis Miguel",songs:["Somos Novios","Contigo En La Distancia","Si Nos Dejan","Amarte Es Un Placer","Contigo Aprendí","La Gloria Eres Tú","Usted","Por Debajo De La Mesa","Sabor A Mí","Bésame Mucho","Hasta Que Me Olvides","La Media Vuelta"]},
+{cat:"En Inglés",songs:["Fly Me To The Moon","How Deep Is Your Love","Can't Help Falling In Love With You","Unchained Melody","Can't Take My Eyes Off You"]},
+{cat:"Para Que Vuelva",songs:["Me Dedique A Perderte","Vuelve (Reik)","Te Extraño (Luis Miguel)","Otra Vez (Victor García)","No Puedo Dejarte De Amar (Kalimba)","Hasta Que Me Olvides","Mi Princesa (David Bisbal)","Hombre Normal (Espinoza Paz)","A Puro Dolor (Son By 4)","Tengo Todo Excepto A Ti","El Día Que Me Quieras","Si Tú No Estás Aquí","Que Lloro (Sin Bandera)","Hasta Que Me Olvides","Volver, Volver (Vicente Fernández)","Abrázame (Alejandro Fernández)"]},
+{cat:"Camila",songs:["Coleccionista De Canciones","Solo Para Ti","Todo Cambió"]},
+{cat:"Carlos Rivera",songs:["Cómo Pagarte","Otras Vidas","Te Esperaba"]},
+{cat:"Banda Romántica Acústica",songs:["Contigo (Calibre 50)","Solo Con Verte (Banda MS)","El Color De Tus Ojos (Banda MS)","Mi Razón De Ser","Gracias Por Tu Amor (El Recodo)"]},
+{cat:"Reik",songs:["De Rodillas","Yo Quisiera","Creo En Ti"]},
+{cat:"Baladas Pop / Sin Bandera",songs:["Te Vi Venir","Kilómetros","Entra En Mi Vida","Que Me Alcance La Vida","Ves","Y Llegaste Tú","Para Empezar (L.G.)","Si Tú No Estás Aquí"]},
+{cat:"Juan Gabriel",songs:["Abrázame Muy Fuerte","Amor Eterno","Te Sigo Amando"]},
+{cat:"José José",songs:["Amar Y Querer","Lo Pasado Pasado","Desesperado","40 y 20"]},
+{cat:"Franco De Vita",songs:["Te Amo","Tú De Qué Vas"]},
+{cat:"Otros",songs:["Hay Algo En Ti (Marcos Llunas)","Bésame (Ricardo Montaner)","Princesa (David Bisbal)","Te Amo (Alexander Acha)","La Primera Cita","Fly Me To The Moon","Can't Help Falling In Love With You","Para Tu Amor (Juanes)","Amor Del Bueno (Reily Barba)","Con Los Años Que Me Quedan","No Hace Falta (Mijares)","Un Amor Así (Carin Leon)","Eres (Café Tacvba)"]}
+];
 
-function fm(n){return"$"+(Number(n)||0).toLocaleString("es-CO")}
-function ft(t){if(!t)return"";var p=t.split(":");var hr=parseInt(p[0]);return(hr%12||12)+":"+p[1]+" "+(hr>=12?"PM":"AM")}
-function gs(f){var t=new Date();t.setHours(0,0,0,0);var d=new Date(f+"T00:00:00");if(d<t)return"pasado";if(d.getTime()===t.getTime())return"hoy";return"proximo"}
-function ct(f){var pr=loadPrices();if(f.tipo==="Por hora")return(Number(f.horas)||1)*(f.precioHora||pr.ph);if(f.tipo==="Serenata")return f.precioSerenata||pr.ps;return 0}
-function mapsUrl(a){return"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a)}
-function waNum(t){var n=(t||"").replace(/\D/g,"");if(n.length===10)n="52"+n;if(n.length===7)n="52686"+n;return n}
-function waUrl(t){return"https://wa.me/"+waNum(t)}
-function ytK(s){return"https://www.youtube.com/results?search_query="+encodeURIComponent(s+" karaoke")+"&sp=CAMSAhAB"}
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
-function persist(a){localStorage.setItem(KEY,JSON.stringify(a))}
-function fd(f){if(!f)return"";var p=f.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
-function calcEnd(hora,hrs){if(!hora)return"";var p=hora.split(":");var eH=parseInt(p[0])+(parseInt(hrs)||1);var eM=p[1];var nd=eH>=24;if(nd)eH-=24;return ft(String(eH).padStart(2,"0")+":"+eM)+(nd?" (sig.)":"")}
-function folio(id,evs){var idx=evs.findIndex(function(e){return e.id===id});var n=idx>=0?idx+1:evs.length+1;var yr=new Date().getFullYear();return"OC-"+yr+"-"+String(n).padStart(3,"0")}
+// Min date
+document.getElementById("fecha").setAttribute("min",new Date().toISOString().split("T")[0]);
 
-// GCal
-function openGCal(ev){
-  var sh=ev.hora||"19:00",p=sh.split(":"),dur=ev.tipo==="Serenata"?1:(ev.horas||1);
-  var eh=String(Math.min(23,parseInt(p[0])+dur)).padStart(2,"0");
-  var total=ct(ev),saldo=total-(ev.anticipo||0);
-  var ds=ev.fecha.replace(/-/g,"");
-  var det=["Tipo: "+ev.tipo,"Contacto: "+ev.contacto,ev.telefono?"Tel: "+ev.telefono:"","Total: "+fm(total),ev.anticipo?"Anticipo: "+fm(ev.anticipo):"",saldo>0?"Pendiente: "+fm(saldo):"Pagado","Estado: "+ev.estado].filter(Boolean).join("\n");
-  window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Show "+ev.tipo+" - "+ev.contacto)+"&dates="+ds+"T"+p[0]+p[1]+"00/"+ds+"T"+eh+p[1]+"00&details="+encodeURIComponent(det)+"&location="+encodeURIComponent(ev.direccion||""),"_blank");
+// Time options
+var horaSelect=document.getElementById("hora");
+[17,18,19,20,21,22,23,16,15,14,13,12,11,10,9,8,7,6].forEach(function(_h){for(var _m=0;_m<60;_m+=30){var hr=_h%12||12;var ap=_h>=12?"PM":"AM";var val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var lab=hr+":"+String(_m).padStart(2,"0")+" "+ap;var opt=document.createElement("option");opt.value=val;opt.textContent=lab;horaSelect.appendChild(opt)}});
+
+// Particles
+(function(){var icons=["🎵","🎤","🎶","♪","♫","✨"];var c=document.getElementById("particles");for(var i=0;i<12;i++){var p=document.createElement("div");p.className="particle";p.textContent=icons[i%icons.length];p.style.left=Math.random()*100+"%";p.style.fontSize=(10+Math.random()*14)+"px";p.style.animationDuration=(15+Math.random()*20)+"s";p.style.animationDelay=(Math.random()*15)+"s";c.appendChild(p)}})();
+
+// Scroll reveal
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("visible");updateSteps(e.target)}})},{threshold:0.2});
+document.querySelectorAll(".card").forEach(function(c){observer.observe(c)});
+function updateSteps(card){var step=parseInt(card.getAttribute("data-step"));for(var i=1;i<=3;i++){var d=document.getElementById("s"+i);d.className=i<step?"step-dot done":i===step?"step-dot active":"step-dot"}}
+
+// Date display with month name
+function showDate(){
+  var v=document.getElementById("fecha").value;
+  var dd=document.getElementById("date-display");
+  if(!v){dd.className="date-display";return}
+  var d=new Date(v+"T12:00:00");
+  dd.textContent="📅 "+DIAS[d.getDay()]+" "+d.getDate()+" de "+MS[d.getMonth()]+" de "+d.getFullYear();
+  dd.className="date-display show";
+  calcAll();
 }
 
-// PDF Receipt
-function genRecibo(ev,evs){
-  var J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:[80,200]});
-  var total=ct(ev),saldo=total-(ev.anticipo||0),y=8;
-  doc.setFillColor(220,30,30);doc.rect(0,0,80,28,"F");
-  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,"bold");
-  doc.text("OSCAR CALDERA",40,12,{align:"center"});
-  doc.setFontSize(8);doc.setFont(undefined,"normal");
-  doc.text("Música en Vivo para Eventos | Mexicali, B.C.",40,18,{align:"center"});
-  doc.text("Folio: "+folio(ev.id,evs),40,24,{align:"center"});
-  y=36;doc.setTextColor(220,30,30);doc.setFontSize(12);doc.setFont(undefined,"bold");
-  doc.text("RECIBO DE ANTICIPO",40,y,{align:"center"});y+=3;
-  doc.setDrawColor(220,30,30);doc.line(10,y,70,y);y+=7;
-  doc.setTextColor(60,60,60);doc.setFontSize(9);
-  var rows=[["Fecha",fd(ev.fecha)],["Inicio",ft(ev.hora)||"Por definir"],["Fin",ev.hora?calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):""],["Tipo",ev.tipo+(ev.tipo==="Por hora"?" ("+ev.horas+"h)":"")],["Cliente",ev.contacto]];
-  if(ev.telefono)rows.push(["Tel",ev.telefono]);if(ev.direccion)rows.push(["Lugar",ev.direccion]);
-  rows.forEach(function(r){doc.setFont(undefined,"bold");doc.setTextColor(100);doc.text(r[0]+":",8,y);doc.setFont(undefined,"normal");doc.setTextColor(40);doc.text(r[1],30,y);y+=5});
-  if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){y+=2;doc.setDrawColor(230);doc.line(8,y,72,y);y+=5;doc.setFont(undefined,"bold");doc.setTextColor(220,30,30);doc.text("CANCIONES",8,y);y+=5;doc.setFont(undefined,"normal");doc.setTextColor(40);ev.canciones.filter(function(c){return c}).forEach(function(c,i){doc.text((i+1)+". "+c,10,y);y+=4.5})}
-  y+=4;doc.setFillColor(245);doc.rect(5,y-3,70,28,"F");doc.setDrawColor(220,30,30);doc.rect(5,y-3,70,28,"S");
-  doc.setFontSize(10);doc.setFont(undefined,"bold");doc.setTextColor(60);doc.text("Total:",10,y+2);doc.text(fm(total),70,y+2,{align:"right"});y+=7;
-  doc.setTextColor(0,120,80);doc.text("Anticipo:",10,y+2);doc.text(fm(ev.anticipo||0),70,y+2,{align:"right"});y+=7;
-  doc.setTextColor(200,30,30);doc.text("RESTANTE:",10,y+2);doc.setFontSize(12);doc.text(fm(saldo),70,y+2,{align:"right"});
-  y+=12;doc.setFontSize(7);doc.setTextColor(160);doc.setFont(undefined,"normal");
-  doc.text(new Date().toLocaleString("es-MX"),40,y,{align:"center"});y+=4;
-  doc.text("oscarcalderamusic.netlify.app",40,y,{align:"center"});
-  doc.save("Recibo_"+folio(ev.id,evs)+"_"+ev.contacto.replace(/\s/g,"_")+".pdf");
+function selType(t){
+  tipo=t;
+  document.getElementById("btn-hora").className="type-opt"+(t==="hora"?" active":"");
+  document.getElementById("btn-serenata").className="type-opt"+(t==="serenata"?" active":"");
+  document.getElementById("hours-box").className="hours-box"+(t==="hora"?" show":"");
+  document.getElementById("songs-box").className="songs-box"+(t==="serenata"?" show":"");
+  document.getElementById("price-sum").className="price-sum show";
+  calcAll();checkForm();
 }
 
-// Monthly Report PDF
-function genReporte(events,fYear,fMonth){
-  var J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"letter"});
-  var yr=parseInt(fYear)||new Date().getFullYear();var mo=fMonth!=="all"?parseInt(fMonth):-1;
-  var moName=mo>=0?MS[mo]:"Anual";
-  var evs=events.filter(function(x){var d=new Date(x.fecha+"T00:00:00");return d.getFullYear()===yr&&(mo<0||d.getMonth()===mo)}).sort(function(a,b){return new Date(a.fecha)-new Date(b.fecha)});
-  var tI=0,tA=0;evs.forEach(function(x){if(x.estado!=="Cancelado"){tI+=ct(x);tA+=(x.anticipo||0)}});
-  doc.setFillColor(220,30,30);doc.rect(0,0,216,30,"F");doc.setTextColor(255);doc.setFontSize(18);doc.setFont(undefined,"bold");
-  doc.text("OSCAR CALDERA - REPORTE",108,14,{align:"center"});doc.setFontSize(9);doc.setFont(undefined,"normal");doc.text(moName+" "+yr,108,23,{align:"center"});
-  var y=40;doc.setTextColor(60);doc.setFontSize(10);doc.setFont(undefined,"bold");
-  doc.text("Eventos: "+evs.length+"    Ingresos: "+fm(tI)+"    Cobrado: "+fm(tA)+"    Pendiente: "+fm(tI-tA),14,y);y+=10;
-  doc.setDrawColor(220,30,30);doc.line(14,y,200,y);y+=6;
-  doc.setFontSize(8);doc.setTextColor(100);doc.text("FOLIO",14,y);doc.text("FECHA",38,y);doc.text("TIPO",58,y);doc.text("CLIENTE",80,y);doc.text("ESTADO",125,y);doc.text("TOTAL",150,y);doc.text("ANTICIPO",175,y);y+=5;
-  doc.line(14,y,200,y);y+=4;doc.setFont(undefined,"normal");doc.setTextColor(40);
-  evs.forEach(function(ev,i){if(y>260){doc.addPage();y=20}doc.text(folio(ev.id,events),14,y);doc.text(fd(ev.fecha),38,y);doc.text(ev.tipo,58,y);doc.text((ev.contacto||"").substring(0,18),80,y);doc.text(ev.estado,125,y);doc.text(fm(ct(ev)),150,y);doc.text(fm(ev.anticipo||0),175,y);y+=5});
-  y+=8;doc.setFontSize(7);doc.setTextColor(160);doc.text("Generado: "+new Date().toLocaleString("es-MX")+" | oscarcalderamusic.netlify.app",108,y,{align:"center"});
-  doc.save("Reporte_"+moName+"_"+yr+".pdf");
+function fmtTime(t){if(!t)return"";var p=t.split(":");var h=parseInt(p[0]);return(h%12||12)+":"+p[1]+" "+(h>=12?"PM":"AM")}
+
+function calcAll(){
+  var total=0,horas=parseInt(document.getElementById("horas").value)||1;
+  if(tipo==="hora"){total=horas*2500;document.getElementById("hours-total").textContent="$"+total.toLocaleString("es-CO");document.getElementById("price-desc").textContent=horas+" hora(s) × $2,500"}
+  else if(tipo==="serenata"){total=1500;document.getElementById("price-desc").textContent="Serenata (4 canciones)"}
+  document.getElementById("price-total").textContent="$"+total.toLocaleString("es-CO");
+  var hora=document.getElementById("hora").value,sched=document.getElementById("sched");
+  if(!hora||!tipo){sched.className="sched";return}
+  var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;var nd=eH>=24;if(nd)eH-=24;
+  document.getElementById("t-start").textContent=fmtTime(hora);
+  document.getElementById("t-end").textContent=fmtTime(String(eH).padStart(2,"0")+":"+p[1])+(nd?" (día sig.)":"");
+  document.getElementById("t-dur").textContent=tipo==="hora"?"Duración: "+horas+" hora(s)":"Serenata: ~1 hora aprox.";
+  sched.className="sched show";checkForm();
 }
 
-// Notifications
-function reqNotif(){if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}
-function chkReminders(evs){if(!("Notification"in window)||Notification.permission!=="granted")return;var now=Date.now();evs.forEach(function(ev){if(ev.estado==="Cancelado"||!ev.fecha||!ev.hora)return;var dt=new Date(ev.fecha+"T"+ev.hora+":00").getTime(),d=dt-now;if(d>0&&d<=7200000&&d>7140000)new Notification("🎤 Evento en 2 horas",{body:ev.tipo+" - "+ev.contacto,icon:"./icons/icon-192.svg"});if(d>0&&d<=86400000&&d>86340000)new Notification("🎤 Evento mañana",{body:ev.tipo+" - "+ev.contacto+" "+ft(ev.hora),icon:"./icons/icon-192.svg"})})}
+function checkForm(){
+  var n=document.getElementById("nombre").value.trim();
+  var t=document.getElementById("telefono").value.trim();
+  var f=document.getElementById("fecha").value;
+  var hr=document.getElementById("hora").value;
+  document.getElementById("submit-btn").disabled=!(tipo&&n&&t&&f&&hr);
+}
+document.querySelectorAll("input,textarea,select").forEach(function(el){el.addEventListener("input",checkForm)});
 
-// WhatsApp messages
-function shareWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="🎤 *Oscar Caldera - Evento Musical*\n\n📋 *Tipo:* "+ev.tipo+"\n📅 *Fecha:* "+fd(ev.fecha)+"\n";if(ev.hora)m+="🕐 *Inicio:* "+ft(ev.hora)+"\n🕐 *Fin:* "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)+"\n";m+="💰 *Total:* "+fm(total)+"\n";if(ev.anticipo)m+="💵 *Anticipo:* "+fm(ev.anticipo)+"\n📊 *Restante:* "+fm(saldo)+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n   ▶ "+ytK(c)+"\n"})}m+="\n✅ *Estado:* "+ev.estado;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}
-function confirmWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="Hola "+ev.contacto+", gracias por agendar su evento conmigo.\n\n";m+="📋 *Detalles del evento:*\n";m+="🎤 *"+ev.tipo+"*\n";m+="📅 "+fd(ev.fecha)+"\n";m+="🕐 "+ft(ev.hora)+(ev.hora?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")+"\n";if(ev.direccion)m+="📍 "+ev.direccion+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n"})}m+="\n";if(ev.anticipo>0){m+="Confirmo la recepción de su anticipo por *"+fm(ev.anticipo)+"*.\n";if(saldo>0)m+="Queda pendiente un saldo de *"+fm(saldo)+"*, el cual puede liquidar en cualquier momento previo al evento o el mismo día.\n";else m+="Su evento se encuentra *liquidado en su totalidad*. ✅\n"}else{m+="El costo total del evento es de *"+fm(total)+"*.\n"}m+="\nQuedo atento a cualquier detalle adicional. Gracias por su confianza, estamos en contacto. 🙏\n\n";m+="🎤 *Oscar Caldera*\n";m+="━━━━━━━━━━━━━━━━━━\n";m+="📱 Redes sociales:\n";m+="▪️ Facebook: https://www.facebook.com/serenade.mx\n";m+="▪️ Instagram: https://www.instagram.com/oscarcalderamusic\n";m+="▪️ TikTok: https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
-function reviewWA(ev){var m="Hola "+ev.contacto+", ¡gracias por confiar en Oscar Caldera para tu evento! 🎤\n\n¿Podrías dejarme una reseña? Tu opinión me ayuda mucho a seguir creciendo 🙏\n\n👉 https://www.facebook.com/serenade.mx/reviews\n\n¡Muchas gracias! Fue un placer cantar para ti.\n\n🎤 *Oscar Caldera*\n▪️ https://www.facebook.com/serenade.mx\n▪️ https://www.instagram.com/oscarcalderamusic\n▪️ https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
-
-// Chart
-function MChart(props){var ref=ur(null),cRef=ur(null);ue(function(){if(!ref.current)return;if(cRef.current)cRef.current.destroy();var d=new Array(12).fill(0),a=new Array(12).fill(0);var yr=parseInt(props.year)||new Date().getFullYear();props.events.forEach(function(ev){var dt=new Date(ev.fecha+"T00:00:00");if(dt.getFullYear()===yr&&ev.estado!=="Cancelado"){d[dt.getMonth()]+=ct(ev);a[dt.getMonth()]+=(ev.anticipo||0)}});cRef.current=new Chart(ref.current,{type:"bar",data:{labels:MS.map(function(m){return m.slice(0,3)}),datasets:[{label:"Total",data:d,backgroundColor:"rgba(220,30,30,0.6)",borderColor:"#dc1e1e",borderWidth:1,borderRadius:4},{label:"Cobrado",data:a,backgroundColor:"rgba(0,135,90,0.6)",borderColor:"#00875a",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#999",font:{family:"Outfit"}}}},scales:{x:{ticks:{color:"#888"},grid:{color:"rgba(255,255,255,0.03)"}},y:{ticks:{color:"#888",callback:function(v){return"$"+v.toLocaleString()}},grid:{color:"rgba(255,255,255,0.05)"}}}}});return function(){if(cRef.current)cRef.current.destroy()}},[props.events,props.year]);return h("canvas",{ref:ref,style:{width:"100%",height:200}})}
-
-// ============ PIN LOCK SCREEN ============
-var APP_PIN="2108";
-function PinScreen(props){
-  var _pin=us(""),pin=_pin[0],setPin=_pin[1];
-  var _err=us(false),err=_err[0],setErr=_err[1];
-  var _shake=us(false),shake=_shake[0],setShake=_shake[1];
-  function addDigit(d){if(pin.length>=4)return;var next=pin+d;setPin(next);setErr(false);
-    if(next.length===4){if(next===APP_PIN){sessionStorage.setItem("oc-unlocked","1");props.onUnlock()}else{setErr(true);setShake(true);setTimeout(function(){setPin("");setShake(false)},600)}}}
-  function del(){setPin(pin.slice(0,-1));setErr(false)}
-  return h(React.Fragment,null,
-    h("div",{className:"app-bg"}),
-    h("div",{className:"app-grain"}),
-    h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
-    h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:85,height:85,borderRadius:22,marginBottom:24,boxShadow:"0 0 40px rgba(220,30,30,0.5)"}}),
-    h("h1",{style:{color:"#dc1e1e",fontSize:26,fontWeight:800,marginBottom:4,fontFamily:"'Playfair Display',serif",letterSpacing:"-0.5px"}},"OC AGENDA"),
-    h("p",{style:{color:"#666",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif",textTransform:"uppercase",letterSpacing:"2px"}},"Ingrese su PIN"),
-    // PIN dots
-    h("div",{style:{display:"flex",gap:14,marginBottom:8,animation:shake?"shake 0.4s ease":"none"}},
-      [0,1,2,3].map(function(i){return h("div",{key:i,style:{width:18,height:18,borderRadius:9,border:"2px solid "+(err?"#ff3333":pin.length>i?"#dc1e1e":"rgba(255,255,255,0.2)"),background:pin.length>i?(err?"#ff3333":"#dc1e1e"):"transparent",transition:"all 0.15s ease",transform:pin.length>i?"scale(1.1)":"scale(1)"}})})),
-    err&&h("p",{style:{color:"#ff3333",fontSize:12,marginTop:8,marginBottom:-8,fontFamily:"'Outfit',sans-serif",animation:"fadeIn 0.2s"}},"PIN incorrecto"),
-    // Keypad
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:24,width:240}},
-      [1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(function(d,i){
-        if(d==="")return h("div",{key:i});
-        return h("button",{key:i,className:"btn-rip",onClick:function(){if(d==="⌫")del();else addDigit(String(d))},style:{width:70,height:56,borderRadius:14,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:d==="⌫"?"#ff4444":"#fff",fontSize:d==="⌫"?20:22,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.1s"}})
-      })
-    ),
-    h("style",null,"@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}")
-  ));
+// SONGS
+function updateSongInputs(){
+  for(var i=0;i<4;i++){document.getElementById("song"+(i+1)).value=songs[i]}
+  document.getElementById("rep-selected").innerHTML="Canciones elegidas: <b>"+songs.filter(function(s){return s}).length+" de 4</b>";
+  renderRep();
+}
+function clearSong(i){songs[i]="";updateSongInputs()}
+function pickSong(name){
+  for(var i=0;i<4;i++){if(!songs[i]){songs[i]=name;updateSongInputs();if(songs.filter(function(s){return s}).length>=4)setTimeout(closeRep,400);return}}
 }
 
-function Root(){
-  var _unlocked=us(sessionStorage.getItem("oc-unlocked")==="1"),unlocked=_unlocked[0],setUnlocked=_unlocked[1];
-  if(!unlocked)return h(PinScreen,{onUnlock:function(){setUnlocked(true)}});
-  return h(App);
+function openRep(){
+  document.getElementById("rep-modal").className="rep-modal show";
+  document.body.style.overflow="hidden";
+  renderRep();
+}
+function closeRep(){
+  document.getElementById("rep-modal").className="rep-modal";
+  document.body.style.overflow="";
 }
 
-// ============ MAIN APP ============
-function App(){
-  var _ev=us(load),events=_ev[0],setEvents=_ev[1];
-  var _fm=us(Object.assign({},EMPTY)),form=_fm[0],setForm=_fm[1];
-  var _sf=us(false),showForm=_sf[0],setShowForm=_sf[1];
-  var _ed=us(false),editing=_ed[0],setEditing=_ed[1];
-  var _fM=us("all"),fMonth=_fM[0],setFMonth=_fM[1];
-  var _fY=us(String(new Date().getFullYear())),fYear=_fY[0],setFYear=_fY[1];
-  var _di=us(null),delId=_di[0],setDelId=_di[1];
-  var _ex=us(null),expId=_ex[0],setExpId=_ex[1];
-  var _to=us(null),toast=_to[0],setToast=_to[1];
-  var _ss=us(false),showSongs=_ss[0],setShowSongs=_ss[1];
-  var _tab=us("eventos"),tab=_tab[0],setTab=_tab[1];
-  var _sg=us([]),sugs=_sg[0],setSugs=_sg[1];
-  var _sgS=us(false),sgShow=_sgS[0],setSgShow=_sgS[1];
-  var _cSrch=us(""),cSrch=_cSrch[0],setCsrch=_cSrch[1];
-  var _srch=us(""),srch=_srch[0],setSrch=_srch[1];
-  var _imp=us(false),showImport=_imp[0],setShowImport=_imp[1];
-  var _impTxt=us(""),impTxt=_impTxt[0],setImpTxt=_impTxt[1];
-  var _pr=us(loadPrices()),precios=_pr[0],setPrecios=_pr[1];
-  var PH=precios.ph,PS=precios.ps;
-
-  function ntf(m,t){setToast({m:m,t:t||"ok"});setTimeout(function(){setToast(null)},3500)}
-  function save(a){setEvents(a);persist(a)}
-  function upd(k,v){var o=Object.assign({},form);o[k]=v;setForm(o)}
-  function updS(i,v){var c=form.canciones.slice();c[i]=v;setForm(Object.assign({},form,{canciones:c}))}
-  function close(){setForm(Object.assign({},EMPTY));setShowForm(false);setEditing(false);setShowSongs(false);setSgShow(false);setShowImport(false);setImpTxt("")}
-
-  function parseWA(txt){
-    var f=Object.assign({},EMPTY);
-    // Extract fields using patterns
-    var m;
-    m=txt.match(/Cliente:\*?\s*(.+)/i);if(m)f.contacto=m[1].trim();
-    m=txt.match(/Teléfono:\*?\s*(.+)/i);if(m)f.telefono=m[1].trim();
-    m=txt.match(/Fecha:\*?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
-    if(m){var p=m[1].split("/");f.fecha=p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0")}
-    m=txt.match(/Inicio:\*?\s*(\d{1,2}:\d{2}\s*[AP]M)/i);
-    if(m){var t=m[1].trim();var tp=t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);if(tp){var hr=parseInt(tp[1]);if(tp[3].toUpperCase()==="PM"&&hr<12)hr+=12;if(tp[3].toUpperCase()==="AM"&&hr===12)hr=0;f.hora=String(hr).padStart(2,"0")+":"+tp[2]}}
-    m=txt.match(/Tipo:\*?\s*(.+)/i);
-    if(m){var tipo=m[1].trim();if(tipo.indexOf("Serenata")>=0)f.tipo="Serenata";else f.tipo="Por hora";var hm=tipo.match(/(\d+)\s*hrs?/i);if(hm)f.horas=hm[1]}
-    m=txt.match(/Lugar:\*?\s*(.+)/i);if(m)f.direccion=m[1].trim();
-    m=txt.match(/Personas:\*?\s*(\d+)/i);if(m)f.personas=m[1];
-    m=txt.match(/Notas:\*?\s*(.+)/i);if(m)f.notas=m[1].trim();
-    // Extract songs
-    var songs=["","","",""];
-    var songMatches=txt.match(/\d+\.\s*(.+)/g);
-    if(songMatches&&f.tipo==="Serenata"){songMatches.forEach(function(s,i){if(i<4){var clean=s.replace(/^\d+\.\s*/,"").trim();if(clean&&clean.indexOf("*")<0&&clean.indexOf("━")<0)songs[i]=clean}})}
-    f.canciones=songs;
-    return f;
-  }
-
-  function doImport(){
-    if(!impTxt.trim()){ntf("Pega el mensaje de WhatsApp","err");return}
-    var parsed=parseWA(impTxt);
-    if(!parsed.contacto){ntf("No se encontró el nombre del cliente","err");return}
-    setForm(parsed);
-    setShowImport(false);setImpTxt("");setShowForm(true);setEditing(false);
-    ntf("Datos importados — revisa y toca Agregar");
-  }
-
-  ue(function(){reqNotif();var iv=setInterval(function(){chkReminders(events)},60000);chkReminders(events);return function(){clearInterval(iv)}},[events]);
-
-  var contacts=um(function(){var c={};events.forEach(function(ev){if(!ev.contacto)return;var k=ev.contacto.toLowerCase().trim();if(!c[k])c[k]={name:ev.contacto,tel:ev.telefono||"",count:0,total:0,last:""};c[k].count++;c[k].total+=ct(ev);if(!c[k].tel&&ev.telefono)c[k].tel=ev.telefono;if(ev.fecha>c[k].last)c[k].last=ev.fecha});return Object.values(c).sort(function(a,b){return b.count-a.count})},[events]);
-
-  function onCC(v){upd("contacto",v);if(v.length<2){setSgShow(false);return}var m=contacts.filter(function(c){return c.name.toLowerCase().indexOf(v.toLowerCase())>=0});setSugs(m);setSgShow(m.length>0)}
-  function pickC(c){upd("contacto",c.name);if(c.tel)upd("telefono",c.tel);setSgShow(false)}
-
-  // Conflict detector
-  function checkConflict(ev){
-    if(!ev.fecha||!ev.hora)return null;
-    var dur=ev.tipo==="Por hora"?(Number(ev.horas)||1):1;
-    var p=ev.hora.split(":"),startH=parseInt(p[0]),startM=parseInt(p[1]);
-    var startMin=startH*60+startM,endMin=startMin+dur*60;
-    var conflict=null;
-    events.forEach(function(x){
-      if(x.id===ev.id||x.fecha!==ev.fecha||x.estado==="Cancelado"||!x.hora)return;
-      var xDur=x.tipo==="Por hora"?(Number(x.horas)||1):1;
-      var xP=x.hora.split(":"),xStart=parseInt(xP[0])*60+parseInt(xP[1]),xEnd=xStart+xDur*60;
-      if(startMin<xEnd&&endMin>xStart)conflict=x;
+function renderRep(){
+  var body=document.getElementById("rep-body");
+  body.innerHTML="";
+  REP.forEach(function(cat,ci){
+    var div=document.createElement("div");div.className="rep-cat";
+    var btn=document.createElement("button");btn.className="rep-cat-btn";
+    btn.innerHTML=cat.cat+'<span class="cnt">'+cat.songs.length+" canciones</span>";
+    var sd=document.createElement("div");sd.className="rep-songs";sd.id="rcat-"+ci;
+    btn.onclick=function(){sd.className=sd.className.indexOf("open")>=0?"rep-songs":"rep-songs open"};
+    cat.songs.forEach(function(s){
+      var d=document.createElement("div");d.className="rep-song";
+      if(songs.indexOf(s)>=0)d.className+=" picked";
+      d.textContent=s;
+      d.onclick=function(){if(songs.indexOf(s)<0)pickSong(s)};
+      sd.appendChild(d);
     });
-    return conflict;
-  }
-
-  function doSubmit(){
-    if(!form.fecha||!form.contacto||!form.tipo)return;
-    var newId=editing?form.id:String(Date.now());
-    var ev=Object.assign({},form,{id:newId,horas:Number(form.horas)||1,anticipo:Number(form.anticipo)||0,personas:Number(form.personas)||0});
-    if(!editing){ev.precioHora=PH;ev.precioSerenata=PS}
-    var conf=checkConflict(ev);
-    if(conf&&!confirm("⚠️ CONFLICTO: Ya tienes un evento ese día con "+conf.contacto+" de "+ft(conf.hora)+" a "+calcEnd(conf.hora,conf.tipo==="Por hora"?conf.horas:1)+". ¿Agendar de todas formas?")){return}
-    var arr=editing?events.map(function(x){return x.id===form.id?ev:x}):events.concat([ev]);
-    save(arr);close();setExpId(newId);ntf(editing?"Evento actualizado":"Evento guardado");
-  }
-  function openEd(ev){setForm(Object.assign({},ev,{canciones:ev.canciones||["","","",""]}));setEditing(true);setShowForm(true);setExpId(null)}
-  function doDel(id){save(events.filter(function(x){return x.id!==id}));setDelId(null);setExpId(null);ntf("Evento eliminado")}
-  function delPast(){var t=new Date();t.setHours(0,0,0,0);var k=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t});var r=events.length-k.length;save(k);ntf(r+" pasados eliminados")}
-  function setEst(id,est){save(events.map(function(x){return x.id===id?Object.assign({},x,{estado:est}):x}));ntf("Estado: "+est)}
-  function confetti(){var colors=["#dc1e1e","#ff4444","#fff","#ff8c00","#00c896","#4285f4"];for(var i=0;i<40;i++){var el=document.createElement("div");el.className="confetti-piece";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=Math.random()*0.8+"s";el.style.animationDuration=(2+Math.random()*1.5)+"s";el.style.width=(6+Math.random()*6)+"px";el.style.height=(6+Math.random()*6)+"px";document.body.appendChild(el);setTimeout(function(){el.remove()},4000)}}
-  function markPaid(ev){save(events.map(function(x){return x.id===ev.id?Object.assign({},x,{anticipo:ct(x)}):x}));ntf("💰 ¡Pagado!");confetti()}
-
-  function exportD(){var b=new Blob([JSON.stringify(events,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="oc_agenda_"+new Date().toISOString().slice(0,10)+".json";a.click();ntf("Respaldo descargado")}
-  function importD(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(Array.isArray(d)){save(d);ntf(d.length+" eventos restaurados")}else ntf("Inválido","err")}catch(er){ntf("Error","err")}};r.readAsText(f)}
-
-  var years=um(function(){var s={};events.forEach(function(x){s[new Date(x.fecha+"T00:00:00").getFullYear()]=1});s[new Date().getFullYear()]=1;return Object.keys(s).map(Number).sort(function(a,b){return b-a})},[events]);
-  var filtered=um(function(){return events.filter(function(x){var d=new Date(x.fecha+"T00:00:00");if(fYear!=="all"&&d.getFullYear()!==parseInt(fYear))return false;if(fMonth!=="all"&&d.getMonth()!==parseInt(fMonth))return false;if(srch){var s=srch.toLowerCase();if((x.contacto||"").toLowerCase().indexOf(s)<0&&(x.direccion||"").toLowerCase().indexOf(s)<0&&(x.fecha||"").indexOf(s)<0&&fd(x.fecha).indexOf(s)<0)return false}return true}).sort(function(a,b){return new Date(a.fecha)-new Date(b.fecha)})},[events,fMonth,fYear,srch]);
-  var stats=um(function(){var t=0,a=0;filtered.forEach(function(x){if(x.estado!=="Cancelado"){t+=ct(x);a+=(x.anticipo||0)}});return{total:t,ant:a,pend:t-a,n:filtered.length}},[filtered]);
-  var pastCount=um(function(){var t=new Date();t.setHours(0,0,0,0);return events.filter(function(x){return new Date(x.fecha+"T00:00:00")<t}).length},[events]);
-
-  // Next event & today events
-  var nextEv=um(function(){var t=new Date();t.setHours(0,0,0,0);var future=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t&&x.estado!=="Cancelado"}).sort(function(a,b){return new Date(a.fecha+"T"+(a.hora||"00:00"))-new Date(b.fecha+"T"+(b.hora||"00:00"))});return future[0]||null},[events]);
-  var todayEvs=um(function(){var t=new Date();t.setHours(0,0,0,0);return events.filter(function(x){return new Date(x.fecha+"T00:00:00").getTime()===t.getTime()&&x.estado!=="Cancelado"})},[events]);
-
-  var tF=ct(form),sF=tF-(Number(form.anticipo)||0),canSave=form.fecha&&form.contacto&&form.tipo;
-  var filteredContacts=um(function(){if(!cSrch)return contacts;return contacts.filter(function(c){return c.name.toLowerCase().indexOf(cSrch.toLowerCase())>=0})},[contacts,cSrch]);
-
-  var B=function(bg){return{border:"none",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",padding:"10px 18px",background:bg||"#dc1e1e",color:"#fff"}};
-  var C=function(bg,co,bd){return{border:"1px solid "+(bd||"rgba(255,255,255,0.08)"),padding:"6px 10px",borderRadius:7,fontSize:11,cursor:"pointer",fontFamily:"'Outfit',sans-serif",background:bg||"rgba(255,255,255,0.04)",color:co||"#ccc"}};
-
-  return h(React.Fragment,null,
-    // Premium background
-    h("div",{className:"app-bg"}),
-    h("div",{className:"app-particles",ref:function(el){if(el&&!el.hasChildNodes()){var icons=["🎵","🎤","🎶","♪","♫","✨"];for(var i=0;i<10;i++){var p=document.createElement("div");p.className="app-particle";p.textContent=icons[i%icons.length];p.style.left=Math.random()*100+"%";p.style.fontSize=(8+Math.random()*12)+"px";p.style.animationDuration=(18+Math.random()*22)+"s";p.style.animationDelay=(Math.random()*15)+"s";el.appendChild(p)}}}}),
-    h("div",{className:"app-grain"}),
-
-    toast&&h("div",{style:{position:"fixed",bottom:75,left:"50%",transform:"translateX(-50%)",zIndex:9999,background:toast.t==="err"?"rgba(180,0,0,0.9)":"rgba(15,15,15,0.9)",backdropFilter:"blur(10px)",color:"#fff",padding:"12px 24px",borderRadius:12,fontSize:13,fontWeight:500,animation:"toastIn 0.3s ease",boxShadow:"0 0 20px rgba(220,30,30,0.4)",border:"1px solid rgba(220,30,30,0.3)"}},(toast.t==="err"?"❌ ":"✅ ")+toast.m),
-
-    h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",padding:"16px 16px 80px",maxWidth:640,margin:"0 auto"}},
-      // Header
-      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}},
-        h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:44,height:44,borderRadius:12,boxShadow:"0 0 25px rgba(220,30,30,0.4)"}}),
-          h("div",null,h("h1",{style:{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:800,color:"#dc1e1e",margin:0,letterSpacing:"-0.5px"}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#666",margin:0,letterSpacing:"1px",textTransform:"uppercase"}},"Oscar Caldera"))
-        ),
-        tab==="eventos"&&h("div",{style:{display:"flex",gap:6}},
-          h("button",{onClick:function(){setShowImport(true);setImpTxt("")},className:"btn-rip",style:Object.assign({},B("rgba(37,211,102,0.1)"),{color:"#25d366",border:"1px solid rgba(37,211,102,0.2)",padding:"10px 12px",fontSize:12,backdropFilter:"blur(8px)"})},"📋 Importar"),
-          h("button",{onClick:function(){setForm(Object.assign({},EMPTY));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},className:"btn-rip",style:B()},"+  Nuevo")
-        )
-      ),
-
-      // ========== EVENTOS ==========
-      tab==="eventos"&&h(React.Fragment,null,
-        // TODAY BANNER
-        todayEvs.length>0&&h("div",{style:{background:"rgba(220,30,30,0.12)",border:"1px solid rgba(220,30,30,0.3)",borderRadius:10,padding:"10px 14px",marginBottom:10,animation:"blink 2s infinite"}},
-          h("span",{style:{color:"#ff4444",fontWeight:700,fontSize:13}},"🔴 EVENTO HOY: "),
-          todayEvs.map(function(ev,i){return h("span",{key:i,style:{color:"#fff",fontSize:13}},ev.tipo+" "+ft(ev.hora)+" - "+ev.contacto+(i<todayEvs.length-1?" | ":""))})
-        ),
-        // NEXT EVENT CARD
-        nextEv&&gs(nextEv.fecha)!=="hoy"&&h("div",{className:"next-glow",style:{background:"rgba(220,30,30,0.05)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:12,padding:"14px",marginBottom:10,animation:"slideUp 0.5s ease both"},onClick:function(){setExpId(expId===nextEv.id?null:nextEv.id)}},
-          h("div",{style:{fontSize:10,color:"#dc1e1e",fontWeight:600,marginBottom:6}},"📌 PRÓXIMO EVENTO"),
-          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
-            h("div",null,
-              h("span",{style:{color:"#fff",fontWeight:700,fontSize:14}},nextEv.tipo==="Serenata"?"🎵 Serenata":"🕐 Por hora"),
-              h("span",{style:{color:"#888",fontSize:12,marginLeft:8}},nextEv.contacto),
-              h("div",{style:{color:"#999",fontSize:11,marginTop:3}},fd(nextEv.fecha)+" • "+ft(nextEv.hora)+(nextEv.hora?" → "+calcEnd(nextEv.hora,nextEv.tipo==="Por hora"?nextEv.horas:1):""))
-            ),
-            h("span",{style:{color:"#ff4444",fontWeight:700,fontFamily:JM,fontSize:15}},fm(ct(nextEv)))
-          ),
-          nextEv.direccion&&h("a",{href:mapsUrl(nextEv.direccion),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{display:"inline-block",marginTop:6,fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.08)",padding:"4px 10px",borderRadius:6}},"📍 "+nextEv.direccion+" → Maps")
-        ),
-        // STATS
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}},
-          [{l:"Eventos",v:stats.n,c:"#fff"},{l:"Ingresos",v:fm(stats.total),c:"#ff4444"},{l:"Cobrado",v:fm(stats.ant),c:"#ff6666"},{l:"Por Cobrar",v:fm(stats.pend),c:stats.pend>0?"#ff3333":"#44ff44"}].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"11px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",animation:"slideUp 0.4s ease both",animationDelay:(i*0.08)+"s"}},h("span",{style:{fontSize:9,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{className:"stat-num",style:{fontSize:14,fontWeight:700,color:s.c,fontFamily:JM,animationDelay:(0.2+i*0.1)+"s"}},s.v))})
-        ),
-        // SEARCH + FILTERS
-        h("input",{type:"text",style:Object.assign({},I,{marginBottom:8,fontSize:12}),placeholder:"🔍 Buscar por nombre, fecha o dirección...",value:srch,onChange:function(e){setSrch(e.target.value)}}),
-        h("div",{style:{display:"flex",gap:6,marginBottom:10}},
-          h("select",{value:fYear,onChange:function(e){setFYear(e.target.value)},style:Object.assign({},I,{flex:1,fontSize:12,cursor:"pointer"})},h("option",{value:"all"},"Todos"),years.map(function(y){return h("option",{key:y,value:y},y)})),
-          h("select",{value:fMonth,onChange:function(e){setFMonth(e.target.value)},style:Object.assign({},I,{flex:1,fontSize:12,cursor:"pointer"})},h("option",{value:"all"},"Todos los meses"),MS.map(function(m,i){return h("option",{key:i,value:i},m)}))
-        ),
-        pastCount>0&&h("button",{onClick:delPast,style:{width:"100%",marginBottom:10,padding:"8px",borderRadius:8,fontSize:11,fontWeight:500,cursor:"pointer",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",color:"#888",fontFamily:"'Outfit',sans-serif"}},"🗑️ Eliminar "+pastCount+" evento(s) pasado(s)"),
-        // EVENT LIST
-        h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
-          filtered.length===0?h("div",{style:{textAlign:"center",padding:"40px 20px"}},h("div",{style:{fontSize:40,marginBottom:8}},"🎵"),h("p",{style:{color:"#888",fontSize:14}},"No hay eventos"))
-          :filtered.map(function(ev,idx){
-            var st=gs(ev.fecha),sc=ST[st],total=ct(ev),saldo=total-(ev.anticipo||0),isExp=expId===ev.id,d=new Date(ev.fecha+"T00:00:00"),ec=EST_C[ev.estado]||EST_C.Pendiente;
-            var hasSg=ev.tipo==="Serenata"&&ev.canciones&&ev.canciones.some(function(c){return c});
-            return h("div",{key:ev.id,className:"ev-card",onClick:function(){setExpId(isExp?null:ev.id)},style:{border:"1px solid "+sc.bd,borderRadius:12,padding:"11px 13px",cursor:"pointer",background:sc.bg,animation:"cardEnter 0.4s ease both",animationDelay:(idx*0.06)+"s"}},
-              h("div",{style:{display:"flex",alignItems:"center",gap:12}},
-                h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",minWidth:38}},h("span",{style:{fontSize:20,fontWeight:800,lineHeight:1,fontFamily:JM,color:sc.txt}},d.getDate()),h("span",{style:{fontSize:9,color:"#777",textTransform:"uppercase",fontWeight:600}},MS[d.getMonth()].slice(0,3))),
-                h("div",{style:{flex:1,minWidth:0}},
-                  h("div",{style:{display:"flex",alignItems:"center",gap:4,marginBottom:3,flexWrap:"wrap"}},
-                    h("span",{style:{fontSize:13,fontWeight:600,color:"#fff"}},ev.tipo==="Serenata"?"🎵 Serenata":"🕐 Por hora"),
-                    h("span",{style:{fontSize:7,fontWeight:700,padding:"2px 5px",borderRadius:4,background:ec.bg,color:"#fff"}},ev.estado),
-                    h("span",{style:{fontSize:7,fontWeight:700,padding:"2px 5px",borderRadius:4,background:sc.badge+"22",color:sc.badge}},sc.lb)
-                  ),
-                  h("div",{style:{display:"flex",gap:6,fontSize:11,color:"#888",flexWrap:"wrap"}},
-                    h("span",null,"👤 "+ev.contacto),
-                    ev.hora&&h("span",null,ft(ev.hora)+" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)),
-                    h("span",{style:{color:"#666",fontSize:9}},folio(ev.id,events))
-                  )
-                ),
-                h("div",{style:{textAlign:"right",flexShrink:0}},
-                  h("span",{style:{fontSize:14,fontWeight:700,color:"#fff",fontFamily:JM,display:"block"}},fm(total)),
-                  saldo>0?h("span",{style:{fontSize:10,color:"#ff3333",display:"block"}},fm(saldo)):total>0?h("span",{style:{fontSize:10,color:"#44ff44",display:"block"}},"Pagado ✓"):null
-                )
-              ),
-              // EXPANDED
-              isExp&&h("div",{style:{marginTop:10,paddingTop:10,borderTop:"1px solid rgba(220,30,30,0.12)",animation:"slideIn 0.2s"}},
-                h("div",{style:{display:"flex",gap:5,marginBottom:8}},ESTADOS.map(function(est){var ac=ev.estado===est,ec2=EST_C[est];return h("button",{key:est,onClick:function(e){e.stopPropagation();setEst(ev.id,est)},style:{flex:1,padding:"6px 0",borderRadius:7,fontSize:10,fontWeight:600,cursor:"pointer",border:"1px solid "+(ac?ec2.bg+"66":"rgba(255,255,255,0.06)"),background:ac?ec2.bg+"22":"transparent",color:ac?ec2.bg:"#666",fontFamily:"'Outfit',sans-serif"}},est)})),
-                h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8,fontSize:12}},
-                  ev.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:8,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",null,h("span",{style:{color:"#dc1e1e",fontSize:10}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(ev.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1))),h("span",{style:{color:"#888",fontSize:10}},ev.tipo==="Por hora"?ev.horas+"h":"~1h")),
-                  ev.direccion&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📍 "),h("span",{style:{color:"#ccc"}},ev.direccion+" "),h("a",{href:mapsUrl(ev.direccion),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.1)",padding:"2px 6px",borderRadius:4}},"Maps ↗")),
-                  ev.telefono&&h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📱 "),h("span",{style:{color:"#ccc"}},ev.telefono+" "),h("a",{href:waUrl(ev.telefono),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#25d366",textDecoration:"none",background:"rgba(37,211,102,0.1)",padding:"2px 6px",borderRadius:4}},"WhatsApp ↗")),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"💰 "),h("span",{style:{color:"#fff",fontWeight:700}},fm(total))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"💵 "),h("span",{style:{color:"#ccc"}},fm(ev.anticipo))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📊 "),h("span",{style:{color:saldo>0?"#ff3333":"#44ff44",fontWeight:700}},fm(saldo))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"🔢 "),h("span",{style:{color:"#888",fontSize:11}},folio(ev.id,events))),
-                  ev.notas&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📝 "),h("span",{style:{color:"#ccc",fontSize:11}},ev.notas)),
-                  hasSg&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:8,padding:8}},
-                    h("div",{style:{fontSize:10,color:"#dc1e1e",fontWeight:600,marginBottom:4}},"🎵 Canciones"),
-                    ev.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3}},h("span",{style:{fontSize:12,color:"#fff"}},h("span",{style:{color:"#dc1e1e",fontWeight:700,fontFamily:JM,fontSize:10}},i+1+". "),c),h("a",{href:ytK(c),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:9,color:"#ff0000",textDecoration:"none",background:"rgba(255,0,0,0.08)",padding:"3px 7px",borderRadius:4,border:"1px solid rgba(255,0,0,0.12)"}},"▶ Karaoke"))})
-                  )
-                ),
-                // Calendar button
-                h("button",{onClick:function(e){e.stopPropagation();openGCal(ev)},style:{width:"100%",padding:"9px",borderRadius:8,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(66,133,244,0.08)",border:"1px solid rgba(66,133,244,0.2)",color:"#4285f4",fontFamily:"'Outfit',sans-serif",marginBottom:6}},"📅 Guardar en Google Calendar"),
-                // Mark as paid
-                saldo>0&&h("button",{onClick:function(e){e.stopPropagation();markPaid(ev)},style:{width:"100%",padding:"9px",borderRadius:8,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(0,135,90,0.08)",border:"1px solid rgba(0,135,90,0.2)",color:"#00c896",fontFamily:"'Outfit',sans-serif",marginBottom:6}},"💰 Marcar como pagado ("+fm(saldo)+")"),
-                // Action buttons
-                h("div",{style:{display:"flex",gap:5,flexWrap:"wrap",justifyContent:"flex-end"}},
-                  ev.anticipo>0&&h("button",{onClick:function(e){e.stopPropagation();genRecibo(ev,events)},style:C("rgba(220,30,30,0.06)","#ff4444","rgba(220,30,30,0.2)")},"🧾 Recibo"),
-                  h("button",{onClick:function(e){e.stopPropagation();shareWA(ev)},style:C("rgba(37,211,102,0.06)","#25d366","rgba(37,211,102,0.2)")},"📤 Compartir"),
-                  ev.telefono&&h("button",{onClick:function(e){e.stopPropagation();confirmWA(ev)},style:C("rgba(37,211,102,0.06)","#25d366","rgba(37,211,102,0.2)")},"✅ Confirmar"),
-                  ev.telefono&&ev.estado==="Confirmado"&&gs(ev.fecha)==="pasado"&&h("button",{onClick:function(e){e.stopPropagation();reviewWA(ev)},style:C("rgba(255,140,0,0.06)","#ff8c00","rgba(255,140,0,0.2)")},"⭐ Reseña"),
-                  h("button",{onClick:function(e){e.stopPropagation();openEd(ev)},style:C(undefined,"#ff6666")},"✏️"),
-                  h("button",{onClick:function(e){e.stopPropagation();setDelId(ev.id)},style:C(undefined,"#ff3333")},"🗑️")
-                )
-              )
-            )
-          })
-        )
-      ),
-
-      // ========== CONTACTOS ==========
-      tab==="contactos"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"👤 Contactos"),
-        h("input",{type:"text",style:Object.assign({},I,{marginBottom:10,fontSize:12}),placeholder:"🔍 Buscar contacto...",value:cSrch,onChange:function(e){setCsrch(e.target.value)}}),
-        h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},filteredContacts.length+" contacto(s)"),
-        h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
-          filteredContacts.map(function(c,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.1)",borderRadius:12,padding:"12px 14px"}},
-            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},h("div",null,h("span",{style:{fontSize:14,fontWeight:600,color:"#fff"}},c.name),c.tel&&h("span",{style:{fontSize:11,color:"#888",marginLeft:8}},c.tel)),h("span",{style:{fontSize:12,fontWeight:700,color:"#ff4444",fontFamily:JM}},fm(c.total))),
-            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",{style:{fontSize:11,color:"#888"}},h("span",null,"🎤 "+c.count+" evento(s)"),c.last&&h("span",{style:{marginLeft:8}},"📅 "+fd(c.last))),h("div",{style:{display:"flex",gap:5}},c.tel&&h("a",{href:waUrl(c.tel),target:"_blank",rel:"noopener",style:{fontSize:10,color:"#25d366",textDecoration:"none",background:"rgba(37,211,102,0.1)",padding:"4px 8px",borderRadius:5}},"💬"),c.tel&&h("a",{href:"tel:"+c.tel,style:{fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.1)",padding:"4px 8px",borderRadius:5}},"📞")))
-          )})
-        )
-      ),
-
-      // ========== DASHBOARD ==========
-      tab==="dashboard"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"📊 Dashboard"),
-        h("select",{value:fYear,onChange:function(e){setFYear(e.target.value)},style:Object.assign({},I,{marginBottom:12,fontSize:13,cursor:"pointer"})},years.map(function(y){return h("option",{key:y,value:y},y)})),
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:14,marginBottom:12}},h(MChart,{events:events,year:fYear})),
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}},
-          [{l:"Total Año",v:fm(events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado!=="Cancelado"}).reduce(function(s,x){return s+ct(x)},0)),c:"#ff4444"},
-          {l:"Cobrado",v:fm(events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado!=="Cancelado"}).reduce(function(s,x){return s+(x.anticipo||0)},0)),c:"#00875a"},
-          {l:"Eventos",v:events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)}).length,c:"#fff"},
-          {l:"Confirmados",v:events.filter(function(x){return new Date(x.fecha+"T00:00:00").getFullYear()===parseInt(fYear)&&x.estado==="Confirmado"}).length,c:"#00875a"}
-          ].map(function(s,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("span",{style:{fontSize:10,color:"#888",textTransform:"uppercase",fontWeight:500}},s.l),h("span",{style:{fontSize:15,fontWeight:700,color:s.c,fontFamily:JM}},s.v))})
-        )
-      ),
-
-      // ========== AJUSTES ==========
-      tab==="ajustes"&&h(React.Fragment,null,
-        h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"⚙️ Ajustes"),
-        h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"12px",borderRadius:12,fontSize:14,fontWeight:600,color:"#fff",background:"linear-gradient(135deg,#8b0000,#dc1e1e)",textDecoration:"none",marginBottom:8}},"🎤 Mi Página Web →"),
-        // QR
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8,textAlign:"center"}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📱 QR de Cotización"),
-          h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},"Los clientes escanean y abren tu formulario"),
-          h("img",{src:"https://api.qrserver.com/v1/create-qr-code/?data="+encodeURIComponent(COTIZAR_URL)+"&size=180x180&bgcolor=000000&color=dc1e1e",style:{width:150,height:150,borderRadius:8,border:"2px solid #dc1e1e"}}),
-          h("p",{style:{color:"#666",fontSize:9,marginTop:6}},COTIZAR_URL)
-        ),
-        // Report
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📄 Reporte Mensual"),
-          h("button",{onClick:function(){genReporte(events,fYear,fMonth)},style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)"})},"📄 Generar Reporte PDF")
-        ),
-        // Backup
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"💾 Respaldo"),
-          h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},events.length+" eventos"),
-          h("button",{onClick:exportD,style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)",marginBottom:6})},"📥 Exportar"),
-          h("label",{style:{display:"block",width:"100%",padding:"10px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",background:"rgba(0,135,90,0.1)",border:"1px solid rgba(0,135,90,0.25)",color:"#00c896",fontFamily:"'Outfit',sans-serif",textAlign:"center"}},"📤 Importar",h("input",{type:"file",accept:".json",onChange:importD,style:{display:"none"}}))
-        ),
-        // Notif
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"🔔 Notificaciones"),
-          h("button",{onClick:function(){reqNotif();if("Notification"in window)ntf("Permiso: "+Notification.permission)},style:Object.assign({},B("rgba(255,140,0,0.1)"),{width:"100%",color:"#ff8c00",border:"1px solid rgba(255,140,0,0.25)"})},"Activar")
-        ),
-        // Prices
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"💰 Precios"),
-          h("p",{style:{color:"#666",fontSize:10,marginBottom:12}},"Cambiar precios solo afecta eventos nuevos. Los ya agendados conservan su precio original."),
-          h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:10}},
-            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🕐 Por hora"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
-              h("span",{style:{color:"#888",fontSize:14}},"$"),
-              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PH,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ph:v});setPrecios(np);savePrices(np)}}),
-              h("span",{style:{color:"#666",fontSize:11}},"/hr")
-            )
-          ),
-          h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🎵 Serenata"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
-              h("span",{style:{color:"#888",fontSize:14}},"$"),
-              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PS,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ps:v});setPrecios(np);savePrices(np)}})
-            )
-          )
-        )
-      )
-    ),
-
-    // Bottom nav
-    h("div",{style:{position:"fixed",bottom:0,left:0,right:0,background:"rgba(5,5,5,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderTop:"1px solid rgba(220,30,30,0.1)",display:"flex",justifyContent:"center",zIndex:900}},
-      h("div",{style:{display:"flex",maxWidth:640,width:"100%"}},
-        [{id:"eventos",icon:"🎤",lb:"Eventos"},{id:"contactos",icon:"👤",lb:"Contactos"},{id:"dashboard",icon:"📊",lb:"Dashboard"},{id:"ajustes",icon:"⚙️",lb:"Ajustes"}].map(function(t){return h("div",{key:t.id,onClick:function(){setTab(t.id)},style:{flex:1,textAlign:"center",padding:"8px 0",cursor:"pointer"}},h("div",{style:{fontSize:18}},t.icon),h("div",{style:{fontSize:9,fontWeight:600,color:tab===t.id?"#ff4444":"#666",marginTop:1}},t.lb))})
-      )
-    ),
-
-    // ========== FORM ==========
-    showForm&&h("div",{onClick:close,style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:460,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 40px rgba(220,30,30,0.15)"}},
-        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},h("h2",{style:{fontSize:16,fontWeight:700,color:"#fff",margin:0}},editing?"✏️ Editar":"🎤 Nuevo Evento"),h("button",{onClick:close,style:{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer"}},"✕")),
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11}},
-          // Type
-          h("div",{style:{gridColumn:"1/-1",display:"flex",gap:8}},["Por hora","Serenata"].map(function(t){var ac=form.tipo===t;return h("div",{key:t,onClick:function(){upd("tipo",t);if(t==="Serenata")setShowSongs(true)},style:{flex:1,textAlign:"center",padding:"11px 8px",borderRadius:11,cursor:"pointer",fontWeight:600,fontSize:13,background:ac?"rgba(220,30,30,0.15)":"rgba(255,255,255,0.04)",color:ac?"#ff4444":"#888",border:"1px solid "+(ac?"rgba(220,30,30,0.4)":"rgba(255,255,255,0.08)")}},h("div",{style:{fontSize:18,marginBottom:2}},t==="Por hora"?"🕐":"🎵"),t,h("div",{style:{fontSize:10,color:ac?"#ff6666":"#666",fontWeight:400}},t==="Por hora"?fm(PH)+"/hr":fm(PS)))})),
-          // Date
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Fecha *"),h("input",{type:"date",style:I,value:form.fecha,onChange:function(e){upd("fecha",e.target.value)}})),
-          // Time (select :00/:30 only)
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Hora inicio"),h("select",{style:Object.assign({},I,{cursor:"pointer"}),value:form.hora,onChange:function(e){upd("hora",e.target.value)}},h("option",{value:""},"Seleccionar..."),TIMES.map(function(t){return h("option",{key:t.v,value:t.v},t.l)}))),
-          // Hours (por hora only)
-          form.tipo==="Por hora"&&h("div",{style:{gridColumn:"1/-1"}},
-            h("label",{style:Object.assign({},LB,{marginBottom:5,display:"block"})},"Horas a cantar"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:form.hora?8:0}},h("input",{type:"number",style:Object.assign({},I,{width:70,textAlign:"center",fontSize:16,fontWeight:700}),min:"1",value:form.horas,onChange:function(e){upd("horas",e.target.value)}}),h("span",{style:{color:"#888",fontSize:11}},"× "+fm(PH)+" ="),h("span",{style:{color:"#ff4444",fontSize:17,fontWeight:700,fontFamily:JM}},fm((Number(form.horas)||1)*PH))),
-            form.hora&&h("div",{style:{background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(form.hora,form.horas)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},(Number(form.horas)||1)+"h"))
-          ),
-          // Serenata end time
-          form.tipo==="Serenata"&&form.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(form.hora,1)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},"~1h")),
-          // Songs button
-          form.tipo==="Serenata"&&h("div",{style:{gridColumn:"1/-1"}},
-            h("button",{onClick:function(){setShowSongs(true)},style:{width:"100%",padding:10,borderRadius:9,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(220,30,30,0.1)",border:"1px solid rgba(220,30,30,0.25)",color:"#ff4444",fontFamily:"'Outfit',sans-serif"}},"🎵 "+(form.canciones.some(function(c){return c})?"Editar canciones":"Agregar canciones")),
-            form.canciones.some(function(c){return c})&&h("div",{style:{marginTop:5,padding:8,background:"rgba(220,30,30,0.05)",borderRadius:6}},form.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{fontSize:11,color:"#ccc",marginBottom:2}},h("span",{style:{color:"#dc1e1e",fontWeight:700}},i+1+". "),c)}))
-          ),
-          // Contact (with autocomplete)
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4,position:"relative"}},h("label",{style:LB},"Contacto *"),h("input",{type:"text",style:I,placeholder:"Cliente",value:form.contacto,onChange:function(e){onCC(e.target.value)},onBlur:function(){setTimeout(function(){setSgShow(false)},200)}}),sgShow&&sugs.length>0&&h("div",{className:"sug"},sugs.slice(0,5).map(function(c,i){return h("div",{key:i,className:"sug-i",onMouseDown:function(){pickC(c)}},c.name,c.tel?h("span",{style:{float:"right",color:"#888",fontSize:11}},c.tel):null)}))),
-          // Phone (pre-fill 686)
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Teléfono"),h("input",{type:"tel",style:I,value:form.telefono,onChange:function(e){upd("telefono",e.target.value)}})),
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Personas"),h("input",{type:"number",style:I,placeholder:"0",min:"0",value:form.personas,onChange:function(e){upd("personas",e.target.value)}})),
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Anticipo ($)"),h("input",{type:"number",style:I,placeholder:"0",min:"0",value:form.anticipo,onChange:function(e){upd("anticipo",e.target.value)}})),
-          // Address + Maps
-          h("div",{style:{gridColumn:"1/-1",display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Dirección"),h("input",{type:"text",style:I,placeholder:"Lugar del evento",value:form.direccion,onChange:function(e){upd("direccion",e.target.value)}}),form.direccion&&form.direccion.length>3&&h("a",{href:mapsUrl(form.direccion),target:"_blank",rel:"noopener",style:{display:"inline-flex",alignItems:"center",gap:5,marginTop:4,fontSize:11,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.08)",padding:"5px 10px",borderRadius:7,border:"1px solid rgba(66,133,244,0.12)"}},"📍 Ver en Google Maps →")),
-          h("div",{style:{gridColumn:"1/-1",display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Notas"),h("textarea",{style:Object.assign({},I,{minHeight:45,resize:"vertical"}),placeholder:"Indicaciones...",value:form.notas,onChange:function(e){upd("notas",e.target.value)}})),
-          // Price summary
-          form.tipo&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.2)",borderRadius:10,padding:"11px 13px"}},
-            h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#999",fontSize:11}},"Total:"),h("span",{style:{color:"#fff",fontWeight:700,fontSize:15,fontFamily:JM}},fm(tF))),
-            h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#999",fontSize:11}},"Anticipo:"),h("span",{style:{color:"#ff6666",fontFamily:JM}},fm(Number(form.anticipo)||0))),
-            h("div",{style:{display:"flex",justifyContent:"space-between",borderTop:"1px solid rgba(220,30,30,0.15)",paddingTop:5}},h("span",{style:{color:"#999",fontSize:11}},"Restante:"),h("span",{style:{color:sF>0?"#ff3333":"#44ff44",fontWeight:700,fontSize:17,fontFamily:JM}},fm(sF)))
-          )
-        ),
-        h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end",marginTop:14}},
-          h("button",{onClick:close,style:Object.assign({},B("rgba(255,255,255,0.06)"),{color:"#999",border:"1px solid rgba(255,255,255,0.1)"})},"Cancelar"),
-          h("button",{onClick:doSubmit,disabled:!canSave,style:Object.assign({},B(),{opacity:canSave?1:0.4})},editing?"Guardar":"Agregar"))
-      )
-    ),
-
-    // Songs dialog
-    showSongs&&showForm&&h("div",{onClick:function(){setShowSongs(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1100,padding:14}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:16,padding:20,width:"100%",maxWidth:370,border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.25s ease"}},
-        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},h("span",{style:{fontSize:22}},"🎵"),h("div",null,h("h3",{style:{fontSize:15,fontWeight:700,color:"#fff",margin:0}},"Canciones de la Serenata"),h("p",{style:{fontSize:10,color:"#888",margin:"2px 0 0"}},"4 canciones = "+fm(PS)))),
-        h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"9px",borderRadius:8,fontSize:11,fontWeight:600,color:"#dc1e1e",background:"rgba(220,30,30,0.08)",border:"1px solid rgba(220,30,30,0.2)",textDecoration:"none",marginBottom:10}},"🎵 Ver repertorio completo →"),
-        [0,1,2,3].map(function(i){return h("div",{key:i,style:{marginBottom:8}},
-          h("div",{style:{display:"flex",alignItems:"center",gap:7}},h("span",{style:{color:"#dc1e1e",fontSize:12,fontWeight:700,fontFamily:JM,minWidth:18}},i+1+"."),h("input",{type:"text",style:Object.assign({},I,{flex:1,fontSize:13}),placeholder:"Canción "+(i+1),value:form.canciones[i]||"",onChange:function(e){updS(i,e.target.value)}})),
-          form.canciones[i]&&form.canciones[i].length>2&&h("a",{href:ytK(form.canciones[i]),target:"_blank",rel:"noopener",style:{display:"inline-block",marginTop:3,marginLeft:25,fontSize:9,color:"#ff0000",textDecoration:"none",background:"rgba(255,0,0,0.08)",padding:"3px 8px",borderRadius:5,border:"1px solid rgba(255,0,0,0.12)"}},"▶ Karaoke YouTube")
-        )}),
-        h("button",{onClick:function(){setShowSongs(false)},style:Object.assign({},B(),{width:"100%",marginTop:6})},"✅ Listo")
-      )
-    ),
-
-    // Import from WhatsApp
-    showImport&&h("div",{onClick:function(){setShowImport(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:420,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(37,211,102,0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 30px rgba(37,211,102,0.15)"}},
-        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
-          h("h2",{style:{fontSize:16,fontWeight:700,color:"#fff",margin:0}},"📋 Importar desde WhatsApp"),
-          h("button",{onClick:function(){setShowImport(false)},style:{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer"}},"✕")
-        ),
-        h("p",{style:{color:"#888",fontSize:12,marginBottom:12,lineHeight:1.5}},"Copia el mensaje que te mandó el cliente desde WhatsApp y pégalo aquí. La app llenará los campos automáticamente."),
-        h("div",{style:{display:"flex",flexDirection:"column",gap:4,marginBottom:14}},
-          h("label",{style:LB},"Pegar mensaje aquí"),
-          h("textarea",{style:Object.assign({},I,{minHeight:180,resize:"vertical",fontSize:12,lineHeight:1.4}),placeholder:"🎤 *SOLICITUD DE EVENTO MUSICAL*\n━━━━━━━━━━━━━━━━━━\n\n👤 *Cliente:* ...\n📱 *Teléfono:* ...\n...\n\n(Pega aquí todo el mensaje)",value:impTxt,onChange:function(e){setImpTxt(e.target.value)}})
-        ),
-        impTxt.trim()&&h("div",{style:{background:"rgba(37,211,102,0.06)",border:"1px solid rgba(37,211,102,0.15)",borderRadius:10,padding:12,marginBottom:14}},
-          h("div",{style:{fontSize:11,color:"#25d366",fontWeight:600,marginBottom:6}},"✅ Vista previa:"),
-          (function(){
-            var p=parseWA(impTxt);
-            return h("div",{style:{fontSize:12,color:"#ccc",lineHeight:1.6}},
-              p.contacto&&h("div",null,"👤 ",h("span",{style:{color:"#fff"}},p.contacto)),
-              p.telefono&&h("div",null,"📱 ",p.telefono),
-              p.tipo&&h("div",null,"📋 ",p.tipo,p.tipo==="Por hora"?" ("+p.horas+"h)":""),
-              p.fecha&&h("div",null,"📅 ",fd(p.fecha)),
-              p.hora&&h("div",null,"🕐 ",ft(p.hora)),
-              p.direccion&&h("div",null,"📍 ",p.direccion),
-              p.personas&&h("div",null,"👥 ",p.personas),
-              p.tipo==="Serenata"&&p.canciones.some(function(c){return c})&&h("div",null,"🎵 ",p.canciones.filter(function(c){return c}).join(", ")),
-              p.notas&&h("div",null,"📝 ",p.notas),
-              !p.contacto&&h("div",{style:{color:"#ff4444"}},"⚠️ No se detectó nombre del cliente")
-            );
-          })()
-        ),
-        h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
-          h("button",{onClick:function(){setShowImport(false);setImpTxt("")},style:Object.assign({},B("rgba(255,255,255,0.06)"),{color:"#999",border:"1px solid rgba(255,255,255,0.1)"})},"Cancelar"),
-          h("button",{onClick:doImport,disabled:!impTxt.trim(),style:Object.assign({},B("#25d366"),{opacity:impTxt.trim()?1:0.4})},"📋 Importar y llenar formulario")
-        )
-      )
-    ),
-
-    // Delete
-    delId&&h("div",{onClick:function(){setDelId(null)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:14,padding:20,border:"1px solid rgba(220,30,30,0.2)",maxWidth:300,width:"100%",animation:"slideIn 0.2s"}},
-        h("p",{style:{color:"#fff",fontSize:14,marginBottom:6}},"¿Eliminar este evento?"),
-        h("p",{style:{color:"#888",fontSize:11,marginBottom:16}},"Se eliminará permanentemente."),
-        h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
-          h("button",{onClick:function(){setDelId(null)},style:Object.assign({},B("rgba(255,255,255,0.06)"),{color:"#999",border:"1px solid rgba(255,255,255,0.1)",fontSize:12,padding:"8px 14px"})},"Cancelar"),
-          h("button",{onClick:function(){doDel(delId)},style:Object.assign({},B("#8b0000"),{fontSize:12,padding:"8px 14px"})},"Eliminar"))
-      )
-    )
-  );
+    div.appendChild(btn);div.appendChild(sd);body.appendChild(div);
+  });
 }
-ReactDOM.createRoot(document.getElementById("root")).render(h(Root));
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(function(){});
-})();
+
+function enviar(){
+  var nombre=document.getElementById("nombre").value.trim();
+  var telefono=document.getElementById("telefono").value.trim();
+  var fecha=document.getElementById("fecha").value;
+  var hora=document.getElementById("hora").value;
+  var direccion=document.getElementById("direccion").value.trim();
+  var personas=document.getElementById("personas").value;
+  var notas=document.getElementById("notas").value.trim();
+  var horas=parseInt(document.getElementById("horas").value)||1;
+  var total=tipo==="hora"?horas*2500:1500;
+  var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;if(eH>=24)eH-=24;
+  var endStr=fmtTime(String(eH).padStart(2,"0")+":"+p[1]);
+  var d=new Date(fecha+"T12:00:00");
+  var fechaF=d.getDate()+" de "+MS[d.getMonth()]+" de "+d.getFullYear();
+
+  var m="🎤 *SOLICITUD DE EVENTO MUSICAL*\n━━━━━━━━━━━━━━━━━━\n\n";
+  m+="👤 *Cliente:* "+nombre+"\n📱 *Teléfono:* "+telefono+"\n\n";
+  m+="📋 *Tipo:* "+(tipo==="hora"?"Por Hora ("+horas+" hrs)":"Serenata (4 canciones)")+"\n";
+  m+="📅 *Fecha:* "+fechaF+"\n🕐 *Inicio:* "+fmtTime(hora)+"\n🕐 *Fin:* "+endStr+"\n";
+  if(tipo==="hora")m+="⏱ *Duración:* "+horas+" hora(s)\n";
+  if(direccion)m+="📍 *Lugar:* "+direccion+"\n";
+  if(personas)m+="👥 *Invitados:* "+personas+"\n";
+  m+="\n💰 *Total estimado:* $"+total.toLocaleString("es-CO")+"\n";
+  if(tipo==="serenata"){var ss=songs.filter(function(s){return s});if(ss.length>0){m+="\n🎵 *Canciones:*\n";ss.forEach(function(s,i){m+=(i+1)+". "+s+"\n"})}}
+  if(notas)m+="\n📝 *Notas:* "+notas+"\n";
+  m+="\n━━━━━━━━━━━━━━━━━━\n_Enviado desde OC AGENDA_";
+
+  var waLink="https://wa.me/"+MI_NUMERO+"?text="+encodeURIComponent(m);
+  document.getElementById("retry-link").href=waLink;
+  window.open(waLink,"_blank");
+  document.getElementById("form-section").style.display="none";
+  document.getElementById("success").className="success show";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetForm(){
+  document.getElementById("form-section").style.display="block";
+  document.getElementById("success").className="success";
+  document.getElementById("nombre").value="";document.getElementById("telefono").value="686";
+  document.getElementById("fecha").value="";document.getElementById("hora").value="";
+  document.getElementById("direccion").value="";document.getElementById("personas").value="";
+  document.getElementById("notas").value="";document.getElementById("horas").value="1";
+  songs=["","","",""];updateSongInputs();
+  document.getElementById("date-display").className="date-display";
+  tipo="";document.getElementById("btn-hora").className="type-opt";document.getElementById("btn-serenata").className="type-opt";
+  document.getElementById("hours-box").className="hours-box";document.getElementById("songs-box").className="songs-box";
+  document.getElementById("price-sum").className="price-sum";document.getElementById("sched").className="sched";
+  document.querySelectorAll(".card").forEach(function(c){c.classList.remove("visible")});
+  setTimeout(function(){document.querySelectorAll(".card").forEach(function(c){observer.observe(c)})},100);
+  checkForm();window.scrollTo({top:0,behavior:"smooth"});
+}
+setTimeout(function(){document.querySelector(".card").classList.add("visible")},300);
 </script>
 </body>
 </html>
