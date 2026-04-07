@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>Cotizar Evento - Oscar Caldera</title>
+<title>Cotizar Evento - OC AGENDA</title>
 <link rel="icon" href="./icons/icon-192.svg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -59,6 +59,16 @@ textarea.input{min-height:80px;resize:vertical}
 .type-opt .t-price{font-size:12px;color:#555;margin-top:4px;font-family:'JetBrains Mono',monospace;transition:color 0.3s}
 .type-opt.active .t-price{color:#dc1e1e}
 .hours-box,.songs-box{display:none;margin-top:16px}.hours-box.show,.songs-box.show{display:block}
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pkg-opt{text-align:center;padding:14px 8px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);transition:all 0.3s}
+.pkg-opt.active{border-color:rgba(220,30,30,0.4);background:rgba(220,30,30,0.08)}
+.pkg-opt .pk-icon{font-size:24px;margin-bottom:4px}
+.pkg-opt .pk-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#888;transition:color 0.3s}
+.pkg-opt.active .pk-name{color:#fff}
+.pkg-opt .pk-price{font-size:11px;color:#555;margin-top:2px;font-family:'JetBrains Mono',monospace;transition:color 0.3s}
+.pkg-opt.active .pk-price{color:#dc1e1e}
+.pkg-opt .pk-desc{font-size:9px;color:#555;margin-top:4px;line-height:1.3;transition:color 0.3s}
+.pkg-opt.active .pk-desc{color:#888}
 .hours-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .hours-input{width:70px;text-align:center;font-size:20px;font-weight:700}
 .song-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
@@ -132,8 +142,8 @@ textarea.input{min-height:80px;resize:vertical}
 <div class="wrap">
   <div class="hero">
     <img src="./icons/icon-192.svg" class="hero-logo" alt="OC">
-    <h1>Oscar <span>Caldera</span></h1>
-    <p>Música en vivo para su evento especial en Mexicali.<br>Cotice en segundos y lo contactamos por <b>WhatsApp</b>.</p>
+    <h1>OC <span>AGENDA</span></h1>
+    <p>Música en vivo para su evento especial.<br>Cotice en segundos y lo contactamos por <b>WhatsApp</b>.</p>
     <div class="hero-line"></div>
   </div>
   <div class="steps"><div class="step-dot active" id="s1"></div><div class="step-dot" id="s2"></div><div class="step-dot" id="s3"></div></div>
@@ -142,24 +152,23 @@ textarea.input{min-height:80px;resize:vertical}
     <div class="card" data-step="1">
       <div class="card-head"><div class="card-icon">🎵</div><div class="card-title">Tipo de Servicio</div></div>
       <div class="type-grid">
-        <div class="type-opt" id="btn-hora" onclick="selType('hora')"><div class="t-icon">🕐</div><div class="t-name">Por Hora</div><div class="t-price">$2,500/hr</div></div>
+        <div class="type-opt" id="btn-hora" onclick="selType('hora')"><div class="t-icon">🕐</div><div class="t-name">Por Hora</div><div class="t-price">Desde $2,500/hr</div></div>
         <div class="type-opt" id="btn-serenata" onclick="selType('serenata')"><div class="t-icon">🎵</div><div class="t-name">Serenata</div><div class="t-price">$1,500 · 4 canciones</div></div>
       </div>
       <div class="hours-box" id="hours-box">
+        <div class="label">Seleccione su paquete</div>
+        <div class="pkg-grid"></div>
         <div class="label">¿Cuántas horas necesita?</div>
         <div class="hours-row">
           <input type="number" class="input hours-input" id="horas" value="1" min="1" max="12" oninput="calcAll()">
-          <span style="color:#888;font-size:13px">hrs × $2,500 =</span>
+          <span style="color:#888;font-size:13px">hrs × <span id="pkg-unit-price">$2,500</span> =</span>
           <span style="color:#dc1e1e;font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace" id="hours-total">$2,500</span>
         </div>
       </div>
       <div class="songs-box" id="songs-box">
         <button class="rep-btn" onclick="openRep()">🎵 Ver repertorio y elegir canciones →</button>
-        <div class="label">Sus 4 canciones elegidas</div>
-        <div class="song-row"><span class="song-num">1.</span><input type="text" class="input song-input" id="song1" placeholder="Toque el botón de arriba para elegir" readonly><button class="song-clear" onclick="clearSong(0)" title="Quitar">✕</button></div>
-        <div class="song-row"><span class="song-num">2.</span><input type="text" class="input song-input" id="song2" placeholder="—" readonly><button class="song-clear" onclick="clearSong(1)" title="Quitar">✕</button></div>
-        <div class="song-row"><span class="song-num">3.</span><input type="text" class="input song-input" id="song3" placeholder="—" readonly><button class="song-clear" onclick="clearSong(2)" title="Quitar">✕</button></div>
-        <div class="song-row"><span class="song-num">4.</span><input type="text" class="input song-input" id="song4" placeholder="—" readonly><button class="song-clear" onclick="clearSong(3)" title="Quitar">✕</button></div>
+        <div class="label" id="songs-label">Sus 4 canciones elegidas</div>
+        <div id="songs-inputs"></div>
       </div>
     </div>
 
@@ -205,20 +214,15 @@ textarea.input{min-height:80px;resize:vertical}
   <div class="success" id="success">
     <div class="success-check">✅</div>
     <h2>¡Solicitud Enviada!</h2>
-    <p><b>Oscar Caldera</b> se comunicará con usted pronto por WhatsApp para confirmar disponibilidad y detalles de su evento.</p>
+    <p>Nos comunicaremos con usted pronto por WhatsApp para confirmar disponibilidad y detalles de su evento.</p>
     <p style="margin-top:12px;font-size:12px">¿No se abrió WhatsApp? <a href="#" id="retry-link" class="retry">Toque aquí para reintentar</a></p>
     <button class="new-btn" onclick="resetForm()">Enviar otra solicitud</button>
   </div>
 
   <div class="footer">
     <img src="./icons/icon-192.svg" class="footer-logo" alt="OC">
-    <p><b style="color:#dc1e1e">Oscar Caldera</b><br>Música en Vivo para Eventos<br>Mexicali, Baja California</p>
-    <div class="socials">
-      <a href="https://www.facebook.com/serenade.mx" target="_blank" class="social-link">📘 Facebook</a>
-      <a href="https://www.instagram.com/oscarcalderamusic" target="_blank" class="social-link">📸 Instagram</a>
-      <a href="https://www.tiktok.com/@oscarcalderamusic" target="_blank" class="social-link">🎵 TikTok</a>
-    </div>
-    <p style="margin-top:12px"><a href="https://oscarcalderamusic.netlify.app">oscarcalderamusic.netlify.app</a></p>
+    <p><b style="color:#dc1e1e" class="footer-brand">OC AGENDA</b><br><span class="footer-sub">Música en Vivo para Eventos</span></p>
+    <div class="socials" id="footer-socials"></div>
   </div>
 </div>
 
@@ -235,9 +239,151 @@ textarea.input{min-height:80px;resize:vertical}
 <script>
 var MI_NUMERO="526861559857";
 var tipo="";
-var songs=["","","",""];
+var paquete="";
+var SONGS_COUNT=4;
+var songs=[];
 var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 var DIAS=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+// Default packages - overridden by ?cfg= URL param
+var PKGS=[
+  {id:"basico",n:"Básico",d:"Voz en vivo con guitarra acústica",i:"🎸",p:2500},
+  {id:"liveDrums",n:"Live Drums",d:"Incluye percusión en vivo",i:"🥁",p:3500},
+  {id:"dueto",n:"Dueto",d:"Dos voces, mayor interacción",i:"🎤",p:4000},
+  {id:"premium",n:"Premium",d:"Formato completo, experiencia festiva",i:"⭐",p:5000}
+];
+var SERENATA_PRICE=1500;
+var BRAND_NAME="OC AGENDA";
+var BRAND_SUB="Música en Vivo";
+var LOGO_SQUARE="";
+var LOGO_BANNER="";
+var COLOR_PRIMARY="#dc1e1e";
+var SOCIAL_FB="",SOCIAL_IG="",SOCIAL_TK="",SOCIAL_WEB="";
+
+// Parse config from URL
+(function(){
+  try{
+    var params=new URLSearchParams(window.location.search);
+    var cfgB64=params.get("cfg");
+    if(cfgB64){
+      var json=decodeURIComponent(escape(atob(cfgB64)));
+      var cfg=JSON.parse(json);
+      if(cfg.pkgs&&cfg.pkgs.length>0)PKGS=cfg.pkgs;
+      if(cfg.ps)SERENATA_PRICE=cfg.ps;
+      if(cfg.bn)BRAND_NAME=cfg.bn;
+      if(cfg.bs)BRAND_SUB=cfg.bs;
+      if(cfg.ls)LOGO_SQUARE=cfg.ls;
+      if(cfg.lb)LOGO_BANNER=cfg.lb;
+      if(cfg.cp)COLOR_PRIMARY=cfg.cp;
+      if(cfg.wa)MI_NUMERO=cfg.wa;
+      if(cfg.sc)SONGS_COUNT=cfg.sc;
+      if(cfg.fb)SOCIAL_FB=cfg.fb;
+      if(cfg.ig)SOCIAL_IG=cfg.ig;
+      if(cfg.tk)SOCIAL_TK=cfg.tk;
+      if(cfg.web)SOCIAL_WEB=cfg.web;
+    }
+  }catch(e){console.warn("Config parse error",e)}
+  // Apply brand to page
+  var heroH1=document.querySelector(".hero h1");
+  if(heroH1){var parts=BRAND_NAME.split(" ");if(parts.length>1){heroH1.innerHTML=parts[0]+" <span>"+parts.slice(1).join(" ")+"</span>"}else{heroH1.innerHTML="<span>"+BRAND_NAME+"</span>"}}
+  var heroP=document.querySelector(".hero p");
+  if(heroP){heroP.innerHTML=BRAND_SUB+'.<br>Cotice en segundos y lo contactamos por <b>WhatsApp</b>.'}
+  var footerB=document.querySelector(".footer-brand");
+  if(footerB){footerB.textContent=BRAND_NAME;footerB.style.color=COLOR_PRIMARY}
+  var footerSub=document.querySelector(".footer-sub");
+  if(footerSub)footerSub.textContent=BRAND_SUB;
+  // Populate social links
+  var socDiv=document.getElementById("footer-socials");
+  if(socDiv){
+    var links=[];
+    if(SOCIAL_FB)links.push({icon:"📘",label:"Facebook",url:SOCIAL_FB});
+    if(SOCIAL_IG)links.push({icon:"📸",label:"Instagram",url:SOCIAL_IG});
+    if(SOCIAL_TK)links.push({icon:"🎵",label:"TikTok",url:SOCIAL_TK});
+    if(SOCIAL_WEB)links.push({icon:"🌐",label:"Web",url:SOCIAL_WEB});
+    links.forEach(function(l){var a=document.createElement("a");a.href=l.url;a.target="_blank";a.className="social-link";a.textContent=l.icon+" "+l.label;socDiv.appendChild(a)});
+  }
+  // Update logos if provided
+  if(LOGO_SQUARE){var heroLogo=document.querySelector(".hero-logo");if(heroLogo){heroLogo.src=LOGO_SQUARE}var footerLogo=document.querySelector(".footer-logo");if(footerLogo){footerLogo.src=LOGO_SQUARE}}
+  // Apply color theme
+  if(COLOR_PRIMARY!=="#dc1e1e"){
+    var r=parseInt(COLOR_PRIMARY.slice(1,3),16),g=parseInt(COLOR_PRIMARY.slice(3,5),16),b=parseInt(COLOR_PRIMARY.slice(5,7),16);
+    var css=document.createElement("style");
+    css.textContent=""+
+      ".hero h1 span{color:"+COLOR_PRIMARY+"!important}"+
+      ".hero-logo{box-shadow:0 0 40px "+COLOR_PRIMARY+"44!important}"+
+      ".hero-line{background:linear-gradient(90deg,transparent,"+COLOR_PRIMARY+",transparent)!important}"+
+      ".step-dot.done{background:"+COLOR_PRIMARY+"!important}"+
+      ".step-dot.active{background:linear-gradient(90deg,"+COLOR_PRIMARY+",rgba("+r+","+g+","+b+",0.3))!important}"+
+      ".card-icon{background:rgba("+r+","+g+","+b+",0.1)!important}"+
+      ".type-opt.active{border-color:rgba("+r+","+g+","+b+",0.4)!important;background:rgba("+r+","+g+","+b+",0.08)!important}"+
+      ".type-opt.active .t-price,.song-num,.rep-cat-btn .cnt{color:"+COLOR_PRIMARY+"!important}"+
+      ".pkg-opt.active{border-color:rgba("+r+","+g+","+b+",0.4)!important;background:rgba("+r+","+g+","+b+",0.08)!important}"+
+      ".pkg-opt.active .pk-price{color:"+COLOR_PRIMARY+"!important}"+
+      ".rep-btn,.sug:hover{color:"+COLOR_PRIMARY+"!important;background:rgba("+r+","+g+","+b+",0.06)!important;border-color:rgba("+r+","+g+","+b+",0.15)!important}"+
+      ".sched{background:rgba("+r+","+g+","+b+",0.04)!important;border-color:rgba("+r+","+g+","+b+",0.1)!important}"+
+      ".sched-val.end{color:"+COLOR_PRIMARY+"!important}"+
+      ".price-sum{background:linear-gradient(135deg,rgba("+r+","+g+","+b+",0.06),rgba("+r+","+g+","+b+",0.02))!important;border-color:rgba("+r+","+g+","+b+",0.15)!important}"+
+      ".price-val{color:"+COLOR_PRIMARY+"!important}"+
+      ".footer a{color:"+COLOR_PRIMARY+"!important}"+
+      ".footer b{color:"+COLOR_PRIMARY+"!important}"+
+      "#hours-total{color:"+COLOR_PRIMARY+"!important}"+
+      ".success .new-btn{color:"+COLOR_PRIMARY+"!important;background:rgba("+r+","+g+","+b+",0.08)!important;border-color:rgba("+r+","+g+","+b+",0.2)!important}";
+    document.head.appendChild(css);
+  }
+})();
+
+// Build package grid dynamically
+(function(){
+  var grid=document.querySelector(".pkg-grid");
+  if(!grid)return;
+  grid.innerHTML="";
+  PKGS.forEach(function(pkg,i){
+    var div=document.createElement("div");
+    div.className="pkg-opt"+(i===0?" active":"");
+    div.id="pkg-"+pkg.id;
+    div.onclick=function(){selPkg(pkg.id)};
+    div.innerHTML='<div class="pk-icon">'+pkg.i+'</div><div class="pk-name">'+pkg.n+'</div><div class="pk-price" id="pprice-'+pkg.id+'">$'+pkg.p.toLocaleString("es-CO")+'/hr</div><div class="pk-desc">'+pkg.d+'</div>';
+    grid.appendChild(div);
+  });
+  if(PKGS.length>0){paquete=PKGS[0].id}
+  // Update serenata price display
+  var serBtn=document.getElementById("btn-serenata");
+  if(serBtn){var priceEl=serBtn.querySelector(".t-price");if(priceEl)priceEl.textContent="$"+SERENATA_PRICE.toLocaleString("es-CO")+" · "+SONGS_COUNT+" canciones"}
+  // Update Por hora button
+  if(PKGS.length>0){var minP=Math.min.apply(null,PKGS.map(function(p){return p.p}));var hrBtn=document.getElementById("btn-hora");if(hrBtn){var priceEl2=hrBtn.querySelector(".t-price");if(priceEl2)priceEl2.textContent="Desde $"+minP.toLocaleString("es-CO")+"/hr"}}
+  // If only 1 package, hide grid
+  if(PKGS.length===1){grid.style.display="none"}
+})();
+
+// Initialize songs array and build song inputs
+(function(){
+  songs=[];for(var i=0;i<SONGS_COUNT;i++)songs.push("");
+  var label=document.getElementById("songs-label");
+  if(label)label.textContent="Sus "+SONGS_COUNT+" canciones elegidas";
+  var container=document.getElementById("songs-inputs");
+  if(!container)return;
+  for(var i=0;i<SONGS_COUNT;i++){
+    var row=document.createElement("div");row.className="song-row";
+    row.innerHTML='<span class="song-num">'+(i+1)+'.</span><input type="text" class="input song-input" id="song'+(i+1)+'" placeholder="'+(i===0?"Toque el botón de arriba para elegir":"—")+'" readonly><button class="song-clear" onclick="clearSong('+i+')" title="Quitar">✕</button>';
+    container.appendChild(row);
+  }
+  // Update serenata button text
+  var serBtn=document.getElementById("btn-serenata");
+  if(serBtn){var pe=serBtn.querySelector(".t-price");if(pe)pe.textContent="$"+SERENATA_PRICE.toLocaleString("es-CO")+" · "+SONGS_COUNT+" canciones"}
+})();
+
+function getPkgPrice(id){for(var i=0;i<PKGS.length;i++){if(PKGS[i].id===id)return PKGS[i].p}return PKGS.length>0?PKGS[0].p:2500}
+function getPkgName(id){for(var i=0;i<PKGS.length;i++){if(PKGS[i].id===id)return PKGS[i].n}return""}
+
+function selPkg(pk){
+  paquete=pk;
+  PKGS.forEach(function(p){
+    var el=document.getElementById("pkg-"+p.id);
+    if(el)el.className="pkg-opt"+(p.id===pk?" active":"");
+  });
+  document.getElementById("pkg-unit-price").textContent="$"+getPkgPrice(pk).toLocaleString("es-CO");
+  calcAll();
+}
 
 // REPERTOIRE
 var REP=[
@@ -297,8 +443,9 @@ function fmtTime(t){if(!t)return"";var p=t.split(":");var h=parseInt(p[0]);retur
 
 function calcAll(){
   var total=0,horas=parseInt(document.getElementById("horas").value)||1;
-  if(tipo==="hora"){total=horas*2500;document.getElementById("hours-total").textContent="$"+total.toLocaleString("es-CO");document.getElementById("price-desc").textContent=horas+" hora(s) × $2,500"}
-  else if(tipo==="serenata"){total=1500;document.getElementById("price-desc").textContent="Serenata (4 canciones)"}
+  var unitPrice=getPkgPrice(paquete);
+  if(tipo==="hora"){total=horas*unitPrice;document.getElementById("hours-total").textContent="$"+total.toLocaleString("es-CO");document.getElementById("price-desc").textContent=getPkgName(paquete)+" · "+horas+" hora(s) × $"+unitPrice.toLocaleString("es-CO")}
+  else if(tipo==="serenata"){total=SERENATA_PRICE;document.getElementById("price-desc").textContent="Serenata ("+SONGS_COUNT+" canciones)"}
   document.getElementById("price-total").textContent="$"+total.toLocaleString("es-CO");
   var hora=document.getElementById("hora").value,sched=document.getElementById("sched");
   if(!hora||!tipo){sched.className="sched";return}
@@ -320,13 +467,13 @@ document.querySelectorAll("input,textarea,select").forEach(function(el){el.addEv
 
 // SONGS
 function updateSongInputs(){
-  for(var i=0;i<4;i++){document.getElementById("song"+(i+1)).value=songs[i]}
-  document.getElementById("rep-selected").innerHTML="Canciones elegidas: <b>"+songs.filter(function(s){return s}).length+" de 4</b>";
+  for(var i=0;i<SONGS_COUNT;i++){document.getElementById("song"+(i+1)).value=songs[i]}
+  document.getElementById("rep-selected").innerHTML="Canciones elegidas: <b>"+songs.filter(function(s){return s}).length+" de "+SONGS_COUNT+"</b>";
   renderRep();
 }
 function clearSong(i){songs[i]="";updateSongInputs()}
 function pickSong(name){
-  for(var i=0;i<4;i++){if(!songs[i]){songs[i]=name;updateSongInputs();if(songs.filter(function(s){return s}).length>=4)setTimeout(closeRep,400);return}}
+  for(var i=0;i<SONGS_COUNT;i++){if(!songs[i]){songs[i]=name;updateSongInputs();if(songs.filter(function(s){return s}).length>=SONGS_COUNT)setTimeout(closeRep,400);return}}
 }
 
 function openRep(){
@@ -368,7 +515,8 @@ function enviar(){
   var personas=document.getElementById("personas").value;
   var notas=document.getElementById("notas").value.trim();
   var horas=parseInt(document.getElementById("horas").value)||1;
-  var total=tipo==="hora"?horas*2500:1500;
+  var unitPrice=getPkgPrice(paquete);
+  var total=tipo==="hora"?horas*unitPrice:SERENATA_PRICE;
   var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;if(eH>=24)eH-=24;
   var endStr=fmtTime(String(eH).padStart(2,"0")+":"+p[1]);
   var d=new Date(fecha+"T12:00:00");
@@ -376,7 +524,7 @@ function enviar(){
 
   var m="🎤 *SOLICITUD DE EVENTO MUSICAL*\n━━━━━━━━━━━━━━━━━━\n\n";
   m+="👤 *Cliente:* "+nombre+"\n📱 *Teléfono:* "+telefono+"\n\n";
-  m+="📋 *Tipo:* "+(tipo==="hora"?"Por Hora ("+horas+" hrs)":"Serenata (4 canciones)")+"\n";
+  m+="📋 *Tipo:* "+(tipo==="hora"?"Por Hora — "+getPkgName(paquete)+" ("+horas+" hrs)":"Serenata ("+SONGS_COUNT+" canciones)")+"\n";
   m+="📅 *Fecha:* "+fechaF+"\n🕐 *Inicio:* "+fmtTime(hora)+"\n🕐 *Fin:* "+endStr+"\n";
   if(tipo==="hora")m+="⏱ *Duración:* "+horas+" hora(s)\n";
   if(direccion)m+="📍 *Lugar:* "+direccion+"\n";
@@ -384,7 +532,7 @@ function enviar(){
   m+="\n💰 *Total estimado:* $"+total.toLocaleString("es-CO")+"\n";
   if(tipo==="serenata"){var ss=songs.filter(function(s){return s});if(ss.length>0){m+="\n🎵 *Canciones:*\n";ss.forEach(function(s,i){m+=(i+1)+". "+s+"\n"})}}
   if(notas)m+="\n📝 *Notas:* "+notas+"\n";
-  m+="\n━━━━━━━━━━━━━━━━━━\n_Enviado desde OC AGENDA_";
+  m+="\n━━━━━━━━━━━━━━━━━━\n_Enviado desde "+BRAND_NAME+"_";
 
   var waLink="https://wa.me/"+MI_NUMERO+"?text="+encodeURIComponent(m);
   document.getElementById("retry-link").href=waLink;
@@ -401,9 +549,9 @@ function resetForm(){
   document.getElementById("fecha").value="";document.getElementById("hora").value="";
   document.getElementById("direccion").value="";document.getElementById("personas").value="";
   document.getElementById("notas").value="";document.getElementById("horas").value="1";
-  songs=["","","",""];updateSongInputs();
+  songs=[];for(var _i=0;_i<SONGS_COUNT;_i++)songs.push("");updateSongInputs();
   document.getElementById("date-display").className="date-display";
-  tipo="";document.getElementById("btn-hora").className="type-opt";document.getElementById("btn-serenata").className="type-opt";
+  tipo="";paquete=PKGS.length>0?PKGS[0].id:"";if(paquete)selPkg(paquete);document.getElementById("btn-hora").className="type-opt";document.getElementById("btn-serenata").className="type-opt";
   document.getElementById("hours-box").className="hours-box";document.getElementById("songs-box").className="songs-box";
   document.getElementById("price-sum").className="price-sum";document.getElementById("sched").className="sched";
   document.querySelectorAll(".card").forEach(function(c){c.classList.remove("visible")});
