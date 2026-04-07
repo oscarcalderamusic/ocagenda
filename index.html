@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="OC AGENDA">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icons/icon-192.svg">
-<title>OC AGENDA - Oscar Caldera</title>
+<title>OC AGENDA</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -18,8 +18,8 @@ html,body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif;overf
 input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 /* Animated background */
 .app-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.app-bg::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.1) 0%,transparent 70%);top:-150px;right:-150px;animation:bgf1 14s ease-in-out infinite}
-.app-bg::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(220,30,30,0.06) 0%,transparent 70%);bottom:-80px;left:-80px;animation:bgf2 18s ease-in-out infinite}
+.app-bg::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(var(--cpr),var(--cpg),var(--cpb),0.1) 0%,transparent 70%);top:-150px;right:-150px;animation:bgf1 14s ease-in-out infinite}
+.app-bg::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(var(--cpr),var(--cpg),var(--cpb),0.06) 0%,transparent 70%);bottom:-80px;left:-80px;animation:bgf2 18s ease-in-out infinite}
 @keyframes bgf1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,60px)}}
 @keyframes bgf2{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px)}}
 .app-particles{position:fixed;inset:0;z-index:0;pointer-events:none}
@@ -37,7 +37,7 @@ input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 @keyframes ripple{0%{transform:scale(0);opacity:0.6}100%{transform:scale(4);opacity:0}}
 @keyframes cardEnter{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
 @keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(220,30,30,0.2)}50%{box-shadow:0 0 20px rgba(220,30,30,0.5)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(var(--cpr),var(--cpg),var(--cpb),0.2)}50%{box-shadow:0 0 20px rgba(var(--cpr),var(--cpg),var(--cpb),0.5)}}
 .ev-card{transition:transform 0.15s ease,box-shadow 0.15s ease;-webkit-tap-highlight-color:transparent}
 .ev-card:active{transform:scale(0.97)!important;box-shadow:0 0 0 rgba(0,0,0,0)!important}
 .btn-rip{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
@@ -48,9 +48,9 @@ input,select,textarea{font-family:'Outfit',sans-serif;color-scheme:dark}
 .stat-num{animation:countUp 0.6s ease both}
 .next-glow{animation:glowPulse 2.5s ease-in-out infinite}
 .confetti-piece{position:fixed;width:8px;height:8px;top:-10px;z-index:10000;border-radius:2px;animation:confetti-fall 2.5s ease-in forwards;pointer-events:none}
-.sug{position:absolute;top:100%;left:0;right:0;background:#1a1a1a;border:1px solid rgba(220,30,30,0.2);border-radius:8px;z-index:10;max-height:120px;overflow-y:auto}
+.sug{position:absolute;top:100%;left:0;right:0;background:#1a1a1a;border:1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2);border-radius:8px;z-index:10;max-height:120px;overflow-y:auto}
 .sug-i{padding:8px 12px;color:#ccc;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
-.sug-i:hover{background:rgba(220,30,30,0.1);color:#fff}
+.sug-i:hover{background:rgba(var(--cpr),var(--cpg),var(--cpb),0.1);color:#fff}
 </style>
 </head>
 <body>
@@ -65,12 +65,36 @@ var h=React.createElement,us=React.useState,ue=React.useEffect,um=React.useMemo,
 var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 var KEY="oc-agenda-v8",TEL_LADA="686",COTIZAR_URL="https://oscarcalderamusic.github.io/ocagenda/cotizar.html";
 var PRICE_KEY="oc-precios";
-function loadPrices(){try{var p=JSON.parse(localStorage.getItem(PRICE_KEY));return p||{ph:2500,ps:1500}}catch(e){return{ph:2500,ps:1500}}}
+var DEF_LABELS={basico:"Básico",liveDrums:"Live Drums",dueto:"Dueto",premium:"Premium"};
+var DEF_DESCS={basico:"Voz en vivo con guitarra acústica. Ideal para ambientación versátil.",liveDrums:"Incluye percusión en vivo para elevar energía y ritmo.",dueto:"Dos voces para mayor interacción y variedad musical.",premium:"Formato completo con mayor presencia escénica y experiencia más festiva."};
+var DEF_ICONS={basico:"🎸",liveDrums:"🥁",dueto:"🎤",premium:"⭐"};
+var DEF_PRICES={basico:2500,liveDrums:3500,dueto:4000,premium:5000,ps:1500,reciboNombre:"Recibo de anticipo",paquetesActivos:{basico:true,liveDrums:true,dueto:true,premium:true},labels:Object.assign({},DEF_LABELS),descs:Object.assign({},DEF_DESCS),icons:Object.assign({},DEF_ICONS),brandName:"OC AGENDA",brandSub:"Música en Vivo",logoSquare:"",logoBanner:"",pkgIds:["basico","liveDrums","dueto","premium"],colorPrimary:"#dc1e1e",waNumero:"",socialFb:"",socialIg:"",socialTk:"",socialWeb:"",lada:"686",cotizarBase:"",songsCount:4,clausulas:["Recesos de 10–15 min por cada hora de servicio.","Se emitirá un recibo digital con desglose completo.","Los músicos pueden variar según disponibilidad.","Cancelación cliente: 20% no reembolsable. Reagendar con 15 días mínimo.","Cancelación prestador: reembolso total + compensación.","Pago total al finalizar el evento.","Cliente responsable por daños al equipo.","Montaje 1 hora antes; tiempo extra = costo adicional.","Tiempo continuo desde hora de inicio, no se pausa el cobro.","Cambios con 48 horas de anticipación mínimo."]};
+var PKG_IDS_DEF=["basico","liveDrums","dueto","premium"];
+function getPkgIds(pr){return pr.pkgIds||PKG_IDS_DEF}
+// Color helpers
+function hexRgb(hex){hex=hex||"#dc1e1e";var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return[r,g,b]}
+function pc(pr,a){var c=hexRgb(pr.colorPrimary);return"rgba("+c[0]+","+c[1]+","+c[2]+","+a+")"}
+function cpri(pr){return pr.colorPrimary||"#dc1e1e"}
+function clit(pr){var c=hexRgb(pr.colorPrimary);return"rgb("+Math.min(255,c[0]+60)+","+Math.min(255,c[1]+40)+","+Math.min(255,c[2]+40)+")"}
+function cdark(pr){var c=hexRgb(pr.colorPrimary);return"rgb("+Math.max(0,c[0]-80)+","+Math.max(0,c[1]-20)+","+Math.max(0,c[2]-20)+")"}
+function injectColors(pr){var r=document.documentElement;var c=hexRgb(pr.colorPrimary);r.style.setProperty("--cp",cpri(pr));r.style.setProperty("--cpr",c[0]);r.style.setProperty("--cpg",c[1]);r.style.setProperty("--cpb",c[2]);r.style.setProperty("--cl",clit(pr));r.style.setProperty("--cd",cdark(pr))}
+var LOGO_KEY="oc-logos";
+function pkgLabel(pr,pk){return(pr.labels&&pr.labels[pk])||DEF_LABELS[pk]||pk}
+function pkgDesc(pr,pk){return(pr.descs&&pr.descs[pk])||DEF_DESCS[pk]||""}
+function pkgIcon(pr,pk){return(pr.icons&&pr.icons[pk])||DEF_ICONS[pk]||"🎵"}
+function brand(pr){return pr.brandName||"OC AGENDA"}
+function brandSub(pr){return pr.brandSub||"Música en Vivo"}
+function loadLogos(){try{var l=JSON.parse(localStorage.getItem(LOGO_KEY));return l||{square:"",banner:""}}catch(e){return{square:"",banner:""}}}
+function saveLogos(l){localStorage.setItem(LOGO_KEY,JSON.stringify(l))}
+function loadPrices(){try{var p=JSON.parse(localStorage.getItem(PRICE_KEY));if(!p)return JSON.parse(JSON.stringify(DEF_PRICES));if(!p.basico&&p.ph){p.basico=p.ph}if(!p.paquetesActivos)p.paquetesActivos={basico:true,liveDrums:true,dueto:true,premium:true};if(!p.reciboNombre)p.reciboNombre="Recibo de anticipo";if(!p.liveDrums)p.liveDrums=3500;if(!p.dueto)p.dueto=4000;if(!p.premium)p.premium=5000;if(!p.labels)p.labels=Object.assign({},DEF_LABELS);if(!p.descs)p.descs=Object.assign({},DEF_DESCS);if(!p.icons)p.icons=Object.assign({},DEF_ICONS);if(!p.brandName)p.brandName="OC AGENDA";if(!p.brandSub)p.brandSub="Música en Vivo";if(!p.pkgIds)p.pkgIds=PKG_IDS_DEF.slice();if(!p.colorPrimary)p.colorPrimary="#dc1e1e";if(p.waNumero===undefined)p.waNumero="";if(p.socialFb===undefined)p.socialFb="";if(p.socialIg===undefined)p.socialIg="";if(p.socialTk===undefined)p.socialTk="";if(p.socialWeb===undefined)p.socialWeb="";if(!p.lada)p.lada="686";if(p.cotizarBase===undefined)p.cotizarBase="";if(!p.songsCount)p.songsCount=4;if(!p.clausulas)p.clausulas=DEF_PRICES.clausulas.slice();return p}catch(e){return JSON.parse(JSON.stringify(DEF_PRICES))}}
 function savePrices(p){localStorage.setItem(PRICE_KEY,JSON.stringify(p))}
+function pkgPrice(pr,pkg){return pr[pkg]||pr.basico||2500}
+function buildCotizarCfg(pr){var cfg={pkgs:[],ps:pr.ps,bn:brand(pr),bs:brandSub(pr),cp:cpri(pr),wa:pr.waNumero||"",sc:pr.songsCount||4};if(pr.socialFb)cfg.fb=pr.socialFb;if(pr.socialIg)cfg.ig=pr.socialIg;if(pr.socialTk)cfg.tk=pr.socialTk;if(pr.socialWeb)cfg.web=pr.socialWeb;var logos=loadLogos();if(logos.square)cfg.ls=logos.square;if(logos.banner)cfg.lb=logos.banner;getPkgIds(pr).forEach(function(pk){if(pr.paquetesActivos[pk]){cfg.pkgs.push({id:pk,n:pkgLabel(pr,pk),d:pkgDesc(pr,pk),i:pkgIcon(pr,pk),p:pr[pk]})}});return cfg}
+function cotizarUrl(pr){var base=pr.cotizarBase||COTIZAR_URL;var cfg=buildCotizarCfg(pr);try{var full=base+"?cfg="+btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));if(full.length>2000){var lite=Object.assign({},cfg);delete lite.ls;delete lite.lb;return base+"?cfg="+btoa(unescape(encodeURIComponent(JSON.stringify(lite))))}return full}catch(e){return base}}
 var ESTADOS=["Pendiente","Confirmado","Cancelado"];
 var EST_C={Pendiente:{bg:"#ff8c00"},Confirmado:{bg:"#00875a"},Cancelado:{bg:"#cc0000"}};
-var EMPTY={id:"",fecha:"",fecha_fin:"",hora:"",horas:"1",tipo:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
-var ST={pasado:{bg:"rgba(255,255,255,0.02)",bd:"rgba(255,255,255,0.06)",badge:"#555",txt:"#666",lb:"Pasado"},hoy:{bg:"rgba(220,30,30,0.1)",bd:"rgba(220,30,30,0.35)",badge:"#dc1e1e",txt:"#ff4444",lb:"HOY"},proximo:{bg:"rgba(220,30,30,0.04)",bd:"rgba(220,30,30,0.15)",badge:"#cc0000",txt:"#ff3333",lb:"Próximo"}};
+var EMPTY={id:"",fecha:"",hora:"",horas:"1",tipo:"",paquete:"basico",precioOverride:"",contacto:"",telefono:TEL_LADA,direccion:"",personas:"",anticipo:"",notas:"",canciones:["","","",""],estado:"Pendiente"};
+var ST={pasado:{bg:"rgba(255,255,255,0.02)",bd:"rgba(255,255,255,0.06)",badge:"#555",txt:"#666",lb:"Pasado"},hoy:{bg:"rgba(var(--cpr),var(--cpg),var(--cpb),0.1)",bd:"rgba(var(--cpr),var(--cpg),var(--cpb),0.35)",badge:"var(--cp)",txt:"var(--cl)",lb:"HOY"},proximo:{bg:"rgba(var(--cpr),var(--cpg),var(--cpb),0.04)",bd:"rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",badge:"var(--cd)",txt:"var(--cl)",lb:"Próximo"}};
 var I={background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"10px 12px",color:"#fff",fontSize:14,outline:"none",fontFamily:"'Outfit',sans-serif",width:"100%"};
 var LB={fontSize:11,color:"#999",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.5px"};
 var JM="'JetBrains Mono',monospace";
@@ -83,7 +107,7 @@ _order.forEach(function(_h){for(var _m=0;_m<60;_m+=30){var _hr=_h%12||12;var _ap
 function fm(n){return"$"+(Number(n)||0).toLocaleString("es-CO")}
 function ft(t){if(!t)return"";var p=t.split(":");var hr=parseInt(p[0]);return(hr%12||12)+":"+p[1]+" "+(hr>=12?"PM":"AM")}
 function gs(f){var t=new Date();t.setHours(0,0,0,0);var d=new Date(f+"T00:00:00");if(d<t)return"pasado";if(d.getTime()===t.getTime())return"hoy";return"proximo"}
-function ct(f){var pr=loadPrices();if(f.tipo==="Bloqueado")return 0;if(f.tipo==="Por hora")return(Number(f.horas)||1)*(f.precioHora||pr.ph);if(f.tipo==="Serenata")return f.precioSerenata||pr.ps;return 0}
+function ct(f){var pr=loadPrices();if(f.tipo==="Bloqueado")return 0;if(f.tipo==="Por hora"){if(f.precioOverride&&Number(f.precioOverride)>0)return(Number(f.horas)||1)*Number(f.precioOverride);return(Number(f.horas)||1)*(f.precioHora||pkgPrice(pr,f.paquete||"basico"))}if(f.tipo==="Serenata")return f.precioSerenata||pr.ps;return 0}
 function mapsUrl(a){return"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a)}
 function waNum(t){var n=(t||"").replace(/\D/g,"");if(n.length===10)n="52"+n;if(n.length===7)n="52686"+n;return n}
 function waUrl(t){return"https://wa.me/"+waNum(t)}
@@ -91,8 +115,6 @@ function ytK(s){return"https://www.youtube.com/results?search_query="+encodeURIC
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
 function persist(a){localStorage.setItem(KEY,JSON.stringify(a))}
 function fd(f){if(!f)return"";var p=f.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
-function dateInRange(dateStr,ev){if(!ev.fecha)return false;if(!ev.fecha_fin)return dateStr===ev.fecha;return dateStr>=ev.fecha&&dateStr<=ev.fecha_fin}
-function rangeDays(f1,f2){if(!f1||!f2)return 1;var d1=new Date(f1+"T00:00:00"),d2=new Date(f2+"T00:00:00");return Math.max(1,Math.round((d2-d1)/(86400000))+1)}
 function calcEnd(hora,hrs){if(!hora)return"";var p=hora.split(":");var eH=parseInt(p[0])+(parseInt(hrs)||1);var eM=p[1];var nd=eH>=24;if(nd)eH-=24;return ft(String(eH).padStart(2,"0")+":"+eM)+(nd?" (sig.)":"")}
 function folio(id,evs){var idx=evs.findIndex(function(e){return e.id===id});var n=idx>=0?idx+1:evs.length+1;var yr=new Date().getFullYear();return"OC-"+yr+"-"+String(n).padStart(3,"0")}
 
@@ -108,99 +130,141 @@ function openGCal(ev){
 
 // PDF Receipt
 function genRecibo(ev,evs){
+  var pr=loadPrices(),_c=hexRgb(cpri(pr));
   var J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:[80,200]});
   var total=ct(ev),saldo=total-(ev.anticipo||0),y=8;
-  doc.setFillColor(220,30,30);doc.rect(0,0,80,28,"F");
-  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,"bold");
-  doc.text("OSCAR CALDERA",40,12,{align:"center"});
-  doc.setFontSize(8);doc.setFont(undefined,"normal");
-  doc.text("Música en Vivo para Eventos | Mexicali, B.C.",40,18,{align:"center"});
+  doc.setFillColor(_c[0],_c[1],_c[2]);doc.rect(0,0,80,28,"F");
+  var _logos=loadLogos();if(_logos.square){try{doc.addImage(_logos.square,"PNG",30,2,20,20)}catch(e){}}
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont(undefined,"bold");
+  doc.text(brand(pr),40,_logos.square?24:12,{align:"center"});
+  doc.setFontSize(7);doc.setFont(undefined,"normal");
+  doc.text(brandSub(pr),40,_logos.square?27:18,{align:"center"});
   doc.text("Folio: "+folio(ev.id,evs),40,24,{align:"center"});
-  y=36;doc.setTextColor(220,30,30);doc.setFontSize(12);doc.setFont(undefined,"bold");
-  doc.text("RECIBO DE ANTICIPO",40,y,{align:"center"});y+=3;
-  doc.setDrawColor(220,30,30);doc.line(10,y,70,y);y+=7;
+  y=36;doc.setTextColor(_c[0],_c[1],_c[2]);doc.setFontSize(12);doc.setFont(undefined,"bold");
+  doc.text((pr.reciboNombre||"Recibo de anticipo").toUpperCase(),40,y,{align:"center"});y+=3;
+  doc.setDrawColor(_c[0],_c[1],_c[2]);doc.line(10,y,70,y);y+=7;
   doc.setTextColor(60,60,60);doc.setFontSize(9);
   var rows=[["Fecha",fd(ev.fecha)],["Inicio",ft(ev.hora)||"Por definir"],["Fin",ev.hora?calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):""],["Tipo",ev.tipo+(ev.tipo==="Por hora"?" ("+ev.horas+"h)":"")],["Cliente",ev.contacto]];
+  if(ev.tipo==="Por hora"&&ev.paquete)rows.push(["Paquete",pkgLabel(loadPrices(),ev.paquete)||ev.paquete]);
   if(ev.telefono)rows.push(["Tel",ev.telefono]);if(ev.direccion)rows.push(["Lugar",ev.direccion]);
   rows.forEach(function(r){doc.setFont(undefined,"bold");doc.setTextColor(100);doc.text(r[0]+":",8,y);doc.setFont(undefined,"normal");doc.setTextColor(40);doc.text(r[1],30,y);y+=5});
-  if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){y+=2;doc.setDrawColor(230);doc.line(8,y,72,y);y+=5;doc.setFont(undefined,"bold");doc.setTextColor(220,30,30);doc.text("CANCIONES",8,y);y+=5;doc.setFont(undefined,"normal");doc.setTextColor(40);ev.canciones.filter(function(c){return c}).forEach(function(c,i){doc.text((i+1)+". "+c,10,y);y+=4.5})}
-  y+=4;doc.setFillColor(245);doc.rect(5,y-3,70,28,"F");doc.setDrawColor(220,30,30);doc.rect(5,y-3,70,28,"S");
+  if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){y+=2;doc.setDrawColor(230);doc.line(8,y,72,y);y+=5;doc.setFont(undefined,"bold");doc.setTextColor(_c[0],_c[1],_c[2]);doc.text("CANCIONES",8,y);y+=5;doc.setFont(undefined,"normal");doc.setTextColor(40);ev.canciones.filter(function(c){return c}).forEach(function(c,i){doc.text((i+1)+". "+c,10,y);y+=4.5})}
+  y+=4;doc.setFillColor(245);doc.rect(5,y-3,70,28,"F");doc.setDrawColor(_c[0],_c[1],_c[2]);doc.rect(5,y-3,70,28,"S");
   doc.setFontSize(10);doc.setFont(undefined,"bold");doc.setTextColor(60);doc.text("Total:",10,y+2);doc.text(fm(total),70,y+2,{align:"right"});y+=7;
   doc.setTextColor(0,120,80);doc.text("Anticipo:",10,y+2);doc.text(fm(ev.anticipo||0),70,y+2,{align:"right"});y+=7;
   doc.setTextColor(200,30,30);doc.text("RESTANTE:",10,y+2);doc.setFontSize(12);doc.text(fm(saldo),70,y+2,{align:"right"});
   y+=12;doc.setFontSize(7);doc.setTextColor(160);doc.setFont(undefined,"normal");
   doc.text(new Date().toLocaleString("es-MX"),40,y,{align:"center"});y+=4;
-  doc.text("oscarcalderamusic.netlify.app",40,y,{align:"center"});
+  doc.text(brand(pr),40,y,{align:"center"});
   doc.save("Recibo_"+folio(ev.id,evs)+"_"+ev.contacto.replace(/\s/g,"_")+".pdf");
 }
 
 // Monthly Report PDF
-function genReporte(events,fYear,fMonth){
+function genReporte(events,fYear,fMonth){var _c=hexRgb(cpri(loadPrices()));
   var J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"letter"});
   var yr=parseInt(fYear)||new Date().getFullYear();var mo=fMonth!=="all"?parseInt(fMonth):-1;
   var moName=mo>=0?MS[mo]:"Anual";
   var evs=events.filter(function(x){var d=new Date(x.fecha+"T00:00:00");return d.getFullYear()===yr&&(mo<0||d.getMonth()===mo)}).sort(function(a,b){return new Date(a.fecha)-new Date(b.fecha)});
   var tI=0,tA=0;evs.forEach(function(x){if(x.estado!=="Cancelado"){tI+=ct(x);tA+=(x.anticipo||0)}});
-  doc.setFillColor(220,30,30);doc.rect(0,0,216,30,"F");doc.setTextColor(255);doc.setFontSize(18);doc.setFont(undefined,"bold");
-  doc.text("OSCAR CALDERA - REPORTE",108,14,{align:"center"});doc.setFontSize(9);doc.setFont(undefined,"normal");doc.text(moName+" "+yr,108,23,{align:"center"});
+  doc.setFillColor(_c[0],_c[1],_c[2]);doc.rect(0,0,216,30,"F");doc.setTextColor(255);doc.setFontSize(18);doc.setFont(undefined,"bold");
+  doc.text(brand(loadPrices())+" - REPORTE",108,14,{align:"center"});doc.setFontSize(9);doc.setFont(undefined,"normal");doc.text(moName+" "+yr,108,23,{align:"center"});
   var y=40;doc.setTextColor(60);doc.setFontSize(10);doc.setFont(undefined,"bold");
   doc.text("Eventos: "+evs.length+"    Ingresos: "+fm(tI)+"    Cobrado: "+fm(tA)+"    Pendiente: "+fm(tI-tA),14,y);y+=10;
-  doc.setDrawColor(220,30,30);doc.line(14,y,200,y);y+=6;
+  doc.setDrawColor(_c[0],_c[1],_c[2]);doc.line(14,y,200,y);y+=6;
   doc.setFontSize(8);doc.setTextColor(100);doc.text("FOLIO",14,y);doc.text("FECHA",38,y);doc.text("TIPO",58,y);doc.text("CLIENTE",80,y);doc.text("ESTADO",125,y);doc.text("TOTAL",150,y);doc.text("ANTICIPO",175,y);y+=5;
   doc.line(14,y,200,y);y+=4;doc.setFont(undefined,"normal");doc.setTextColor(40);
   evs.forEach(function(ev,i){if(y>260){doc.addPage();y=20}doc.text(folio(ev.id,events),14,y);doc.text(fd(ev.fecha),38,y);doc.text(ev.tipo,58,y);doc.text((ev.contacto||"").substring(0,18),80,y);doc.text(ev.estado,125,y);doc.text(fm(ct(ev)),150,y);doc.text(fm(ev.anticipo||0),175,y);y+=5});
-  y+=8;doc.setFontSize(7);doc.setTextColor(160);doc.text("Generado: "+new Date().toLocaleString("es-MX")+" | oscarcalderamusic.netlify.app",108,y,{align:"center"});
+  y+=8;doc.setFontSize(7);doc.setTextColor(160);doc.text("Generado: "+new Date().toLocaleString("es-MX")+" | "+brand(loadPrices()),108,y,{align:"center"});
   doc.save("Reporte_"+moName+"_"+yr+".pdf");
 }
 
-// Notifications
+// Contract PDF - Premium Design
+function genContrato(ev,evs){
+  var J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"letter"});
+  var pr=loadPrices(),_c=hexRgb(cpri(pr)),total=ct(ev),saldo=total-(ev.anticipo||0),y=0;
+  var W=216,M=20;
+  // Header bar
+  doc.setFillColor(10,10,10);doc.rect(0,0,W,38,"F");
+  doc.setFillColor(_c[0],_c[1],_c[2]);doc.rect(0,36,W,2,"F");
+  var _logos=loadLogos();
+  if(_logos.banner){try{doc.addImage(_logos.banner,"PNG",M,6,60,26)}catch(e){}}
+  else if(_logos.square){try{doc.addImage(_logos.square,"PNG",M,5,28,28)}catch(e){}}
+  var _txX=_logos.banner?M+64:(_logos.square?M+32:M);
+  doc.setTextColor(255,255,255);doc.setFontSize(_logos.banner||_logos.square?18:24);doc.setFont(undefined,"bold");
+  doc.text(brand(pr),_txX,_logos.banner||_logos.square?16:20);
+  doc.setFontSize(9);doc.setFont(undefined,"normal");doc.setTextColor(180,180,180);
+  doc.text("CONTRATO DE PRESTACIÓN DE SERVICIOS MUSICALES",_txX,_logos.banner||_logos.square?24:30);
+  doc.setTextColor(_c[0],_c[1],_c[2]);doc.setFontSize(8);
+  doc.text("Folio: "+folio(ev.id,evs),W-M,30,{align:"right"});
+  y=48;
+  // Red separator helper
+  function sep(){doc.setDrawColor(_c[0],_c[1],_c[2]);doc.setLineWidth(0.3);doc.line(M,y,W-M,y);y+=6}
+  function title(t){doc.setFontSize(11);doc.setFont(undefined,"bold");doc.setTextColor(_c[0],_c[1],_c[2]);doc.text(t,M,y);y+=6}
+  function row(k,v){doc.setFontSize(9);doc.setFont(undefined,"bold");doc.setTextColor(80);doc.text(k,M,y);doc.setFont(undefined,"normal");doc.setTextColor(30);doc.text(v||"",M+42,y);y+=5.5}
+  function body(t){doc.setFontSize(8.5);doc.setFont(undefined,"normal");doc.setTextColor(50);var lines=doc.splitTextToSize(t,W-M*2);doc.text(lines,M,y);y+=lines.length*4+2}
+  // Event details
+  title("DATOS DEL EVENTO");
+  row("Fecha:",fd(ev.fecha));
+  row("Horario:",ft(ev.hora)+(ev.hora?" - "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):""));
+  row("Tipo:",ev.tipo+(ev.tipo==="Por hora"?" ("+ev.horas+" hora"+(ev.horas>1?"s":"")+")":" ("+(pr.songsCount||4)+" canciones)"));
+  if(ev.tipo==="Por hora"&&ev.paquete)row("Paquete:",(pkgLabel(loadPrices(),ev.paquete)||ev.paquete)+" - "+(pkgDesc(loadPrices(),ev.paquete)||""));
+  row("Cliente:",ev.contacto);
+  if(ev.telefono)row("Teléfono:",ev.telefono);
+  if(ev.direccion)row("Ubicación:",ev.direccion);
+  if(ev.personas)row("Asistentes:",String(ev.personas));
+  y+=2;sep();
+  // Financial
+  title("DESGLOSE ECONÓMICO");
+  row("Total:",fm(total));
+  row("Anticipo:",fm(ev.anticipo||0));
+  row("Saldo pendiente:",fm(saldo));
+  y+=2;sep();
+  // Songs
+  if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){
+    title("REPERTORIO");
+    ev.canciones.filter(function(c){return c}).forEach(function(c,i){
+      doc.setFontSize(9);doc.setFont(undefined,"normal");doc.setTextColor(40);
+      doc.text((i+1)+". "+c,M+4,y);y+=5
+    });
+    y+=2;sep();
+  }
+  // Clauses
+  if(y>200){doc.addPage();y=20}
+  title("TÉRMINOS Y CONDICIONES");
+  var clauses=(pr.clausulas||DEF_PRICES.clausulas).map(function(cl,i){return(i+1)+". "+cl});
+  clauses.forEach(function(cl){
+    if(y>250){doc.addPage();y=20}
+    body(cl);
+  });
+  y+=6;sep();
+  // Signatures
+  if(y>220){doc.addPage();y=20}
+  title("FIRMAS DE CONFORMIDAD");y+=4;
+  doc.setDrawColor(180);doc.setLineWidth(0.2);
+  doc.line(M,y+18,M+70,y+18);doc.line(W-M-70,y+18,W-M,y+18);
+  doc.setFontSize(8);doc.setFont(undefined,"normal");doc.setTextColor(100);
+  doc.text("Prestador del servicio",M+35,y+24,{align:"center"});
+  doc.text("Cliente: "+ev.contacto,(W-M-35),y+24,{align:"center"});
+  y+=34;
+  // Footer
+  doc.setFillColor(_c[0],_c[1],_c[2]);doc.rect(0,272,W,2,"F");
+  doc.setFontSize(7);doc.setTextColor(150);doc.setFont(undefined,"normal");
+  doc.text("Documento generado por "+brand(pr)+" | "+new Date().toLocaleString("es-MX"),W/2,280,{align:"center"});
+  doc.save("Contrato_"+folio(ev.id,evs)+"_"+ev.contacto.replace(/\s/g,"_")+".pdf");
+}
 function reqNotif(){if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}
 function chkReminders(evs){if(!("Notification"in window)||Notification.permission!=="granted")return;var now=Date.now();evs.forEach(function(ev){if(ev.estado==="Cancelado"||!ev.fecha||!ev.hora)return;var dt=new Date(ev.fecha+"T"+ev.hora+":00").getTime(),d=dt-now;if(d>0&&d<=7200000&&d>7140000)new Notification("🎤 Evento en 2 horas",{body:ev.tipo+" - "+ev.contacto,icon:"./icons/icon-192.svg"});if(d>0&&d<=86400000&&d>86340000)new Notification("🎤 Evento mañana",{body:ev.tipo+" - "+ev.contacto+" "+ft(ev.hora),icon:"./icons/icon-192.svg"})})}
 
 // WhatsApp messages
-function shareWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="🎤 *Oscar Caldera - Evento Musical*\n\n📋 *Tipo:* "+ev.tipo+"\n📅 *Fecha:* "+fd(ev.fecha)+"\n";if(ev.hora)m+="🕐 *Inicio:* "+ft(ev.hora)+"\n🕐 *Fin:* "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)+"\n";m+="💰 *Total:* "+fm(total)+"\n";if(ev.anticipo)m+="💵 *Anticipo:* "+fm(ev.anticipo)+"\n📊 *Restante:* "+fm(saldo)+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n   ▶ "+ytK(c)+"\n"})}m+="\n✅ *Estado:* "+ev.estado;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}
-function confirmWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="Hola "+ev.contacto+", gracias por agendar su evento conmigo.\n\n";m+="📋 *Detalles del evento:*\n";m+="🎤 *"+ev.tipo+"*\n";m+="📅 "+fd(ev.fecha)+"\n";m+="🕐 "+ft(ev.hora)+(ev.hora?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")+"\n";if(ev.direccion)m+="📍 "+ev.direccion+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n"})}m+="\n";if(ev.anticipo>0){m+="Confirmo la recepción de su anticipo por *"+fm(ev.anticipo)+"*.\n";if(saldo>0)m+="Queda pendiente un saldo de *"+fm(saldo)+"*, el cual puede liquidar en cualquier momento previo al evento o el mismo día.\n";else m+="Su evento se encuentra *liquidado en su totalidad*. ✅\n"}else{m+="El costo total del evento es de *"+fm(total)+"*.\n"}m+="\nQuedo atento a cualquier detalle adicional. Gracias por su confianza, estamos en contacto. 🙏\n\n";m+="🎤 *Oscar Caldera*\n";m+="━━━━━━━━━━━━━━━━━━\n";m+="📱 Redes sociales:\n";m+="▪️ Facebook: https://www.facebook.com/serenade.mx\n";m+="▪️ Instagram: https://www.instagram.com/oscarcalderamusic\n";m+="▪️ TikTok: https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
-function reviewWA(ev){var m="Hola "+ev.contacto+", ¡gracias por confiar en Oscar Caldera para tu evento! 🎤\n\n¿Podrías dejarme una reseña? Tu opinión me ayuda mucho a seguir creciendo 🙏\n\n👉 https://www.facebook.com/serenade.mx/reviews\n\n¡Muchas gracias! Fue un placer cantar para ti.\n\n🎤 *Oscar Caldera*\n▪️ https://www.facebook.com/serenade.mx\n▪️ https://www.instagram.com/oscarcalderamusic\n▪️ https://www.tiktok.com/@oscarcalderamusic";window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
+function shareWA(ev){var total=ct(ev),saldo=total-(ev.anticipo||0);var m="🎤 *"+brand(loadPrices())+" - Evento Musical*\n\n📋 *Tipo:* "+ev.tipo+"\n";if(ev.tipo==="Por hora"&&ev.paquete)m+="📦 *Paquete:* "+(pkgLabel(loadPrices(),ev.paquete)||ev.paquete)+"\n";m+="📅 *Fecha:* "+fd(ev.fecha)+"\n";if(ev.hora)m+="🕐 *Inicio:* "+ft(ev.hora)+"\n🕐 *Fin:* "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1)+"\n";m+="💰 *Total:* "+fm(total)+"\n";if(ev.anticipo)m+="💵 *Anticipo:* "+fm(ev.anticipo)+"\n📊 *Restante:* "+fm(saldo)+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n   ▶ "+ytK(c)+"\n"})}m+="\n✅ *Estado:* "+ev.estado;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank")}
+function socialBlock(){var pr=loadPrices(),s="";if(pr.socialFb||pr.socialIg||pr.socialTk||pr.socialWeb){s+="\n━━━━━━━━━━━━━━━━━━\n";if(pr.socialFb)s+="▪️ Facebook: "+pr.socialFb+"\n";if(pr.socialIg)s+="▪️ Instagram: "+pr.socialIg+"\n";if(pr.socialTk)s+="▪️ TikTok: "+pr.socialTk+"\n";if(pr.socialWeb)s+="▪️ Web: "+pr.socialWeb+"\n"}return s}
+function confirmWA(ev){var pr=loadPrices(),total=ct(ev),saldo=total-(ev.anticipo||0);var m="Hola "+ev.contacto+", gracias por agendar su evento.\n\n";m+="📋 *Detalles del evento:*\n";m+="🎤 *"+ev.tipo+"*\n";if(ev.tipo==="Por hora"&&ev.paquete)m+="📦 *Paquete:* "+(pkgLabel(pr,ev.paquete)||ev.paquete)+"\n";m+="📅 "+fd(ev.fecha)+"\n";m+="🕐 "+ft(ev.hora)+(ev.hora?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")+"\n";if(ev.direccion)m+="📍 "+ev.direccion+"\n";if(ev.tipo==="Serenata"&&ev.canciones.some(function(c){return c})){m+="\n🎵 *Canciones:*\n";ev.canciones.filter(function(c){return c}).forEach(function(c,i){m+=(i+1)+". "+c+"\n"})}m+="\n";if(ev.anticipo>0){m+="Confirmo la recepción de su anticipo por *"+fm(ev.anticipo)+"*.\n";if(saldo>0)m+="Queda pendiente un saldo de *"+fm(saldo)+"*, el cual puede liquidar en cualquier momento previo al evento o el mismo día.\n";else m+="Su evento se encuentra *liquidado en su totalidad*. ✅\n"}else{m+="El costo total del evento es de *"+fm(total)+"*.\n"}m+="\nQuedo atento a cualquier detalle adicional. Gracias por su confianza, estamos en contacto. 🙏\n\n";m+="🎤 *"+brand(pr)+"*";m+=socialBlock();window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
+function reviewWA(ev){var pr=loadPrices();var m="Hola "+ev.contacto+", ¡gracias por confiar en nosotros para tu evento! 🎤\n\n¿Podrías dejarnos una reseña? Tu opinión nos ayuda mucho a seguir creciendo 🙏\n\n¡Muchas gracias! Fue un placer amenizar tu evento.\n\n🎤 *"+brand(pr)+"*";m+=socialBlock();window.open(waUrl(ev.telefono)+"?text="+encodeURIComponent(m),"_blank")}
 
 // Chart
-function MChart(props){var ref=ur(null),cRef=ur(null);ue(function(){if(!ref.current)return;if(cRef.current)cRef.current.destroy();var d=new Array(12).fill(0),a=new Array(12).fill(0);var yr=parseInt(props.year)||new Date().getFullYear();props.events.forEach(function(ev){var dt=new Date(ev.fecha+"T00:00:00");if(dt.getFullYear()===yr&&ev.estado!=="Cancelado"){d[dt.getMonth()]+=ct(ev);a[dt.getMonth()]+=(ev.anticipo||0)}});cRef.current=new Chart(ref.current,{type:"bar",data:{labels:MS.map(function(m){return m.slice(0,3)}),datasets:[{label:"Total",data:d,backgroundColor:"rgba(220,30,30,0.6)",borderColor:"#dc1e1e",borderWidth:1,borderRadius:4},{label:"Cobrado",data:a,backgroundColor:"rgba(0,135,90,0.6)",borderColor:"#00875a",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#999",font:{family:"Outfit"}}}},scales:{x:{ticks:{color:"#888"},grid:{color:"rgba(255,255,255,0.03)"}},y:{ticks:{color:"#888",callback:function(v){return"$"+v.toLocaleString()}},grid:{color:"rgba(255,255,255,0.05)"}}}}});return function(){if(cRef.current)cRef.current.destroy()}},[props.events,props.year]);return h("canvas",{ref:ref,style:{width:"100%",height:200}})}
+function MChart(props){var ref=ur(null),cRef=ur(null);ue(function(){if(!ref.current)return;if(cRef.current)cRef.current.destroy();var d=new Array(12).fill(0),a=new Array(12).fill(0);var yr=parseInt(props.year)||new Date().getFullYear();props.events.forEach(function(ev){var dt=new Date(ev.fecha+"T00:00:00");if(dt.getFullYear()===yr&&ev.estado!=="Cancelado"){d[dt.getMonth()]+=ct(ev);a[dt.getMonth()]+=(ev.anticipo||0)}});cRef.current=new Chart(ref.current,{type:"bar",data:{labels:MS.map(function(m){return m.slice(0,3)}),datasets:[{label:"Total",data:d,backgroundColor:"rgba(var(--cpr),var(--cpg),var(--cpb),0.6)",borderColor:cpri(loadPrices()),borderWidth:1,borderRadius:4},{label:"Cobrado",data:a,backgroundColor:"rgba(0,135,90,0.6)",borderColor:"#00875a",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#999",font:{family:"Outfit"}}}},scales:{x:{ticks:{color:"#888"},grid:{color:"rgba(255,255,255,0.03)"}},y:{ticks:{color:"#888",callback:function(v){return"$"+v.toLocaleString()}},grid:{color:"rgba(255,255,255,0.05)"}}}}});return function(){if(cRef.current)cRef.current.destroy()}},[props.events,props.year]);return h("canvas",{ref:ref,style:{width:"100%",height:200}})}
 
-// ============ PIN LOCK SCREEN ============
-var APP_PIN="2108";
-function PinScreen(props){
-  var _pin=us(""),pin=_pin[0],setPin=_pin[1];
-  var _err=us(false),err=_err[0],setErr=_err[1];
-  var _shake=us(false),shake=_shake[0],setShake=_shake[1];
-  function addDigit(d){if(pin.length>=4)return;var next=pin+d;setPin(next);setErr(false);
-    if(next.length===4){if(next===APP_PIN){sessionStorage.setItem("oc-unlocked","1");props.onUnlock()}else{setErr(true);setShake(true);setTimeout(function(){setPin("");setShake(false)},600)}}}
-  function del(){setPin(pin.slice(0,-1));setErr(false)}
-  return h(React.Fragment,null,
-    h("div",{className:"app-bg"}),
-    h("div",{className:"app-grain"}),
-    h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}},
-    h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:85,height:85,borderRadius:22,marginBottom:24,boxShadow:"0 0 40px rgba(220,30,30,0.5)"}}),
-    h("h1",{style:{color:"#dc1e1e",fontSize:26,fontWeight:800,marginBottom:4,fontFamily:"'Playfair Display',serif",letterSpacing:"-0.5px"}},"OC AGENDA"),
-    h("p",{style:{color:"#666",fontSize:12,marginBottom:30,fontFamily:"'Outfit',sans-serif",textTransform:"uppercase",letterSpacing:"2px"}},"Ingrese su PIN"),
-    // PIN dots
-    h("div",{style:{display:"flex",gap:14,marginBottom:8,animation:shake?"shake 0.4s ease":"none"}},
-      [0,1,2,3].map(function(i){return h("div",{key:i,style:{width:18,height:18,borderRadius:9,border:"2px solid "+(err?"#ff3333":pin.length>i?"#dc1e1e":"rgba(255,255,255,0.2)"),background:pin.length>i?(err?"#ff3333":"#dc1e1e"):"transparent",transition:"all 0.15s ease",transform:pin.length>i?"scale(1.1)":"scale(1)"}})})),
-    err&&h("p",{style:{color:"#ff3333",fontSize:12,marginTop:8,marginBottom:-8,fontFamily:"'Outfit',sans-serif",animation:"fadeIn 0.2s"}},"PIN incorrecto"),
-    // Keypad
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:24,width:240}},
-      [1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(function(d,i){
-        if(d==="")return h("div",{key:i});
-        return h("button",{key:i,className:"btn-rip",onClick:function(){if(d==="⌫")del();else addDigit(String(d))},style:{width:70,height:56,borderRadius:14,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:d==="⌫"?"#ff4444":"#fff",fontSize:d==="⌫"?20:22,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.1s"}})
-      })
-    ),
-    h("style",null,"@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}")
-  ));
-}
-
-function Root(){
-  var _unlocked=us(sessionStorage.getItem("oc-unlocked")==="1"),unlocked=_unlocked[0],setUnlocked=_unlocked[1];
-  if(!unlocked)return h(PinScreen,{onUnlock:function(){setUnlocked(true)}});
-  return h(App);
-}
+function Root(){return h(App)}
 
 // ============ MAIN APP ============
 function App(){
@@ -222,7 +286,9 @@ function App(){
   var _imp=us(false),showImport=_imp[0],setShowImport=_imp[1];
   var _impTxt=us(""),impTxt=_impTxt[0],setImpTxt=_impTxt[1];
   var _pr=us(loadPrices()),precios=_pr[0],setPrecios=_pr[1];
-  var PH=precios.ph,PS=precios.ps;
+  var _lg=us(loadLogos()),logos=_lg[0],setLogos=_lg[1];
+  ue(function(){injectColors(precios)},[precios.colorPrimary]);
+  var PH=pkgPrice(precios,form.paquete||"basico"),PS=precios.ps;
   var _calM=us(new Date().getMonth()),calM=_calM[0],setCalM=_calM[1];
   var _calY=us(new Date().getFullYear()),calY=_calY[0],setCalY=_calY[1];
 
@@ -287,20 +353,13 @@ function App(){
 
   // Conflict detector
   function checkConflict(ev){
-    if(!ev.fecha)return null;
+    if(!ev.fecha||!ev.hora)return null;
+    var dur=ev.tipo==="Por hora"?(Number(ev.horas)||1):1;
+    var p=ev.hora.split(":"),startH=parseInt(p[0]),startM=parseInt(p[1]);
+    var startMin=startH*60+startM,endMin=startMin+dur*60;
     var conflict=null;
     events.forEach(function(x){
-      if(x.id===ev.id||x.estado==="Cancelado")return;
-      // Check blocked date ranges
-      if(x.tipo==="Bloqueado"&&dateInRange(ev.fecha,x)){conflict=x;return}
-      if(ev.tipo==="Bloqueado"){
-        if(ev.fecha_fin){var d=new Date(x.fecha+"T00:00:00"),s=new Date(ev.fecha+"T00:00:00"),e=new Date(ev.fecha_fin+"T00:00:00");if(d>=s&&d<=e){conflict=x;return}}
-        else if(x.fecha===ev.fecha){conflict=x;return}
-      }
-      // Check time conflicts on same day
-      if(!ev.hora||!x.hora||x.fecha!==ev.fecha)return;
-      var dur=ev.tipo==="Por hora"?(Number(ev.horas)||1):1;
-      var p=ev.hora.split(":"),startMin=parseInt(p[0])*60+parseInt(p[1]),endMin=startMin+dur*60;
+      if(x.id===ev.id||x.fecha!==ev.fecha||x.estado==="Cancelado"||!x.hora)return;
       var xDur=x.tipo==="Por hora"?(Number(x.horas)||1):1;
       var xP=x.hora.split(":"),xStart=parseInt(xP[0])*60+parseInt(xP[1]),xEnd=xStart+xDur*60;
       if(startMin<xEnd&&endMin>xStart)conflict=x;
@@ -312,7 +371,7 @@ function App(){
     if(!form.fecha||!form.contacto||!form.tipo)return;
     var newId=editing?form.id:String(Date.now());
     var ev=Object.assign({},form,{id:newId,horas:Number(form.horas)||1,anticipo:Number(form.anticipo)||0,personas:Number(form.personas)||0});
-    if(!editing){ev.precioHora=PH;ev.precioSerenata=PS}
+    if(!editing){ev.precioHora=ev.tipo==="Por hora"?pkgPrice(precios,ev.paquete||"basico"):0;ev.precioSerenata=precios.ps}
     var conf=checkConflict(ev);
     if(conf&&!confirm("⚠️ CONFLICTO: Ya tienes un evento ese día con "+conf.contacto+" de "+ft(conf.hora)+" a "+calcEnd(conf.hora,conf.tipo==="Por hora"?conf.horas:1)+". ¿Agendar de todas formas?")){return}
     var arr=editing?events.map(function(x){return x.id===form.id?ev:x}):events.concat([ev]);
@@ -322,7 +381,7 @@ function App(){
   function doDel(id){save(events.filter(function(x){return x.id!==id}));setDelId(null);setExpId(null);ntf("Evento eliminado")}
   function delPast(){var t=new Date();t.setHours(0,0,0,0);var k=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t});var r=events.length-k.length;save(k);ntf(r+" pasados eliminados")}
   function setEst(id,est){save(events.map(function(x){return x.id===id?Object.assign({},x,{estado:est}):x}));ntf("Estado: "+est)}
-  function confetti(){var colors=["#dc1e1e","#ff4444","#fff","#ff8c00","#00c896","#4285f4"];for(var i=0;i<40;i++){var el=document.createElement("div");el.className="confetti-piece";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=Math.random()*0.8+"s";el.style.animationDuration=(2+Math.random()*1.5)+"s";el.style.width=(6+Math.random()*6)+"px";el.style.height=(6+Math.random()*6)+"px";document.body.appendChild(el);setTimeout(function(){el.remove()},4000)}}
+  function confetti(){var colors=[cpri(precios),"#ff4444","#fff","#ff8c00","#00c896","#4285f4"];for(var i=0;i<40;i++){var el=document.createElement("div");el.className="confetti-piece";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=Math.random()*0.8+"s";el.style.animationDuration=(2+Math.random()*1.5)+"s";el.style.width=(6+Math.random()*6)+"px";el.style.height=(6+Math.random()*6)+"px";document.body.appendChild(el);setTimeout(function(){el.remove()},4000)}}
   function markPaid(ev){save(events.map(function(x){return x.id===ev.id?Object.assign({},x,{anticipo:ct(x)}):x}));ntf("💰 ¡Pagado!");confetti()}
 
   function exportD(){var b=new Blob([JSON.stringify(events,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="oc_agenda_"+new Date().toISOString().slice(0,10)+".json";a.click();ntf("Respaldo descargado")}
@@ -338,12 +397,12 @@ function App(){
 
   // Next event & today events
   var nextEv=um(function(){var t=new Date();t.setHours(0,0,0,0);var future=events.filter(function(x){return new Date(x.fecha+"T00:00:00")>=t&&x.estado!=="Cancelado"}).sort(function(a,b){return new Date(a.fecha+"T"+(a.hora||"00:00"))-new Date(b.fecha+"T"+(b.hora||"00:00"))});return future[0]||null},[events]);
-  var todayEvs=um(function(){var t=new Date();t.setHours(0,0,0,0);var ts=t.toISOString().split("T")[0];return events.filter(function(x){return(new Date(x.fecha+"T00:00:00").getTime()===t.getTime()||dateInRange(ts,x))&&x.estado!=="Cancelado"})},[events]);
+  var todayEvs=um(function(){var t=new Date();t.setHours(0,0,0,0);return events.filter(function(x){return new Date(x.fecha+"T00:00:00").getTime()===t.getTime()&&x.estado!=="Cancelado"})},[events]);
 
   var tF=ct(form),sF=tF-(Number(form.anticipo)||0),canSave=form.fecha&&form.contacto&&form.tipo;
   var filteredContacts=um(function(){if(!cSrch)return contacts;return contacts.filter(function(c){return c.name.toLowerCase().indexOf(cSrch.toLowerCase())>=0})},[contacts,cSrch]);
 
-  var B=function(bg){return{border:"none",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",padding:"10px 18px",background:bg||"#dc1e1e",color:"#fff"}};
+  var B=function(bg){return{border:"none",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",padding:"10px 18px",background:bg||cpri(precios),color:"#fff"}};
   var C=function(bg,co,bd){return{border:"1px solid "+(bd||"rgba(255,255,255,0.08)"),padding:"6px 10px",borderRadius:7,fontSize:11,cursor:"pointer",fontFamily:"'Outfit',sans-serif",background:bg||"rgba(255,255,255,0.04)",color:co||"#ccc"}};
 
   return h(React.Fragment,null,
@@ -352,38 +411,38 @@ function App(){
     h("div",{className:"app-particles",ref:function(el){if(el&&!el.hasChildNodes()){var icons=["🎵","🎤","🎶","♪","♫","✨"];for(var i=0;i<10;i++){var p=document.createElement("div");p.className="app-particle";p.textContent=icons[i%icons.length];p.style.left=Math.random()*100+"%";p.style.fontSize=(8+Math.random()*12)+"px";p.style.animationDuration=(18+Math.random()*22)+"s";p.style.animationDelay=(Math.random()*15)+"s";el.appendChild(p)}}}}),
     h("div",{className:"app-grain"}),
 
-    toast&&h("div",{style:{position:"fixed",bottom:75,left:"50%",transform:"translateX(-50%)",zIndex:9999,background:toast.t==="err"?"rgba(180,0,0,0.9)":"rgba(15,15,15,0.9)",backdropFilter:"blur(10px)",color:"#fff",padding:"12px 24px",borderRadius:12,fontSize:13,fontWeight:500,animation:"toastIn 0.3s ease",boxShadow:"0 0 20px rgba(220,30,30,0.4)",border:"1px solid rgba(220,30,30,0.3)"}},(toast.t==="err"?"❌ ":"✅ ")+toast.m),
+    toast&&h("div",{style:{position:"fixed",bottom:75,left:"50%",transform:"translateX(-50%)",zIndex:9999,background:toast.t==="err"?"rgba(180,0,0,0.9)":"rgba(15,15,15,0.9)",backdropFilter:"blur(10px)",color:"#fff",padding:"12px 24px",borderRadius:12,fontSize:13,fontWeight:500,animation:"toastIn 0.3s ease",boxShadow:"0 0 20px rgba(var(--cpr),var(--cpg),var(--cpb),0.4)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.3)"}},(toast.t==="err"?"❌ ":"✅ ")+toast.m),
 
     h("div",{style:{position:"relative",zIndex:2,minHeight:"100vh",padding:"16px 16px 80px",maxWidth:640,margin:"0 auto"}},
       // Header
       h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}},
         h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-          h("img",{src:"./icons/icon-192.svg",className:"logo-beat",style:{width:44,height:44,borderRadius:12,boxShadow:"0 0 25px rgba(220,30,30,0.4)"}}),
-          h("div",null,h("h1",{style:{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:800,color:"#dc1e1e",margin:0,letterSpacing:"-0.5px"}},"OC AGENDA"),h("p",{style:{fontSize:10,color:"#666",margin:0,letterSpacing:"1px",textTransform:"uppercase"}},"Oscar Caldera"))
+          h("img",{src:logos.square||"./icons/icon-192.svg",className:"logo-beat",style:{width:44,height:44,borderRadius:12,boxShadow:"0 0 25px rgba(var(--cpr),var(--cpg),var(--cpb),0.4)",objectFit:"cover"}}),
+          h("div",null,h("h1",{style:{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:800,color:"var(--cp)",margin:0,letterSpacing:"-0.5px"}},brand(precios)),h("p",{style:{fontSize:10,color:"#666",margin:0,letterSpacing:"1px",textTransform:"uppercase"}},brandSub(precios)))
         ),
         tab==="eventos"&&h("div",{style:{display:"flex",gap:6}},
           h("button",{onClick:function(){setShowImport(true);setImpTxt("")},className:"btn-rip",style:Object.assign({},B("rgba(37,211,102,0.1)"),{color:"#25d366",border:"1px solid rgba(37,211,102,0.2)",padding:"10px 12px",fontSize:12,backdropFilter:"blur(8px)"})},"📋 Importar"),
-          h("button",{onClick:function(){setForm(Object.assign({},EMPTY));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},className:"btn-rip",style:B()},"+  Nuevo")
+          h("button",{onClick:function(){setForm(Object.assign({},EMPTY,{telefono:precios.lada||"686",canciones:new Array(precios.songsCount||4).fill("")}));setEditing(false);setShowForm(true);setShowSongs(false);setSgShow(false)},className:"btn-rip",style:B()},"+  Nuevo")
         )
       ),
 
       // ========== EVENTOS ==========
       tab==="eventos"&&h(React.Fragment,null,
         // TODAY BANNER
-        todayEvs.length>0&&h("div",{style:{background:"rgba(220,30,30,0.12)",border:"1px solid rgba(220,30,30,0.3)",borderRadius:10,padding:"10px 14px",marginBottom:10,animation:"blink 2s infinite"}},
-          h("span",{style:{color:"#ff4444",fontWeight:700,fontSize:13}},"🔴 EVENTO HOY: "),
+        todayEvs.length>0&&h("div",{style:{background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.12)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.3)",borderRadius:10,padding:"10px 14px",marginBottom:10,animation:"blink 2s infinite"}},
+          h("span",{style:{color:"var(--cl)",fontWeight:700,fontSize:13}},"🔴 EVENTO HOY: "),
           todayEvs.map(function(ev,i){return h("span",{key:i,style:{color:"#fff",fontSize:13}},ev.tipo+" "+ft(ev.hora)+" - "+ev.contacto+(i<todayEvs.length-1?" | ":""))})
         ),
         // NEXT EVENT CARD
-        nextEv&&gs(nextEv.fecha)!=="hoy"&&h("div",{className:"next-glow",style:{background:"rgba(220,30,30,0.05)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:12,padding:"14px",marginBottom:10,animation:"slideUp 0.5s ease both"},onClick:function(){setExpId(expId===nextEv.id?null:nextEv.id)}},
-          h("div",{style:{fontSize:10,color:"#dc1e1e",fontWeight:600,marginBottom:6}},"📌 PRÓXIMO EVENTO"),
+        nextEv&&gs(nextEv.fecha)!=="hoy"&&h("div",{className:"next-glow",style:{background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.05)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",borderRadius:12,padding:"14px",marginBottom:10,animation:"slideUp 0.5s ease both"},onClick:function(){setExpId(expId===nextEv.id?null:nextEv.id)}},
+          h("div",{style:{fontSize:10,color:"var(--cp)",fontWeight:600,marginBottom:6}},"📌 PRÓXIMO EVENTO"),
           h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
             h("div",null,
-              h("span",{style:{color:"#fff",fontWeight:700,fontSize:14}},nextEv.tipo==="Serenata"?"🎵 Serenata":nextEv.tipo==="Bloqueado"?"🚫 Bloqueado":"🕐 Por hora"),
+              h("span",{style:{color:"#fff",fontWeight:700,fontSize:14}},nextEv.tipo==="Serenata"?"🎵 Serenata":nextEv.tipo==="Bloqueado"?"🚫 Bloqueado":"🕐 "+(pkgLabel(loadPrices(),nextEv.paquete)||"Por hora")),
               h("span",{style:{color:"#888",fontSize:12,marginLeft:8}},nextEv.contacto),
               h("div",{style:{color:"#999",fontSize:11,marginTop:3}},fd(nextEv.fecha)+" • "+ft(nextEv.hora)+(nextEv.hora?" → "+calcEnd(nextEv.hora,nextEv.tipo==="Por hora"?nextEv.horas:1):""))
             ),
-            h("span",{style:{color:"#ff4444",fontWeight:700,fontFamily:JM,fontSize:15}},fm(ct(nextEv)))
+            h("span",{style:{color:"var(--cl)",fontWeight:700,fontFamily:JM,fontSize:15}},fm(ct(nextEv)))
           ),
           nextEv.direccion&&h("a",{href:mapsUrl(nextEv.direccion),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{display:"inline-block",marginTop:6,fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.08)",padding:"4px 10px",borderRadius:6}},"📍 "+nextEv.direccion+" → Maps")
         ),
@@ -409,38 +468,38 @@ function App(){
                 h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",minWidth:38}},h("span",{style:{fontSize:20,fontWeight:800,lineHeight:1,fontFamily:JM,color:sc.txt}},d.getDate()),h("span",{style:{fontSize:9,color:"#777",textTransform:"uppercase",fontWeight:600}},MS[d.getMonth()].slice(0,3))),
                 h("div",{style:{flex:1,minWidth:0}},
                   h("div",{style:{display:"flex",alignItems:"center",gap:4,marginBottom:3,flexWrap:"wrap"}},
-                    h("span",{style:{fontSize:13,fontWeight:600,color:ev.tipo==="Bloqueado"?"#888":"#fff"}},ev.tipo==="Serenata"?"🎵 Serenata":ev.tipo==="Bloqueado"?"🚫 "+ev.contacto:"🕐 Por hora"),
+                    h("span",{style:{fontSize:13,fontWeight:600,color:ev.tipo==="Bloqueado"?"#888":"#fff"}},ev.tipo==="Serenata"?"🎵 Serenata":ev.tipo==="Bloqueado"?"🚫 "+ev.contacto:"🕐 "+(pkgLabel(loadPrices(),ev.paquete)||"Por hora")),
                     h("span",{style:{fontSize:7,fontWeight:700,padding:"2px 5px",borderRadius:4,background:ec.bg,color:"#fff"}},ev.estado),
                     h("span",{style:{fontSize:7,fontWeight:700,padding:"2px 5px",borderRadius:4,background:sc.badge+"22",color:sc.badge}},sc.lb)
                   ),
                   h("div",{style:{display:"flex",gap:6,fontSize:11,color:"#888",flexWrap:"wrap"}},
                     ev.tipo!=="Bloqueado"&&h("span",null,"👤 "+ev.contacto),
                     ev.hora&&h("span",null,ft(ev.hora)+(ev.tipo!=="Bloqueado"?" → "+calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1):"")),
-                    ev.tipo==="Bloqueado"&&ev.fecha_fin&&h("span",{style:{color:"#999"}},"→ "+fd(ev.fecha_fin)+" ("+rangeDays(ev.fecha,ev.fecha_fin)+" días)"),
                     ev.tipo==="Bloqueado"&&ev.notas&&h("span",{style:{color:"#777",fontStyle:"italic"}},ev.notas),
                     h("span",{style:{color:"#666",fontSize:9}},folio(ev.id,events))
                   )
                 ),
                 ev.tipo!=="Bloqueado"?h("div",{style:{textAlign:"right",flexShrink:0}},
                   h("span",{style:{fontSize:14,fontWeight:700,color:"#fff",fontFamily:JM,display:"block"}},fm(total)),
-                  saldo>0?h("span",{style:{fontSize:10,color:"#ff3333",display:"block"}},fm(saldo)):total>0?h("span",{style:{fontSize:10,color:"#44ff44",display:"block"}},"Pagado ✓"):null
+                  saldo>0?h("span",{style:{fontSize:10,color:"var(--cl)",display:"block"}},fm(saldo)):total>0?h("span",{style:{fontSize:10,color:"#44ff44",display:"block"}},"Pagado ✓"):null
                 ):h("div",{style:{textAlign:"right",flexShrink:0}},h("span",{style:{fontSize:20}},"🚫"))
               ),
               // EXPANDED
-              isExp&&h("div",{style:{marginTop:10,paddingTop:10,borderTop:"1px solid rgba(220,30,30,0.12)",animation:"slideIn 0.2s"}},
+              isExp&&h("div",{style:{marginTop:10,paddingTop:10,borderTop:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.12)",animation:"slideIn 0.2s"}},
                 h("div",{style:{display:"flex",gap:5,marginBottom:8}},ESTADOS.map(function(est){var ac=ev.estado===est,ec2=EST_C[est];return h("button",{key:est,onClick:function(e){e.stopPropagation();setEst(ev.id,est)},style:{flex:1,padding:"6px 0",borderRadius:7,fontSize:10,fontWeight:600,cursor:"pointer",border:"1px solid "+(ac?ec2.bg+"66":"rgba(255,255,255,0.06)"),background:ac?ec2.bg+"22":"transparent",color:ac?ec2.bg:"#666",fontFamily:"'Outfit',sans-serif"}},est)})),
                 h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8,fontSize:12}},
-                  ev.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:8,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",null,h("span",{style:{color:"#dc1e1e",fontSize:10}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(ev.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1))),h("span",{style:{color:"#888",fontSize:10}},ev.tipo==="Por hora"?ev.horas+"h":"~1h")),
-                  ev.direccion&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📍 "),h("span",{style:{color:"#ccc"}},ev.direccion+" "),h("a",{href:mapsUrl(ev.direccion),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.1)",padding:"2px 6px",borderRadius:4}},"Maps ↗")),
-                  ev.telefono&&h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📱 "),h("span",{style:{color:"#ccc"}},ev.telefono+" "),h("a",{href:waUrl(ev.telefono),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#25d366",textDecoration:"none",background:"rgba(37,211,102,0.1)",padding:"2px 6px",borderRadius:4}},"WhatsApp ↗")),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"💰 "),h("span",{style:{color:"#fff",fontWeight:700}},fm(total))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"💵 "),h("span",{style:{color:"#ccc"}},fm(ev.anticipo))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📊 "),h("span",{style:{color:saldo>0?"#ff3333":"#44ff44",fontWeight:700}},fm(saldo))),
-                  h("div",null,h("span",{style:{fontSize:10,color:"#dc1e1e"}},"🔢 "),h("span",{style:{color:"#888",fontSize:11}},folio(ev.id,events))),
-                  ev.notas&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"#dc1e1e"}},"📝 "),h("span",{style:{color:"#ccc",fontSize:11}},ev.notas)),
-                  hasSg&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.12)",borderRadius:8,padding:8}},
-                    h("div",{style:{fontSize:10,color:"#dc1e1e",fontWeight:600,marginBottom:4}},"🎵 Canciones"),
-                    ev.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3}},h("span",{style:{fontSize:12,color:"#fff"}},h("span",{style:{color:"#dc1e1e",fontWeight:700,fontFamily:JM,fontSize:10}},i+1+". "),c),h("a",{href:ytK(c),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:9,color:"#ff0000",textDecoration:"none",background:"rgba(255,0,0,0.08)",padding:"3px 7px",borderRadius:4,border:"1px solid rgba(255,0,0,0.12)"}},"▶ Karaoke"))})
+                  ev.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.12)",borderRadius:8,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",null,h("span",{style:{color:"var(--cp)",fontSize:10}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(ev.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"var(--cl)",fontWeight:700}},calcEnd(ev.hora,ev.tipo==="Por hora"?ev.horas:1))),h("span",{style:{color:"#888",fontSize:10}},ev.tipo==="Por hora"?ev.horas+"h":"~1h")),
+                  ev.tipo==="Por hora"&&ev.paquete&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"var(--cp)"}},"📦 "),h("span",{style:{color:"#ccc",fontSize:12}},(pkgLabel(loadPrices(),ev.paquete)||ev.paquete)),h("span",{style:{color:"#666",fontSize:10,marginLeft:6}},pkgDesc(loadPrices(),ev.paquete)||"")),
+                  ev.direccion&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"var(--cp)"}},"📍 "),h("span",{style:{color:"#ccc"}},ev.direccion+" "),h("a",{href:mapsUrl(ev.direccion),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.1)",padding:"2px 6px",borderRadius:4}},"Maps ↗")),
+                  ev.telefono&&h("div",null,h("span",{style:{fontSize:10,color:"var(--cp)"}},"📱 "),h("span",{style:{color:"#ccc"}},ev.telefono+" "),h("a",{href:waUrl(ev.telefono),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:10,color:"#25d366",textDecoration:"none",background:"rgba(37,211,102,0.1)",padding:"2px 6px",borderRadius:4}},"WhatsApp ↗")),
+                  h("div",null,h("span",{style:{fontSize:10,color:"var(--cp)"}},"💰 "),h("span",{style:{color:"#fff",fontWeight:700}},fm(total))),
+                  h("div",null,h("span",{style:{fontSize:10,color:"var(--cp)"}},"💵 "),h("span",{style:{color:"#ccc"}},fm(ev.anticipo))),
+                  h("div",null,h("span",{style:{fontSize:10,color:"var(--cp)"}},"📊 "),h("span",{style:{color:saldo>0?"#ff3333":"#44ff44",fontWeight:700}},fm(saldo))),
+                  h("div",null,h("span",{style:{fontSize:10,color:"var(--cp)"}},"🔢 "),h("span",{style:{color:"#888",fontSize:11}},folio(ev.id,events))),
+                  ev.notas&&h("div",{style:{gridColumn:"1/-1"}},h("span",{style:{fontSize:10,color:"var(--cp)"}},"📝 "),h("span",{style:{color:"#ccc",fontSize:11}},ev.notas)),
+                  hasSg&&h("div",{style:{gridColumn:"1/-1",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.12)",borderRadius:8,padding:8}},
+                    h("div",{style:{fontSize:10,color:"var(--cp)",fontWeight:600,marginBottom:4}},"🎵 Canciones"),
+                    ev.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3}},h("span",{style:{fontSize:12,color:"#fff"}},h("span",{style:{color:"var(--cp)",fontWeight:700,fontFamily:JM,fontSize:10}},i+1+". "),c),h("a",{href:ytK(c),target:"_blank",rel:"noopener",onClick:function(e){e.stopPropagation()},style:{fontSize:9,color:"#ff0000",textDecoration:"none",background:"rgba(255,0,0,0.08)",padding:"3px 7px",borderRadius:4,border:"1px solid rgba(255,0,0,0.12)"}},"▶ Karaoke"))})
                   )
                 ),
                 // Calendar button
@@ -449,7 +508,8 @@ function App(){
                 saldo>0&&h("button",{onClick:function(e){e.stopPropagation();markPaid(ev)},style:{width:"100%",padding:"9px",borderRadius:8,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(0,135,90,0.08)",border:"1px solid rgba(0,135,90,0.2)",color:"#00c896",fontFamily:"'Outfit',sans-serif",marginBottom:6}},"💰 Marcar como pagado ("+fm(saldo)+")"),
                 // Action buttons
                 h("div",{style:{display:"flex",gap:5,flexWrap:"wrap",justifyContent:"flex-end"}},
-                  ev.anticipo>0&&h("button",{onClick:function(e){e.stopPropagation();genRecibo(ev,events)},style:C("rgba(220,30,30,0.06)","#ff4444","rgba(220,30,30,0.2)")},"🧾 Recibo"),
+                  ev.anticipo>0&&h("button",{onClick:function(e){e.stopPropagation();genRecibo(ev,events)},style:C("rgba(var(--cpr),var(--cpg),var(--cpb),0.06)","#ff4444","rgba(var(--cpr),var(--cpg),var(--cpb),0.2)")},"🧾 Recibo"),
+                  ev.tipo!=="Bloqueado"&&h("button",{onClick:function(e){e.stopPropagation();genContrato(ev,events)},style:C("rgba(var(--cpr),var(--cpg),var(--cpb),0.06)","#ff4444","rgba(var(--cpr),var(--cpg),var(--cpb),0.2)")},"📄 Contrato"),
                   h("button",{onClick:function(e){e.stopPropagation();shareWA(ev)},style:C("rgba(37,211,102,0.06)","#25d366","rgba(37,211,102,0.2)")},"📤 Compartir"),
                   ev.telefono&&h("button",{onClick:function(e){e.stopPropagation();confirmWA(ev)},style:C("rgba(37,211,102,0.06)","#25d366","rgba(37,211,102,0.2)")},"✅ Confirmar"),
                   ev.telefono&&ev.estado==="Confirmado"&&gs(ev.fecha)==="pasado"&&h("button",{onClick:function(e){e.stopPropagation();reviewWA(ev)},style:C("rgba(255,140,0,0.06)","#ff8c00","rgba(255,140,0,0.2)")},"⭐ Reseña"),
@@ -468,8 +528,8 @@ function App(){
         h("input",{type:"text",style:Object.assign({},I,{marginBottom:10,fontSize:12}),placeholder:"🔍 Buscar contacto...",value:cSrch,onChange:function(e){setCsrch(e.target.value)}}),
         h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},filteredContacts.length+" contacto(s)"),
         h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
-          filteredContacts.map(function(c,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(220,30,30,0.1)",borderRadius:12,padding:"12px 14px"}},
-            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},h("div",null,h("span",{style:{fontSize:14,fontWeight:600,color:"#fff"}},c.name),c.tel&&h("span",{style:{fontSize:11,color:"#888",marginLeft:8}},c.tel)),h("span",{style:{fontSize:12,fontWeight:700,color:"#ff4444",fontFamily:JM}},fm(c.total))),
+          filteredContacts.map(function(c,i){return h("div",{key:i,style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.1)",borderRadius:12,padding:"12px 14px"}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},h("div",null,h("span",{style:{fontSize:14,fontWeight:600,color:"#fff"}},c.name),c.tel&&h("span",{style:{fontSize:11,color:"#888",marginLeft:8}},c.tel)),h("span",{style:{fontSize:12,fontWeight:700,color:"var(--cl)",fontFamily:JM}},fm(c.total))),
             h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",{style:{fontSize:11,color:"#888"}},h("span",null,"🎤 "+c.count+" evento(s)"),c.last&&h("span",{style:{marginLeft:8}},"📅 "+fd(c.last))),h("div",{style:{display:"flex",gap:5}},c.tel&&h("a",{href:waUrl(c.tel),target:"_blank",rel:"noopener",style:{fontSize:10,color:"#25d366",textDecoration:"none",background:"rgba(37,211,102,0.1)",padding:"4px 8px",borderRadius:5}},"💬"),c.tel&&h("a",{href:"tel:"+c.tel,style:{fontSize:10,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.1)",padding:"4px 8px",borderRadius:5}},"📞")))
           )})
         )
@@ -504,15 +564,15 @@ function App(){
               for(var d=1;d<=daysInMonth;d++){
                 var dateStr=calY+"-"+String(calM+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
                 var isToday=new Date(dateStr+"T00:00:00").getTime()===today.getTime();
-                var dayEvs=events.filter(function(x){return x.fecha===dateStr||dateInRange(dateStr,x)});
+                var dayEvs=events.filter(function(x){return x.fecha===dateStr});
                 var hasEvent=dayEvs.some(function(x){return x.tipo!=="Bloqueado"&&x.estado!=="Cancelado"});
                 var hasBlocked=dayEvs.some(function(x){return x.tipo==="Bloqueado"});
+                var hasCancelled=dayEvs.some(function(x){return x.estado==="Cancelado"});
                 var bg="transparent";var co="#666";var bd="transparent";
-                if(hasEvent){bg="rgba(220,30,30,0.2)";co="#ff4444";bd="rgba(220,30,30,0.4)"}
+                if(hasEvent){bg="rgba(var(--cpr),var(--cpg),var(--cpb),0.2)";co="#ff4444";bd="rgba(var(--cpr),var(--cpg),var(--cpb),0.4)"}
                 else if(hasBlocked){bg="rgba(100,100,100,0.15)";co="#999";bd="rgba(100,100,100,0.3)"}
-                if(isToday){bd="#dc1e1e";co="#fff"}
-                var titles=dayEvs.map(function(x){return x.tipo==="Bloqueado"?"🚫 "+x.contacto:x.contacto}).join(", ");
-                cells.push(h("div",{key:d,title:titles,style:{padding:"6px 0",borderRadius:7,fontSize:12,fontWeight:isToday?700:hasEvent?600:400,color:co,background:bg,border:"1px solid "+bd,cursor:dayEvs.length?"pointer":"default",transition:"all 0.15s",position:"relative"}},d,hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#dc1e1e",margin:"2px auto 0"}}),hasBlocked&&!hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#888",margin:"2px auto 0"}})))
+                if(isToday){bd=cpri(precios);co="#fff"}
+                cells.push(h("div",{key:d,title:dayEvs.map(function(x){return x.tipo==="Bloqueado"?"🚫 "+x.contacto:x.contacto}).join(", "),style:{padding:"6px 0",borderRadius:7,fontSize:12,fontWeight:isToday?700:hasEvent?600:400,color:co,background:bg,border:"1px solid "+bd,cursor:dayEvs.length?"pointer":"default",transition:"all 0.15s",position:"relative"}},d,hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:cpri(precios),margin:"2px auto 0"}}),hasBlocked&&!hasEvent&&h("div",{style:{width:4,height:4,borderRadius:2,background:"#888",margin:"2px auto 0"}})))
               }
               return cells;
             })()
@@ -526,56 +586,187 @@ function App(){
       // ========== AJUSTES ==========
       tab==="ajustes"&&h(React.Fragment,null,
         h("h2",{style:{color:"#fff",fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,marginBottom:12}},"⚙️ Ajustes"),
-        h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"12px",borderRadius:12,fontSize:14,fontWeight:600,color:"#fff",background:"linear-gradient(135deg,#8b0000,#dc1e1e)",textDecoration:"none",marginBottom:8}},"🎤 Mi Página Web →"),
-        // QR
+        // BRANDING
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"🎨 Branding"),
+          h("p",{style:{color:"#666",fontSize:10,marginBottom:12}},"Tu nombre aparece en encabezados, contratos, recibos, WhatsApp y cotizaciones."),
+          h("div",{style:{display:"grid",gridTemplateColumns:"70px 1fr",gap:"8px",alignItems:"center",marginBottom:12}},
+            h("span",{style:{color:"#888",fontSize:11}},"Nombre"),
+            h("input",{type:"text",style:Object.assign({},I,{fontSize:15,fontWeight:700}),value:brand(precios),placeholder:"Ej: Oscar Caldera Music",onChange:function(e){var np=Object.assign({},precios,{brandName:e.target.value});setPrecios(np);savePrices(np)}}),
+            h("span",{style:{color:"#888",fontSize:11}},"Subtítulo"),
+            h("input",{type:"text",style:Object.assign({},I,{fontSize:12}),value:brandSub(precios),placeholder:"Ej: Música en Vivo para Eventos",onChange:function(e){var np=Object.assign({},precios,{brandSub:e.target.value});setPrecios(np);savePrices(np)}}),
+            h("span",{style:{color:"#888",fontSize:11}},"Color"),
+            h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              h("input",{type:"color",value:cpri(precios),onChange:function(e){var np=Object.assign({},precios,{colorPrimary:e.target.value});setPrecios(np);savePrices(np)},style:{width:40,height:36,border:"none",borderRadius:8,cursor:"pointer",background:"transparent",padding:0}}),
+              h("input",{type:"text",style:Object.assign({},I,{fontSize:12,fontFamily:JM,width:90,textAlign:"center"}),value:cpri(precios),onChange:function(e){if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){var np=Object.assign({},precios,{colorPrimary:e.target.value});setPrecios(np);savePrices(np)}},placeholder:"#dc1e1e"}),
+              h("div",{style:{display:"flex",gap:4}},
+                ["#dc1e1e","#7b2ff7","#0077ff","#e91e8c","#ff6600","#00a86b","#d4af37"].map(function(c){return h("div",{key:c,onClick:function(){var np=Object.assign({},precios,{colorPrimary:c});setPrecios(np);savePrices(np)},style:{width:20,height:20,borderRadius:6,background:c,cursor:"pointer",border:cpri(precios)===c?"2px solid #fff":"2px solid transparent",transition:"all 0.15s"}})})
+              )
+            )
+          ),
+          // Contact & Social
+          h("div",{style:{marginBottom:12}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:10}},
+              h("span",{style:{fontSize:18}},"📱"),
+              h("div",null,
+                h("span",{style:{color:"#ccc",fontSize:12,fontWeight:600}},"Contacto y Redes Sociales"),
+                h("div",{style:{color:"#777",fontSize:9}},"Aparecen en cotización, WhatsApp de confirmación y reseña.")
+              )
+            ),
+            h("div",{style:{display:"grid",gridTemplateColumns:"28px 1fr",gap:"6px 8px",alignItems:"center"}},
+              h("span",{style:{fontSize:16,textAlign:"center"}},"💬"),
+              h("input",{type:"tel",style:Object.assign({},I,{fontSize:13,fontFamily:JM}),value:precios.waNumero||"",placeholder:"WhatsApp: 526861559857",onChange:function(e){var np=Object.assign({},precios,{waNumero:e.target.value.replace(/\D/g,"")});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{fontSize:16,textAlign:"center"}},"📘"),
+              h("input",{type:"url",style:Object.assign({},I,{fontSize:12}),value:precios.socialFb||"",placeholder:"Facebook: https://facebook.com/tu-pagina",onChange:function(e){var np=Object.assign({},precios,{socialFb:e.target.value});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{fontSize:16,textAlign:"center"}},"📸"),
+              h("input",{type:"url",style:Object.assign({},I,{fontSize:12}),value:precios.socialIg||"",placeholder:"Instagram: https://instagram.com/tu-perfil",onChange:function(e){var np=Object.assign({},precios,{socialIg:e.target.value});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{fontSize:16,textAlign:"center"}},"🎵"),
+              h("input",{type:"url",style:Object.assign({},I,{fontSize:12}),value:precios.socialTk||"",placeholder:"TikTok: https://tiktok.com/@tu-perfil",onChange:function(e){var np=Object.assign({},precios,{socialTk:e.target.value});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{fontSize:16,textAlign:"center"}},"🌐"),
+              h("input",{type:"url",style:Object.assign({},I,{fontSize:12}),value:precios.socialWeb||"",placeholder:"Página web: https://tu-sitio.com",onChange:function(e){var np=Object.assign({},precios,{socialWeb:e.target.value});setPrecios(np);savePrices(np)}})
+            )
+          ),
+          // Logo Square
+          h("div",{style:{marginBottom:12}},
+            h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}},
+              h("div",null,
+                h("span",{style:{color:"#ccc",fontSize:12,fontWeight:600}},"Logo cuadrado (1:1)"),
+                h("div",{style:{color:"#777",fontSize:9}},"Para encabezados y app. PNG transparente recomendado.")
+              ),
+              logos.square&&h("button",{onClick:function(){var nl={square:"",banner:logos.banner};setLogos(nl);saveLogos(nl)},style:{background:"none",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"#888",fontSize:10,padding:"4px 8px",cursor:"pointer"}},"✕ Quitar")
+            ),
+            logos.square?h("div",{style:{display:"flex",alignItems:"center",gap:12}},
+              h("img",{src:logos.square,style:{width:60,height:60,borderRadius:12,border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",objectFit:"cover",background:"#111"}}),
+              h("img",{src:logos.square,style:{width:60,height:60,borderRadius:12,border:"1px solid rgba(255,255,255,0.1)",objectFit:"cover",background:"#fff",filter:"invert(1)"}})
+            ):null,
+            h("label",{style:{display:"block",width:"100%",padding:"10px",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",color:"var(--cl)",fontFamily:"'Outfit',sans-serif",textAlign:"center",marginTop:6}},logos.square?"Cambiar logo cuadrado":"📤 Subir logo cuadrado",
+              h("input",{type:"file",accept:"image/*",style:{display:"none"},onChange:function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){var nl=Object.assign({},logos,{square:ev.target.result});setLogos(nl);saveLogos(nl)};r.readAsDataURL(f)}}))
+          ),
+          // Logo Banner
+          h("div",null,
+            h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}},
+              h("div",null,
+                h("span",{style:{color:"#ccc",fontSize:12,fontWeight:600}},"Logo horizontal (banner)"),
+                h("div",{style:{color:"#777",fontSize:9}},"Para contratos y PDFs. PNG transparente recomendado.")
+              ),
+              logos.banner&&h("button",{onClick:function(){var nl={square:logos.square,banner:""};setLogos(nl);saveLogos(nl)},style:{background:"none",border:"1px solid rgba(255,255,255,0.1)",borderRadius:6,color:"#888",fontSize:10,padding:"4px 8px",cursor:"pointer"}},"✕ Quitar")
+            ),
+            logos.banner?h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+              h("img",{src:logos.banner,style:{height:40,maxWidth:"100%",objectFit:"contain",borderRadius:8,border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",padding:6,background:"#111"}}),
+              h("img",{src:logos.banner,style:{height:40,maxWidth:"100%",objectFit:"contain",borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",padding:6,background:"#fff",filter:"invert(1)"}})
+            ):null,
+            h("label",{style:{display:"block",width:"100%",padding:"10px",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",color:"var(--cl)",fontFamily:"'Outfit',sans-serif",textAlign:"center",marginTop:6}},logos.banner?"Cambiar banner":"📤 Subir logo horizontal",
+              h("input",{type:"file",accept:"image/*",style:{display:"none"},onChange:function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){var nl=Object.assign({},logos,{banner:ev.target.result});setLogos(nl);saveLogos(nl)};r.readAsDataURL(f)}}))
+          )
+        ),
+        // QR - dynamic with config
         h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8,textAlign:"center"}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📱 QR de Cotización"),
-          h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},"Los clientes escanean y abren tu formulario"),
-          h("img",{src:"https://api.qrserver.com/v1/create-qr-code/?data="+encodeURIComponent(COTIZAR_URL)+"&size=180x180&bgcolor=000000&color=dc1e1e",style:{width:150,height:150,borderRadius:8,border:"2px solid #dc1e1e"}}),
-          h("p",{style:{color:"#666",fontSize:9,marginTop:6}},COTIZAR_URL)
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"📱 QR de Cotización"),
+          h("p",{style:{color:"#888",fontSize:10,marginBottom:10}},"Incluye tu configuración de paquetes activos"),
+          h("img",{key:JSON.stringify(precios.paquetesActivos)+precios.basico+precios.liveDrums+precios.dueto+precios.premium+precios.ps,src:"https://api.qrserver.com/v1/create-qr-code/?data="+encodeURIComponent(cotizarUrl(precios))+"&size=180x180&bgcolor=000000&color=dc1e1e",style:{width:150,height:150,borderRadius:8,border:"2px solid var(--cp)"}}),
+          h("button",{onClick:function(){navigator.clipboard.writeText(cotizarUrl(precios)).then(function(){ntf("Link copiado")}).catch(function(){ntf("No se pudo copiar","err")})},style:Object.assign({},B("rgba(var(--cpr),var(--cpg),var(--cpb),0.1)"),{color:"var(--cl)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.25)",marginTop:8,fontSize:11})},"📋 Copiar link")
+        ),
+        // Package Prices - fully editable
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"📦 Paquetes por Hora"),
+          h("p",{style:{color:"#666",fontSize:10,marginBottom:12}},"Agrega, edita o elimina paquetes. Solo los activos aparecen en cotización y formulario."),
+          getPkgIds(precios).map(function(pk,idx){
+            var activo=precios.paquetesActivos[pk];
+            return h("div",{key:pk,style:{background:activo?"rgba(var(--cpr),var(--cpg),var(--cpb),0.04)":"rgba(255,255,255,0.02)",border:"1px solid "+(activo?"rgba(var(--cpr),var(--cpg),var(--cpb),0.15)":"rgba(255,255,255,0.06)"),borderRadius:12,padding:"14px",marginBottom:8,opacity:activo?1:0.45,transition:"all 0.2s"}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:activo?10:0}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                  h("span",{style:{fontSize:22}},pkgIcon(precios,pk)),
+                  h("span",{style:{fontSize:14,fontWeight:700,color:activo?"#fff":"#888"}},pkgLabel(precios,pk))
+                ),
+                h("div",{style:{display:"flex",gap:6}},
+                  h("button",{onClick:function(){var np=Object.assign({},precios);np.paquetesActivos=Object.assign({},np.paquetesActivos);np.paquetesActivos[pk]=!np.paquetesActivos[pk];setPrecios(np);savePrices(np)},style:{padding:"6px 12px",borderRadius:8,fontSize:10,fontWeight:600,cursor:"pointer",border:"1px solid "+(activo?"rgba(0,135,90,0.3)":"rgba(255,255,255,0.12)"),background:activo?"rgba(0,135,90,0.1)":"rgba(255,255,255,0.04)",color:activo?"#00c896":"#888",fontFamily:"'Outfit',sans-serif"}},activo?"✓ Activo":"Inactivo"),
+                  getPkgIds(precios).length>1&&h("button",{onClick:function(){if(!confirm("¿Eliminar paquete '"+pkgLabel(precios,pk)+"'?"))return;var np=Object.assign({},precios);np.pkgIds=getPkgIds(np).filter(function(x){return x!==pk});delete np[pk];np.paquetesActivos=Object.assign({},np.paquetesActivos);delete np.paquetesActivos[pk];np.labels=Object.assign({},np.labels);delete np.labels[pk];np.descs=Object.assign({},np.descs);delete np.descs[pk];np.icons=Object.assign({},np.icons);delete np.icons[pk];setPrecios(np);savePrices(np)},style:{padding:"6px 10px",borderRadius:8,fontSize:10,cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.03)",color:"var(--cl)",fontFamily:"'Outfit',sans-serif"}},"🗑️")
+                )
+              ),
+              activo&&h("div",{style:{display:"grid",gridTemplateColumns:"60px 1fr",gap:"6px 8px",alignItems:"center"}},
+                h("span",{style:{color:"#888",fontSize:10}},"Icono"),
+                h("input",{type:"text",style:Object.assign({},I,{fontSize:18,width:50,textAlign:"center",padding:"6px"}),value:pkgIcon(precios,pk),onChange:function(e){var np=Object.assign({},precios);np.icons=Object.assign({},np.icons);np.icons[pk]=e.target.value;setPrecios(np);savePrices(np)}}),
+                h("span",{style:{color:"#888",fontSize:10}},"Nombre"),
+                h("input",{type:"text",style:Object.assign({},I,{fontSize:13}),value:pkgLabel(precios,pk),onChange:function(e){var np=Object.assign({},precios);np.labels=Object.assign({},np.labels);np.labels[pk]=e.target.value;setPrecios(np);savePrices(np)}}),
+                h("span",{style:{color:"#888",fontSize:10}},"Descripción"),
+                h("input",{type:"text",style:Object.assign({},I,{fontSize:11}),value:pkgDesc(precios,pk),onChange:function(e){var np=Object.assign({},precios);np.descs=Object.assign({},np.descs);np.descs[pk]=e.target.value;setPrecios(np);savePrices(np)}}),
+                h("span",{style:{color:"#888",fontSize:10}},"Precio/hr"),
+                h("div",{style:{display:"flex",alignItems:"center",gap:4}},
+                  h("span",{style:{color:"#888",fontSize:14}},"$"),
+                  h("input",{type:"number",style:Object.assign({},I,{fontSize:15,fontWeight:700,textAlign:"center",fontFamily:JM,width:90}),value:precios[pk]||0,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios);np[pk]=v;setPrecios(np);savePrices(np)}}),
+                  h("span",{style:{color:"#666",fontSize:10}},"/hr")
+                )
+              )
+            )
+          }),
+          // Add new package button
+          h("button",{onClick:function(){var newId="pkg_"+Date.now();var np=Object.assign({},precios);np.pkgIds=getPkgIds(np).concat([newId]);np[newId]=2000;np.paquetesActivos=Object.assign({},np.paquetesActivos);np.paquetesActivos[newId]=true;np.labels=Object.assign({},np.labels);np.labels[newId]="Nuevo Paquete";np.descs=Object.assign({},np.descs);np.descs[newId]="Descripción del servicio";np.icons=Object.assign({},np.icons);np.icons[newId]="🎵";setPrecios(np);savePrices(np);ntf("Paquete agregado — edítalo arriba")},style:Object.assign({},B("rgba(var(--cpr),var(--cpg),var(--cpb),0.08)"),{width:"100%",color:"var(--cl)",border:"1px dashed rgba(var(--cpr),var(--cpg),var(--cpb),0.3)",fontSize:12})},"+ Agregar paquete")
+        ),
+        // Serenata Price
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"🎵 Precio Serenata"),
+          h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+            h("span",{style:{color:"#888",fontSize:14}},"$"),
+            h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:precios.ps,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ps:v});setPrecios(np);savePrices(np)}}),
+            h("span",{style:{color:"#666",fontSize:11}},(precios.songsCount||4)+" canciones")
+          )
+        ),
+        // Receipt Name
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"🧾 Nombre del Recibo"),
+          h("p",{style:{color:"#666",fontSize:10,marginBottom:8}},"Este nombre aparece en el PDF del recibo de anticipo."),
+          h("input",{type:"text",style:Object.assign({},I,{fontSize:14}),value:precios.reciboNombre||"Recibo de anticipo",onChange:function(e){var np=Object.assign({},precios,{reciboNombre:e.target.value});setPrecios(np);savePrices(np)},placeholder:"Ej: Recibo de anticipo, Comprobante de reserva..."})
+        ),
+        // General config
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"⚙️ Configuración General"),
+          h("div",{style:{display:"grid",gridTemplateColumns:"90px 1fr",gap:"8px",alignItems:"center"}},
+            h("span",{style:{color:"#888",fontSize:11}},"Lada telefónica"),
+            h("input",{type:"text",style:Object.assign({},I,{fontSize:14,fontFamily:JM,width:80}),value:precios.lada||"",placeholder:"686",onChange:function(e){var np=Object.assign({},precios,{lada:e.target.value});setPrecios(np);savePrices(np)}}),
+            h("span",{style:{color:"#888",fontSize:11}},"Canciones serenata"),
+            h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,fontFamily:JM,width:60,textAlign:"center"}),min:"1",max:"20",value:precios.songsCount||4,onChange:function(e){var np=Object.assign({},precios,{songsCount:Math.max(1,Number(e.target.value)||4)});setPrecios(np);savePrices(np)}}),
+              h("span",{style:{color:"#666",fontSize:11}},"canciones por serenata")
+            ),
+            h("span",{style:{color:"#888",fontSize:11}},"URL cotización"),
+            h("input",{type:"url",style:Object.assign({},I,{fontSize:11}),value:precios.cotizarBase||"",placeholder:COTIZAR_URL,onChange:function(e){var np=Object.assign({},precios,{cotizarBase:e.target.value});setPrecios(np);savePrices(np)}})
+          )
+        ),
+        // Contract clauses
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"📄 Cláusulas del Contrato"),
+          h("p",{style:{color:"#666",fontSize:10,marginBottom:10}},"Edita, agrega o elimina cláusulas. Aparecen en el PDF del contrato."),
+          (precios.clausulas||DEF_PRICES.clausulas).map(function(cl,i){
+            return h("div",{key:i,style:{display:"flex",gap:6,marginBottom:6,alignItems:"flex-start"}},
+              h("span",{style:{color:"var(--cp)",fontSize:11,fontWeight:700,fontFamily:JM,minWidth:20,marginTop:10}},(i+1)+"."),
+              h("textarea",{style:Object.assign({},I,{fontSize:11,minHeight:36,resize:"vertical",flex:1}),value:cl,onChange:function(e){var np=Object.assign({},precios);np.clausulas=(np.clausulas||DEF_PRICES.clausulas).slice();np.clausulas[i]=e.target.value;setPrecios(np);savePrices(np)}}),
+              h("button",{onClick:function(){var np=Object.assign({},precios);np.clausulas=(np.clausulas||DEF_PRICES.clausulas).slice();np.clausulas.splice(i,1);setPrecios(np);savePrices(np)},style:{background:"none",border:"1px solid rgba(255,255,255,0.08)",borderRadius:6,color:"#ff4444",fontSize:10,padding:"4px 6px",cursor:"pointer",marginTop:8}},"✕")
+            )
+          }),
+          h("button",{onClick:function(){var np=Object.assign({},precios);np.clausulas=(np.clausulas||DEF_PRICES.clausulas).slice();np.clausulas.push("Nueva cláusula");setPrecios(np);savePrices(np)},style:Object.assign({},B("rgba(var(--cpr),var(--cpg),var(--cpb),0.08)"),{width:"100%",color:"var(--cl)",border:"1px dashed rgba(var(--cpr),var(--cpg),var(--cpb),0.3)",fontSize:11})},"+ Agregar cláusula")
         ),
         // Report
         h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"📄 Reporte Mensual"),
-          h("button",{onClick:function(){genReporte(events,fYear,fMonth)},style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)"})},"📄 Generar Reporte PDF")
+          h("button",{onClick:function(){genReporte(events,fYear,fMonth)},style:Object.assign({},B("rgba(var(--cpr),var(--cpg),var(--cpb),0.1)"),{width:"100%",color:"var(--cl)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.25)"})},"📄 Generar Reporte PDF")
         ),
         // Backup
         h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"💾 Respaldo"),
           h("p",{style:{color:"#888",fontSize:11,marginBottom:10}},events.length+" eventos"),
-          h("button",{onClick:exportD,style:Object.assign({},B("rgba(220,30,30,0.1)"),{width:"100%",color:"#ff4444",border:"1px solid rgba(220,30,30,0.25)",marginBottom:6})},"📥 Exportar"),
+          h("button",{onClick:exportD,style:Object.assign({},B("rgba(var(--cpr),var(--cpg),var(--cpb),0.1)"),{width:"100%",color:"var(--cl)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.25)",marginBottom:6})},"📥 Exportar"),
           h("label",{style:{display:"block",width:"100%",padding:"10px",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer",background:"rgba(0,135,90,0.1)",border:"1px solid rgba(0,135,90,0.25)",color:"#00c896",fontFamily:"'Outfit',sans-serif",textAlign:"center"}},"📤 Importar",h("input",{type:"file",accept:".json",onChange:importD,style:{display:"none"}}))
         ),
         // Notif
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16,marginBottom:8}},
+        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16}},
           h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:8}},"🔔 Notificaciones"),
           h("button",{onClick:function(){reqNotif();if("Notification"in window)ntf("Permiso: "+Notification.permission)},style:Object.assign({},B("rgba(255,140,0,0.1)"),{width:"100%",color:"#ff8c00",border:"1px solid rgba(255,140,0,0.25)"})},"Activar")
-        ),
-        // Prices
-        h("div",{style:{background:"rgba(255,255,255,0.03)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:16}},
-          h("h3",{style:{color:"#fff",fontSize:14,fontWeight:600,marginBottom:4}},"💰 Precios"),
-          h("p",{style:{color:"#666",fontSize:10,marginBottom:12}},"Cambiar precios solo afecta eventos nuevos. Los ya agendados conservan su precio original."),
-          h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:10}},
-            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🕐 Por hora"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
-              h("span",{style:{color:"#888",fontSize:14}},"$"),
-              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PH,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ph:v});setPrecios(np);savePrices(np)}}),
-              h("span",{style:{color:"#666",fontSize:11}},"/hr")
-            )
-          ),
-          h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-            h("span",{style:{color:"#ccc",fontSize:13,minWidth:80}},"🎵 Serenata"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:4,flex:1}},
-              h("span",{style:{color:"#888",fontSize:14}},"$"),
-              h("input",{type:"number",style:Object.assign({},I,{fontSize:16,fontWeight:700,textAlign:"center",fontFamily:JM,width:100}),value:PS,onChange:function(e){var v=Number(e.target.value)||0;var np=Object.assign({},precios,{ps:v});setPrecios(np);savePrices(np)}})
-            )
-          )
         )
       )
     ),
 
     // Bottom nav
-    h("div",{style:{position:"fixed",bottom:0,left:0,right:0,background:"rgba(5,5,5,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderTop:"1px solid rgba(220,30,30,0.1)",display:"flex",justifyContent:"center",zIndex:900}},
+    h("div",{style:{position:"fixed",bottom:0,left:0,right:0,background:"rgba(5,5,5,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderTop:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.1)",display:"flex",justifyContent:"center",zIndex:900}},
       h("div",{style:{display:"flex",maxWidth:640,width:"100%"}},
         [{id:"eventos",icon:"🎤",lb:"Eventos"},{id:"contactos",icon:"👤",lb:"Contactos"},{id:"dashboard",icon:"📊",lb:"Dashboard"},{id:"ajustes",icon:"⚙️",lb:"Ajustes"}].map(function(t){return h("div",{key:t.id,onClick:function(){setTab(t.id)},style:{flex:1,textAlign:"center",padding:"8px 0",cursor:"pointer"}},h("div",{style:{fontSize:18}},t.icon),h("div",{style:{fontSize:9,fontWeight:600,color:tab===t.id?"#ff4444":"#666",marginTop:1}},t.lb))})
       )
@@ -583,29 +774,42 @@ function App(){
 
     // ========== FORM ==========
     showForm&&h("div",{onClick:close,style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:14,animation:"fadeIn 0.2s"}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:460,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 40px rgba(220,30,30,0.15)"}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:18,padding:20,width:"100%",maxWidth:460,maxHeight:"90vh",overflowY:"auto",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",animation:"slideIn 0.3s ease",boxShadow:"0 0 40px rgba(var(--cpr),var(--cpg),var(--cpb),0.15)"}},
         h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},h("h2",{style:{fontSize:16,fontWeight:700,color:"#fff",margin:0}},editing?"✏️ Editar":"🎤 Nuevo Evento"),h("button",{onClick:close,style:{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer"}},"✕")),
         h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11}},
           // Type
-          h("div",{style:{gridColumn:"1/-1",display:"flex",gap:8}},["Por hora","Serenata","Bloqueado"].map(function(t){var ac=form.tipo===t;var isB=t==="Bloqueado";return h("div",{key:t,onClick:function(){upd("tipo",t);if(t==="Serenata")setShowSongs(true)},style:{flex:1,textAlign:"center",padding:"11px 8px",borderRadius:11,cursor:"pointer",fontWeight:600,fontSize:13,background:ac?(isB?"rgba(100,100,100,0.15)":"rgba(220,30,30,0.15)"):"rgba(255,255,255,0.04)",color:ac?(isB?"#aaa":"#ff4444"):"#888",border:"1px solid "+(ac?(isB?"rgba(100,100,100,0.4)":"rgba(220,30,30,0.4)"):"rgba(255,255,255,0.08)")}},h("div",{style:{fontSize:18,marginBottom:2}},t==="Por hora"?"🕐":t==="Serenata"?"🎵":"🚫"),t,h("div",{style:{fontSize:10,color:ac?(isB?"#888":"#ff6666"):"#666",fontWeight:400}},t==="Por hora"?fm(PH)+"/hr":t==="Serenata"?fm(PS):"Personal"))})),
+          h("div",{style:{gridColumn:"1/-1",display:"flex",gap:8}},["Por hora","Serenata","Bloqueado"].map(function(t){var ac=form.tipo===t;var isB=t==="Bloqueado";return h("div",{key:t,onClick:function(){upd("tipo",t);if(t==="Serenata")setShowSongs(true)},style:{flex:1,textAlign:"center",padding:"11px 8px",borderRadius:11,cursor:"pointer",fontWeight:600,fontSize:13,background:ac?(isB?"rgba(100,100,100,0.15)":"rgba(var(--cpr),var(--cpg),var(--cpb),0.15)"):"rgba(255,255,255,0.04)",color:ac?(isB?"#aaa":"#ff4444"):"#888",border:"1px solid "+(ac?(isB?"rgba(100,100,100,0.4)":"rgba(var(--cpr),var(--cpg),var(--cpb),0.4)"):"rgba(255,255,255,0.08)")}},h("div",{style:{fontSize:18,marginBottom:2}},t==="Por hora"?"🕐":t==="Serenata"?"🎵":"🚫"),t,h("div",{style:{fontSize:10,color:ac?(isB?"#888":"#ff6666"):"#666",fontWeight:400}},t==="Por hora"?fm(PH)+"/hr":t==="Serenata"?fm(PS):"Personal"))})),
           // Date
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},form.tipo==="Bloqueado"?"Fecha inicio *":"Fecha *"),h("input",{type:"date",style:I,value:form.fecha,onChange:function(e){upd("fecha",e.target.value)}})),
-          // Fecha fin (solo Bloqueado)
-          form.tipo==="Bloqueado"?h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Fecha fin"),h("input",{type:"date",style:I,value:form.fecha_fin||"",min:form.fecha||"",onChange:function(e){upd("fecha_fin",e.target.value)}}),form.fecha&&form.fecha_fin&&h("div",{style:{marginTop:4,padding:"6px 10px",background:"rgba(100,100,100,0.1)",border:"1px solid rgba(100,100,100,0.15)",borderRadius:7,fontSize:11,color:"#999"}},"🚫 "+rangeDays(form.fecha,form.fecha_fin)+" día(s) bloqueado(s)")):
+          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Fecha *"),h("input",{type:"date",style:I,value:form.fecha,onChange:function(e){upd("fecha",e.target.value)}})),
           // Time (select :00/:30 only)
           h("div",{style:{display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Hora inicio"),h("select",{style:Object.assign({},I,{cursor:"pointer"}),value:form.hora,onChange:function(e){upd("hora",e.target.value)}},h("option",{value:""},"Seleccionar..."),TIMES.map(function(t){return h("option",{key:t.v,value:t.v},t.l)}))),
-          // Hours (por hora only)
+          // Hours + Package (por hora only)
           form.tipo==="Por hora"&&h("div",{style:{gridColumn:"1/-1"}},
+            h("label",{style:Object.assign({},LB,{marginBottom:5,display:"block"})},"Paquete"),
+            h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}},
+              getPkgIds(precios).filter(function(pk){return precios.paquetesActivos[pk]}).map(function(pk){var ac=form.paquete===pk;return h("div",{key:pk,onClick:function(){upd("paquete",pk)},style:{textAlign:"center",padding:"9px 6px",borderRadius:10,cursor:"pointer",background:ac?"rgba(var(--cpr),var(--cpg),var(--cpb),0.15)":"rgba(255,255,255,0.04)",border:"1px solid "+(ac?"rgba(var(--cpr),var(--cpg),var(--cpb),0.4)":"rgba(255,255,255,0.08)"),transition:"all 0.15s"}},
+                h("div",{style:{fontSize:16,marginBottom:2}},pkgIcon(precios,pk)),
+                h("div",{style:{fontSize:12,fontWeight:600,color:ac?"#ff4444":"#aaa"}},pkgLabel(precios,pk)),
+                h("div",{style:{fontSize:10,color:ac?"#ff6666":"#666",marginTop:2}},fm(precios[pk])+"/hr"),
+                h("div",{style:{fontSize:8,color:"#777",marginTop:3,lineHeight:1.2}},pkgDesc(precios,pk))
+              )})
+            ),
+            // Override price
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},
+              h("label",{style:Object.assign({},LB,{minWidth:90})},"Precio manual"),
+              h("input",{type:"number",style:Object.assign({},I,{width:100,textAlign:"center",fontSize:13,fontFamily:JM}),placeholder:"Opcional",value:form.precioOverride||"",onChange:function(e){upd("precioOverride",e.target.value)}}),
+              h("span",{style:{color:"#666",fontSize:10}},form.precioOverride?"Override activo":"Usa precio del paquete")
+            ),
             h("label",{style:Object.assign({},LB,{marginBottom:5,display:"block"})},"Horas a cantar"),
-            h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:form.hora?8:0}},h("input",{type:"number",style:Object.assign({},I,{width:70,textAlign:"center",fontSize:16,fontWeight:700}),min:"1",value:form.horas,onChange:function(e){upd("horas",e.target.value)}}),h("span",{style:{color:"#888",fontSize:11}},"× "+fm(PH)+" ="),h("span",{style:{color:"#ff4444",fontSize:17,fontWeight:700,fontFamily:JM}},fm((Number(form.horas)||1)*PH))),
-            form.hora&&h("div",{style:{background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(form.hora,form.horas)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},(Number(form.horas)||1)+"h"))
+            h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:form.hora?8:0}},h("input",{type:"number",style:Object.assign({},I,{width:70,textAlign:"center",fontSize:16,fontWeight:700}),min:"1",value:form.horas,onChange:function(e){upd("horas",e.target.value)}}),h("span",{style:{color:"#888",fontSize:11}},"× "+fm(form.precioOverride&&Number(form.precioOverride)>0?Number(form.precioOverride):PH)+" ="),h("span",{style:{color:"var(--cl)",fontSize:17,fontWeight:700,fontFamily:JM}},fm((Number(form.horas)||1)*(form.precioOverride&&Number(form.precioOverride)>0?Number(form.precioOverride):PH)))),
+            form.hora&&h("div",{style:{background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"var(--cl)",fontWeight:700}},calcEnd(form.hora,form.horas)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},(Number(form.horas)||1)+"h"))
           ),
           // Serenata end time
-          form.tipo==="Serenata"&&form.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"#ff4444",fontWeight:700}},calcEnd(form.hora,1)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},"~1h")),
+          form.tipo==="Serenata"&&form.hora&&h("div",{style:{gridColumn:"1/-1",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",borderRadius:10,padding:"8px 12px"}},h("span",{style:{color:"#999",fontSize:11}},"🕐 "),h("span",{style:{color:"#fff",fontWeight:600}},ft(form.hora)),h("span",{style:{color:"#888"}}," → "),h("span",{style:{color:"var(--cl)",fontWeight:700}},calcEnd(form.hora,1)),h("span",{style:{color:"#888",fontSize:10,marginLeft:8}},"~1h")),
           // Songs button
           form.tipo==="Serenata"&&h("div",{style:{gridColumn:"1/-1"}},
-            h("button",{onClick:function(){setShowSongs(true)},style:{width:"100%",padding:10,borderRadius:9,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(220,30,30,0.1)",border:"1px solid rgba(220,30,30,0.25)",color:"#ff4444",fontFamily:"'Outfit',sans-serif"}},"🎵 "+(form.canciones.some(function(c){return c})?"Editar canciones":"Agregar canciones")),
-            form.canciones.some(function(c){return c})&&h("div",{style:{marginTop:5,padding:8,background:"rgba(220,30,30,0.05)",borderRadius:6}},form.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{fontSize:11,color:"#ccc",marginBottom:2}},h("span",{style:{color:"#dc1e1e",fontWeight:700}},i+1+". "),c)}))
+            h("button",{onClick:function(){setShowSongs(true)},style:{width:"100%",padding:10,borderRadius:9,fontSize:12,fontWeight:600,cursor:"pointer",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.1)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.25)",color:"var(--cl)",fontFamily:"'Outfit',sans-serif"}},"🎵 "+(form.canciones.some(function(c){return c})?"Editar canciones":"Agregar canciones")),
+            form.canciones.some(function(c){return c})&&h("div",{style:{marginTop:5,padding:8,background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.05)",borderRadius:6}},form.canciones.filter(function(c){return c}).map(function(c,i){return h("div",{key:i,style:{fontSize:11,color:"#ccc",marginBottom:2}},h("span",{style:{color:"var(--cp)",fontWeight:700}},i+1+". "),c)}))
           ),
           // Contact (with autocomplete) - label changes for Bloqueado
           h("div",{style:{display:"flex",flexDirection:"column",gap:4,position:"relative"}},h("label",{style:LB},form.tipo==="Bloqueado"?"Motivo del bloqueo *":"Contacto *"),h("input",{type:"text",style:I,placeholder:form.tipo==="Bloqueado"?"Ej: Evento familiar, Día libre, Cita médica...":"Cliente",value:form.contacto,onChange:function(e){onCC(e.target.value)},onBlur:function(){setTimeout(function(){setSgShow(false)},200)}}),form.tipo!=="Bloqueado"&&sgShow&&sugs.length>0&&h("div",{className:"sug"},sugs.slice(0,5).map(function(c,i){return h("div",{key:i,className:"sug-i",onMouseDown:function(){pickC(c)}},c.name,c.tel?h("span",{style:{float:"right",color:"#888",fontSize:11}},c.tel):null)}))),
@@ -617,10 +821,10 @@ function App(){
           form.tipo!=="Bloqueado"&&h("div",{style:{gridColumn:"1/-1",display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},"Dirección"),h("input",{type:"text",style:I,placeholder:"Lugar del evento",value:form.direccion,onChange:function(e){upd("direccion",e.target.value)}}),form.direccion&&form.direccion.length>3&&h("a",{href:mapsUrl(form.direccion),target:"_blank",rel:"noopener",style:{display:"inline-flex",alignItems:"center",gap:5,marginTop:4,fontSize:11,color:"#4285f4",textDecoration:"none",background:"rgba(66,133,244,0.08)",padding:"5px 10px",borderRadius:7,border:"1px solid rgba(66,133,244,0.12)"}},"📍 Ver en Google Maps →")),
           h("div",{style:{gridColumn:"1/-1",display:"flex",flexDirection:"column",gap:4}},h("label",{style:LB},form.tipo==="Bloqueado"?"Detalles adicionales":"Notas"),h("textarea",{style:Object.assign({},I,{minHeight:45,resize:"vertical"}),placeholder:form.tipo==="Bloqueado"?"Información adicional sobre el bloqueo...":"Indicaciones...",value:form.notas,onChange:function(e){upd("notas",e.target.value)}})),
           // Price summary - hide for Bloqueado
-          form.tipo&&form.tipo!=="Bloqueado"&&h("div",{style:{gridColumn:"1/-1",background:"rgba(220,30,30,0.06)",border:"1px solid rgba(220,30,30,0.2)",borderRadius:10,padding:"11px 13px"}},
+          form.tipo&&form.tipo!=="Bloqueado"&&h("div",{style:{gridColumn:"1/-1",background:"rgba(var(--cpr),var(--cpg),var(--cpb),0.06)",border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",borderRadius:10,padding:"11px 13px"}},
             h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#999",fontSize:11}},"Total:"),h("span",{style:{color:"#fff",fontWeight:700,fontSize:15,fontFamily:JM}},fm(tF))),
-            h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#999",fontSize:11}},"Anticipo:"),h("span",{style:{color:"#ff6666",fontFamily:JM}},fm(Number(form.anticipo)||0))),
-            h("div",{style:{display:"flex",justifyContent:"space-between",borderTop:"1px solid rgba(220,30,30,0.15)",paddingTop:5}},h("span",{style:{color:"#999",fontSize:11}},"Restante:"),h("span",{style:{color:sF>0?"#ff3333":"#44ff44",fontWeight:700,fontSize:17,fontFamily:JM}},fm(sF)))
+            h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#999",fontSize:11}},"Anticipo:"),h("span",{style:{color:"var(--cl)",fontFamily:JM}},fm(Number(form.anticipo)||0))),
+            h("div",{style:{display:"flex",justifyContent:"space-between",borderTop:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.15)",paddingTop:5}},h("span",{style:{color:"#999",fontSize:11}},"Restante:"),h("span",{style:{color:sF>0?"#ff3333":"#44ff44",fontWeight:700,fontSize:17,fontFamily:JM}},fm(sF)))
           )
         ),
         h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end",marginTop:14}},
@@ -631,11 +835,10 @@ function App(){
 
     // Songs dialog
     showSongs&&showForm&&h("div",{onClick:function(){setShowSongs(false)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1100,padding:14}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:16,padding:20,width:"100%",maxWidth:370,border:"1px solid rgba(220,30,30,0.2)",animation:"slideIn 0.25s ease"}},
-        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},h("span",{style:{fontSize:22}},"🎵"),h("div",null,h("h3",{style:{fontSize:15,fontWeight:700,color:"#fff",margin:0}},"Canciones de la Serenata"),h("p",{style:{fontSize:10,color:"#888",margin:"2px 0 0"}},"4 canciones = "+fm(PS)))),
-        h("a",{href:"https://oscarcalderamusic.netlify.app/",target:"_blank",rel:"noopener",style:{display:"block",textAlign:"center",padding:"9px",borderRadius:8,fontSize:11,fontWeight:600,color:"#dc1e1e",background:"rgba(220,30,30,0.08)",border:"1px solid rgba(220,30,30,0.2)",textDecoration:"none",marginBottom:10}},"🎵 Ver repertorio completo →"),
-        [0,1,2,3].map(function(i){return h("div",{key:i,style:{marginBottom:8}},
-          h("div",{style:{display:"flex",alignItems:"center",gap:7}},h("span",{style:{color:"#dc1e1e",fontSize:12,fontWeight:700,fontFamily:JM,minWidth:18}},i+1+"."),h("input",{type:"text",style:Object.assign({},I,{flex:1,fontSize:13}),placeholder:"Canción "+(i+1),value:form.canciones[i]||"",onChange:function(e){updS(i,e.target.value)}})),
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:16,padding:20,width:"100%",maxWidth:370,border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",animation:"slideIn 0.25s ease"}},
+        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},h("span",{style:{fontSize:22}},"🎵"),h("div",null,h("h3",{style:{fontSize:15,fontWeight:700,color:"#fff",margin:0}},"Canciones de la Serenata"),h("p",{style:{fontSize:10,color:"#888",margin:"2px 0 0"}},(precios.songsCount||4)+" canciones = "+fm(PS)))),
+        Array.from({length:precios.songsCount||4},function(_,i){return i}).map(function(i){return h("div",{key:i,style:{marginBottom:8}},
+          h("div",{style:{display:"flex",alignItems:"center",gap:7}},h("span",{style:{color:"var(--cp)",fontSize:12,fontWeight:700,fontFamily:JM,minWidth:18}},i+1+"."),h("input",{type:"text",style:Object.assign({},I,{flex:1,fontSize:13}),placeholder:"Canción "+(i+1),value:form.canciones[i]||"",onChange:function(e){updS(i,e.target.value)}})),
           form.canciones[i]&&form.canciones[i].length>2&&h("a",{href:ytK(form.canciones[i]),target:"_blank",rel:"noopener",style:{display:"inline-block",marginTop:3,marginLeft:25,fontSize:9,color:"#ff0000",textDecoration:"none",background:"rgba(255,0,0,0.08)",padding:"3px 8px",borderRadius:5,border:"1px solid rgba(255,0,0,0.12)"}},"▶ Karaoke YouTube")
         )}),
         h("button",{onClick:function(){setShowSongs(false)},style:Object.assign({},B(),{width:"100%",marginTop:6})},"✅ Listo")
@@ -668,7 +871,7 @@ function App(){
               p.personas&&h("div",null,"👥 ",p.personas),
               p.tipo==="Serenata"&&p.canciones.some(function(c){return c})&&h("div",null,"🎵 ",p.canciones.filter(function(c){return c}).join(", ")),
               p.notas&&h("div",null,"📝 ",p.notas),
-              !p.contacto&&h("div",{style:{color:"#ff4444"}},"⚠️ No se detectó nombre del cliente")
+              !p.contacto&&h("div",{style:{color:"var(--cl)"}},"⚠️ No se detectó nombre del cliente")
             );
           })()
         ),
@@ -681,7 +884,7 @@ function App(){
 
     // Delete
     delId&&h("div",{onClick:function(){setDelId(null)},style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}},
-      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:14,padding:20,border:"1px solid rgba(220,30,30,0.2)",maxWidth:300,width:"100%",animation:"slideIn 0.2s"}},
+      h("div",{onClick:function(e){e.stopPropagation()},className:"glass",style:{borderRadius:14,padding:20,border:"1px solid rgba(var(--cpr),var(--cpg),var(--cpb),0.2)",maxWidth:300,width:"100%",animation:"slideIn 0.2s"}},
         h("p",{style:{color:"#fff",fontSize:14,marginBottom:6}},"¿Eliminar este evento?"),
         h("p",{style:{color:"#888",fontSize:11,marginBottom:16}},"Se eliminará permanentemente."),
         h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
